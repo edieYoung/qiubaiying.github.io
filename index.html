@@ -59,7 +59,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">碎碎</a></li>
+				<li><a href="/tags/iOS开发/">iOS开发</a></li>
 	        
 			</ul>
 		</nav>
@@ -141,7 +141,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">碎碎</a></li>
+					<li style="width: 50%"><a href="/tags/iOS开发/">iOS开发</a></li>
 		        
 				</ul>
 			</nav>
@@ -158,7 +158,125 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="理解deep-Link" class="article article-type-理解deep  article-index" itemscope itemprop="blogPost">
+    <article id="post-Schemes" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/04/Schemes/">iOS-URLSchemes</a>
+    </h1>
+  
+
+        
+        <a href="/2017/09/04/Schemes/" class="archive-article-date">
+  	<time datetime="2017-09-03T16:45:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Targets"><a href="#Targets" class="headerlink" title="Targets:"></a>Targets:</h1><ul>
+<li><p>What is a URL scheme?</p>
+</li>
+<li><p>How to set a URL scheme?</p>
+</li>
+<li><p>What can a URL scheme do?</p>
+</li>
+<li><p>How to apply it in to practice?</p>
+</li>
+<li><p>How to detect if an app is installed?</p>
+</li>
+<li><p>How to open another app in an iPhone?</p>
+</li>
+<li><p>Other operations</p>
+</li>
+</ul>
+<h1 id="1-URL-Scheme"><a href="#1-URL-Scheme" class="headerlink" title="1. URL Scheme"></a>1. URL Scheme</h1><h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><p>As we all know, <a href="http://www.apple.com" target="_blank" rel="external">http://www.apple.com</a> is a URL (Uniform Resource Locator), with which we can locate the address to fetch what we request. Sometimes, we will also call it link or website. </p>
+<h2 id="Scheme"><a href="#Scheme" class="headerlink" title="Scheme"></a>Scheme</h2><p>A scheme describes a specify location of a URL, the header (the part before ://) . For example <a href="http://www.apple.com" target="_blank" rel="external">http://www.apple.com</a> ‘s scheme is “http”. In application, it is also clear that a URL Scheme can locate another application just like the header of a web’s URL. So using URL Scheme we can easily identify the application we need to open or interact with.</p>
+<h1 id="2-Set-URL-Schemes"><a href="#2-Set-URL-Schemes" class="headerlink" title="2. Set URL Schemes"></a>2. Set URL Schemes</h1><p>In xcode, we could identify our own project with a URL Scheme easily.</p>
+<p>Step 1:  Select your project name at the file root.</p>
+<p>Step 2: Find in middle section’s menu banner : -&gt;Info-&gt;URL Types-&gt;“+”-&gt;URL Schemes</p>
+<p>Step 3: Type your scheme name into the blank<br><img src="http://upload-images.jianshu.io/upload_images/6970989-8988b8b76e0a5aa2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="demo.png"></p>
+<p>Completed!</p>
+<p>We can see the change in the info.plist, there is the URL Scheme (demo) I just added.</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/6970989-c227a0e18b44a1f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h2 id="3-OpenURL"><a href="#3-OpenURL" class="headerlink" title="3. OpenURL"></a>3. OpenURL</h2><p>Now with a url scheme already known, we can use it to open another application installed in your iPhone. Let’s start coding:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">- (void)openOtherApp &#123;</div><div class="line"></div><div class="line">  //create the url we need</div><div class="line"></div><div class="line">  NSURL *url = [NSURL URLWithString:@&quot;demo://&quot;];</div><div class="line"></div><div class="line">  //open the application with the url</div><div class="line"></div><div class="line">  [[UIApplication sharedAppliaction] openURL: url];</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>With the method openURL, we can easily open another application in the iPhone.</p>
+<p>This action will  just be like the operation that you type &gt;demo://  in safari search bar:</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/6970989-298be96f293a54e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/6970989-e5ba9c7487043930.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h2 id="4-CanOpenURL"><a href="#4-CanOpenURL" class="headerlink" title="4. CanOpenURL"></a>4. CanOpenURL</h2><p>Usually before open the URL, we should detect if this app is installed or not. So in this way, we need to detect whether the scheme exists or not at first. And this will use the method canOpenURL, which will return the BOOL meaning YES, it can. or NO, it can’t. Example coding:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">NSString *schemeURL = [[NSString alloc]initWithFormat:@&quot;%@://&quot;, scheme];</div><div class="line"></div><div class="line">NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line"></div><div class="line">if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line"></div><div class="line">  [installedApp addObject:scheme];</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Attention:</p>
+<p>However, iOS has the restriction that limits your request for URL Schemes. So if you just run your project calling the methods above, it will crash just like this:<img src="http://upload-images.jianshu.io/upload_images/6970989-0a09c305542e690d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+</blockquote>
+<p>To solve this situation, you are supposed to add some script language into your project’ info.plist first.</p>
+<p>Open the info.plist as source code, and add following sentences:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">&lt;key&gt;LSApplicationQueriesSchemes&lt;/key&gt;</div><div class="line"></div><div class="line">&lt;array&gt;</div><div class="line"></div><div class="line">&lt;string&gt; micbuye &lt;/string&gt;</div><div class="line"></div><div class="line">&lt;/array&gt;</div></pre></td></tr></table></figure>
+<p> Finally, you can use this URL Scheme for openURL or canOpenURL at will!</p>
+<h2 id="5-Apply"><a href="#5-Apply" class="headerlink" title="5. Apply"></a>5. Apply</h2><p>Until now, I believe you definitely have already known how to detect if the application is installed using URL Scheme, and as well using it to open another application. So I just put my codes here for study and communication:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">@implementation Detect</div><div class="line"></div><div class="line">  //detect a list of apps if they are installed and return the result as a string</div><div class="line"></div><div class="line">  + (NSString *)detectWithArray &#123;</div><div class="line"></div><div class="line">    NSArray *appList = @[@&quot;scheme1&quot;, @&quot;scheme2&quot;, @&quot;scheme3&quot;]; //the list of schemes you want to detect</div><div class="line"></div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line"></div><div class="line">    //detect if the scheme exists, if yes-&gt;this app is installed</div><div class="line"></div><div class="line">    for (NSString *scheme in appList) &#123;</div><div class="line"></div><div class="line">      NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, scheme];</div><div class="line"></div><div class="line">      NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line"></div><div class="line">      if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line"></div><div class="line">        [installedApp addObject:scheme];</div><div class="line"></div><div class="line">      &#125;</div><div class="line"></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  //turn this installedapp array into string as the outcome</div><div class="line"></div><div class="line">  NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line"></div><div class="line">  NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line"></div><div class="line">  return installedList;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>You can also use openURL to implement a method that can open another application if you need.</p>
+<p> Thanks for reading.</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">iOS开发</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/09/04/Schemes/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Link" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
@@ -270,6 +388,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">iOS开发</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -457,6 +586,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
