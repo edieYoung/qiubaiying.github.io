@@ -188,7 +188,7 @@
 <li>Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp; uninstalled app list.</li>
 </ul>
 <h1 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h1><blockquote>
-<p>Using method canOpenScheme, we can easily detect any URL Scheme to see if the application is installed, which I have introduced in my last article.<br><a href="http://www.jianshu.com/p/2c1f1735fe38" target="_blank" rel="external">click here to see.</a><br>Therefore, in this task, I am going to write a runable tool module for any project(application) to complete the app-installed detection task. And I record this coding-testing process circle to mark down some usful gained knowledge and important notes for reminder. </p>
+<p>Using method canOpenScheme, we can easily detect any URL Scheme to see if the application is installed, which I have introduced in my last article.<br><a href="http://localhost:4000/2017/09/04/Schemes/" target="_blank" rel="external">click here to see.</a><br>Therefore, in this task, I am going to write a runable tool module for any project(application) to complete the app-installed detection task. And I record this coding-testing process circle to mark down some usful gained knowledge and important notes for reminder. </p>
 </blockquote>
 <h2 id="1-detectWithArray-amp-detectScheme"><a href="#1-detectWithArray-amp-detectScheme" class="headerlink" title="1. detectWithArray &amp; detectScheme"></a>1. detectWithArray &amp; detectScheme</h2><ul>
 <li>Outline<br>This method is designed to return the result installed or uninstalled apps list seperated by commas as a string acording to an appList which is declared as an array. </li>
@@ -420,7 +420,7 @@
 <li>URN : universal resource name<br>这里可以看出，URI就是一个资源的统一标志符，它既可以是定位符也可以是一个名称，因此URL、URN都属于URI。</li>
 </ul>
 <h2 id="如何区分URL和URN？"><a href="#如何区分URL和URN？" class="headerlink" title="如何区分URL和URN？"></a>如何区分URL和URN？</h2><p>URL包含了找到资源的方法（路径）和资源名称，也就是当一个URI包含了一个访问机制或者网络位置的时候（e.g. http// or ftp://），它就是一个URL了。<br>URN就是一个独一无二的资源名称，它是由urn开头的一串URI。<br>e.g. urn:oasis:names:specification:docbook:dtd:xml:4.1.2<br>所以说，它们之间重要的区别就在于它的开头，也就是Scheme.</p>
-<h2 id="URI-Schemes"><a href="#URI-Schemes" class="headerlink" title="URI Schemes"></a>URI Schemes</h2><p>大家应该都对http:// 非常熟悉，而它就是一个scheme，也就是一个url的开头部分。<br>有兴趣也可以去看我在之前写过一篇关于URL scheme的介绍：<a href="http://www.jianshu.com/p/2c1f1735fe38" target="_blank" rel="external">iOS-URL Schemes</a> 。而有了以上概念之后，我们可以了解到，实际上scheme不仅仅可以指URL的开头，URI的开头也一样的是scheme。</p>
+<h2 id="URI-Schemes"><a href="#URI-Schemes" class="headerlink" title="URI Schemes"></a>URI Schemes</h2><p>大家应该都对http:// 非常熟悉，而它就是一个scheme，也就是一个url的开头部分。<br>有兴趣也可以去看我在之前写过一篇关于URL scheme的介绍：<a href="https://edieyoung.github.io/2017/09/04/Schemes/" target="_blank" rel="external">iOS-URL Schemes</a>。而有了以上概念之后，我们可以了解到，实际上scheme不仅仅可以指URL的开头，URI的开头也一样的是scheme。</p>
 <p>那么回到正题，来讲它和deep link的关系。URI Schemes其实就是实现deep linking的第一代解决方案。利用它就可以在移动开发中实现从web页面或者别的app中唤起自己的app的功能，然而开发者们很快就发现，这样也还有很多限制：</p>
 <ul>
 <li>当要被唤起的app没有安装时，这个链接就会出错。</li>
@@ -466,7 +466,7 @@
 <li>Universal links是从服务器上查询是哪个app需要被打开，因此不存在Custom URL scheme那样名字被抢占、冲突的情况。</li>
 <li>Universal links支持从其他app中的UIWebView中跳转到目标app</li>
 <li>安全性，用universl link去打开的时候，只有你（开发这个app的人）可以通过创建和上传一个允许这个网页去通过这个URL去打开你的app的文件。</li>
-<li>隐私性，提供Universal link给别的app进行app间的交流，然而对方并不能够用这个方法去检测你的app是否被安装。（之前的custom scheme URL的canOpenURL方法可以，具体可以看这里<a href="http://www.jianshu.com/p/97a0e708a6b2" target="_blank" rel="external">iOS Review-DetectScheme</a>。）</li>
+<li>隐私性，提供Universal link给别的app进行app间的交流，然而对方并不能够用这个方法去检测你的app是否被安装。（之前的custom scheme URL的canOpenURL方法可以，具体可以看这里<a href="https://edieyoung.github.io/2017/09/04/DetectScheme/" target="_blank" rel="external">iOS Review-DetectScheme</a> </li>
 </ol>
 <h2 id="使用Universal-Link"><a href="#使用Universal-Link" class="headerlink" title="使用Universal Link"></a>使用Universal Link</h2><p>首先，你需要创建一个 apple-app-site-association文件，它是一些JSON格式的数据，提供了你的app能够处理的URLs。然后你需要将这个文件上传到你的HTTPS web 服务器上。之后就是一些准备工作来处理这个Universal Link，有两种技术，<a href="https://developer.apple.com/library/content/documentation/UserExperience/Conceptual/Handoff/AdoptingHandoff/AdoptingHandoff.html#//apple_ref/doc/uid/TP40014338-CH2-SW10" target="_blank" rel="external">Web Browser–to–Native App Handoff</a> 和 <a href="https://developer.apple.com/documentation/security/shared_web_credentials" target="_blank" rel="external">Shared Web Credentials Reference</a>。</p>
 <p>当一个用户点击了这个universal link，iOS就会启动你的app，然后会传入一个NSUserActivity的对象，让你能够查询到你的app是如何被启动的。要实现这些，你需要做以下步骤：</p>
