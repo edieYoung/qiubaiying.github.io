@@ -6,14 +6,14 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>理解Deep Link &amp; URI Schemes &amp; Universal Link &amp; App Link | Edie Young&#39;s Blog</title>
+  <title>理解Deep Link &amp; URI Schemes &amp; Universal Link &amp; App Link | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="引言   最近在做客户端开发的工作中，需要解决一些渠道流量监控的问题。发现在唤醒app的时候涉及到很多这样那样的link，于是就先对这几个link做了一些了解。    事实上，这几个名词并不是完全区分的关系，同时这些技术都仍处在不断发展的阶段，因此面对这样碎片化的概念，很难去直接解释清楚它们之间的关系与不同，所以只能先从每个名字的概念上和实践运用中去把握了。    而且，这几个概念实际上是有一些从">
 <meta name="keywords" content="iOS开发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="理解Deep Link &amp; URI Schemes &amp; Universal Link &amp; App Link">
 <meta property="og:url" content="http://yoursite.com/2017/09/04/Link/index.html">
-<meta property="og:site_name" content="Edie Young&#39;s Blog">
+<meta property="og:site_name" content="Edie&#39;s Blog">
 <meta property="og:description" content="引言   最近在做客户端开发的工作中，需要解决一些渠道流量监控的问题。发现在唤醒app的时候涉及到很多这样那样的link，于是就先对这几个link做了一些了解。    事实上，这几个名词并不是完全区分的关系，同时这些技术都仍处在不断发展的阶段，因此面对这样碎片化的概念，很难去直接解释清楚它们之间的关系与不同，所以只能先从每个名字的概念上和实践运用中去把握了。    而且，这几个概念实际上是有一些从">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6970989-c73ccd06a24ec726.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6970989-7006ef4d51cd85b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
@@ -23,7 +23,7 @@
 <meta name="twitter:description" content="引言   最近在做客户端开发的工作中，需要解决一些渠道流量监控的问题。发现在唤醒app的时候涉及到很多这样那样的link，于是就先对这几个link做了一些了解。    事实上，这几个名词并不是完全区分的关系，同时这些技术都仍处在不断发展的阶段，因此面对这样碎片化的概念，很难去直接解释清楚它们之间的关系与不同，所以只能先从每个名字的概念上和实践运用中去把握了。    而且，这几个概念实际上是有一些从">
 <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/6970989-c73ccd06a24ec726.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
   
-    <link rel="alternative" href="/atom.xml" title="Edie Young&#39;s Blog" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -66,6 +66,8 @@
 	        
 				<li><a href="/tags/iOS开发/">iOS开发</a></li>
 	        
+				<li><a href="/tags/随笔／">随笔</a></li>
+	        
 			</ul>
 		</nav>
 		<nav class="header-smart-menu">
@@ -86,13 +88,13 @@
 		<nav class="header-nav">
 			<div class="social">
 				
-					<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
+					<a class="github" target="_blank" href="https://github.com/edieYoung" title="github"><i class="icon-github"></i></a>
 		        
-					<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
+					<a class="zhihu" target="_blank" href="https://www.zhihu.com/people/edie-77-95/activities" title="zhihu"><i class="icon-zhihu"></i></a>
 		        
-					<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
+					<a class="jianshu" target="_blank" href="http://www.jianshu.com/u/76581af1eb58" title="jianshu"><i class="icon-jianshu"></i></a>
 		        
-					<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+					<a class="mail" target="_blank" href="mailto:edie0426@outlook.com" title="mail"><i class="icon-mail"></i></a>
 		        
 			</div>
 		</nav>
@@ -124,29 +126,33 @@
 			
 				
 			
+				
+			
 			
 			
 			<nav class="header-nav">
 				<div class="social">
 					
-						<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
+						<a class="github" target="_blank" href="https://github.com/edieYoung" title="github"><i class="icon-github"></i></a>
 			        
-						<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
+						<a class="zhihu" target="_blank" href="https://www.zhihu.com/people/edie-77-95/activities" title="zhihu"><i class="icon-zhihu"></i></a>
 			        
-						<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
+						<a class="jianshu" target="_blank" href="http://www.jianshu.com/u/76581af1eb58" title="jianshu"><i class="icon-jianshu"></i></a>
 			        
-						<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+						<a class="mail" target="_blank" href="mailto:edie0426@outlook.com" title="mail"><i class="icon-mail"></i></a>
 			        
 				</div>
 			</nav>
 
 			<nav class="header-menu js-header-menu">
-				<ul style="width: 50%">
+				<ul style="width: 70%">
 				
 				
-					<li style="width: 50%"><a href="/">主页</a></li>
+					<li style="width: 33.333333333333336%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/iOS开发/">iOS开发</a></li>
+					<li style="width: 33.333333333333336%"><a href="/tags/iOS开发/">iOS开发</a></li>
+		        
+					<li style="width: 33.333333333333336%"><a href="/tags/随笔／">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -278,7 +284,7 @@
             <span class="tooltip-content">
               <span class="tooltip-text">
                 <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你给我鼓励<i class="icon icon-quo-right"></i></p>
                   <div class="reward-box">
                     
                     
