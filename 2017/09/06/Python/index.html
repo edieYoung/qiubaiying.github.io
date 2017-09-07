@@ -15,7 +15,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/09/06/Python/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
 <meta property="og:description" content="前言这篇文章内容产生背景是我在学习python过程中的一些个人理解，主要是对python语言的辨识度较高的知识点即语法中比较特殊的地方进行考究与归纳。适合供已经掌握某一门编程语言或有一定编程知识背景的同学，想快速了解python的朋友来一起学习并分享交流。P.S.前面基本都是总结现有知识，从第7点“高阶函数”开始属于“灰色地带”，即会带有很多我个人提出的观点以及奇特的思考与理解方式的成分，同时它们">
-<meta property="og:updated_time" content="2017-09-07T16:40:31.000Z">
+<meta property="og:updated_time" content="2017-09-07T16:59:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="有关Python学习与函数式编程的思考">
 <meta name="twitter:description" content="前言这篇文章内容产生背景是我在学习python过程中的一些个人理解，主要是对python语言的辨识度较高的知识点即语法中比较特殊的地方进行考究与归纳。适合供已经掌握某一门编程语言或有一定编程知识背景的同学，想快速了解python的朋友来一起学习并分享交流。P.S.前面基本都是总结现有知识，从第7点“高阶函数”开始属于“灰色地带”，即会带有很多我个人提出的观点以及奇特的思考与理解方式的成分，同时它们">
@@ -287,22 +287,14 @@
 <p>通过我的实验发现，一个生成器创建之后，它的循环周期就只有一次，不能重新开始，除非你重新创建一个。也就是说，如果我一次没有循环完这个生成器，那么下一次它还会从它上次循环停止的地方继续开始。如果最后我循环完了这个生成器，那么这个生成器的周期就结束了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = mylife.fib(10)</div><div class="line">&gt;&gt;&gt; for n in range(3):</div><div class="line">...     g.next()</div><div class="line">...</div><div class="line">1</div><div class="line">1</div><div class="line">2</div><div class="line">&gt;&gt;&gt; for n in range(3):</div><div class="line">...     g.next()</div><div class="line">...</div><div class="line">3</div><div class="line">5</div><div class="line">8</div><div class="line">&gt;&gt;&gt; for n in g:</div><div class="line">...     print n</div><div class="line">...</div><div class="line">13</div><div class="line">21</div><div class="line">34</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">StopIteration</div><div class="line">&gt;&gt;&gt; g</div><div class="line">&lt;generator object fib at 0x1080b6a50&gt;</div></pre></td></tr></table></figure></p>
 <h3 id="7-高阶函数"><a href="#7-高阶函数" class="headerlink" title="7. 高阶函数"></a>7. 高阶函数</h3><p>高阶函数的英文是Higher-oder function。简单来说，高阶函数的概念就是把函数泛化为普通的参数，既函数能够作为参数被传入。</p>
 <p>深入理解，主要总结为以下几点：</p>
-<ol>
-<li>函数的结果可以赋值给变量。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; x = abs(-10)</div><div class="line"> &gt;&gt;&gt; x</div><div class="line">10</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li>函数本身可以赋值给变量,并且通过这个变量可以调用这个函数<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; f = abs</div><div class="line">&gt;&gt;&gt; f</div><div class="line">&lt;built-in function abs&gt;</div><div class="line">&gt;&gt;&gt; f(-10)</div><div class="line">10</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>函数名是指向函数的变量<br>这就是说，在python中，函数名可以完全当作一个普通的变量来使用。<br>可以给函数名这个变量赋值试试：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; abs = 10</div><div class="line"> &gt;&gt;&gt; abs(-10)</div><div class="line"> Traceback (most recent call last):</div><div class="line">File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">TypeError: &apos;int&apos; object is not callable</div></pre></td></tr></table></figure>
+<p>1.函数的结果可以赋值给变量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; x = abs(-10)</div><div class="line"> &gt;&gt;&gt; x</div><div class="line">10</div></pre></td></tr></table></figure>
+<p>2.函数本身可以赋值给变量,并且通过这个变量可以调用这个函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; f = abs</div><div class="line">&gt;&gt;&gt; f</div><div class="line">&lt;built-in function abs&gt;</div><div class="line">&gt;&gt;&gt; f(-10)</div><div class="line">10</div></pre></td></tr></table></figure>
+<p>3.函数名是指向函数的变量<br>这就是说，在python中，函数名可以完全当作一个普通的变量来使用。<br>可以给函数名这个变量赋值试试：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; abs = 10</div><div class="line">&gt;&gt;&gt; abs(-10)</div><div class="line">Traceback (most recent call last):</div><div class="line">File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">TypeError: &apos;int&apos; object is not callable</div></pre></td></tr></table></figure>
 <p>因为这个函数名被重新赋值成了一个整型变量10，abs这个变量就不代表这个函数，也就不能被调用了。</p>
-</li>
-<li><p>函数作为参数<br>当一个函数的参数中包含一个函数的时候，这种函数就被称之为高阶函数。<br>其实用数学里的表达就是：f(g(x))，f函数的参数又是一个g函数。来感受一下“阶”的概念：例如对这个二阶函数求导，就是二阶求导。</p>
-</li>
-</ol>
+<p>4.函数作为参数<br>当一个函数的参数中包含一个函数的时候，这种函数就被称之为高阶函数。<br>其实用数学里的表达就是：f(g(x))，f函数的参数又是一个g函数。来感受一下“阶”的概念：例如对这个二阶函数求导，就是二阶求导。</p>
 <p>一个最简单的高阶函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">def add(x, y, f)</div><div class="line">	return f(x)+f(y)</div></pre></td></tr></table></figure></p>
 <p>用数学表达式去理解，例如：g(x, y, f)= f(x)+f(y)</p>
 <p>这个函数g可以理解为是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">一个</div><div class="line">	通过</div><div class="line">		1.用一个处理“分支问题”的方法f来计算若干中间结果</div><div class="line">			[方法甚至可以是再调用一个方法解决分支的“分支问题”...]</div><div class="line">		2.然后将最终的最上层结果用以产生某种关系（这里是数值相加）</div><div class="line">		</div><div class="line">	来解决“主要问题”</div><div class="line">的方法。</div></pre></td></tr></table></figure></p>
