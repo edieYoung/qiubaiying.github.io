@@ -322,7 +322,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/09/06/Python/">有关Python学习与函数式编程的思考</a>
+      <a class="article-title" href="/2017/09/06/Python/">有关Python语言与函数式编程的思考</a>
     </h1>
   
 
@@ -373,7 +373,7 @@
 <ul>
 <li><p>tuple<br>tuple和list非常相似，只是tuple是一旦初始化后它的元素就不可以被修改的。它没有append（），insert（）之类的方法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students(&apos;Tom&apos;,&apos;Bob&apos;,&apos;Lucy&apos;)</div></pre></td></tr></table></figure>
-<p>tuple使用括号来表示，然而在写代码进行计算的时候括号又可能是数学公式中的小括号<br>比如： t = (1)，t代表的时候1这个数，而不会是一个只有一个元素的tuple。<br>正确表示只有一个元素的tuple应该是这样：带上逗号</p>
+<p>tuple使用括号来表示，然而在写代码进行计算的时候括号又可能是数学公式中的小括号<br>比如： t = (1)，这时候t代表1这个数，而不会是一个只有一个元素的tuple。<br>正确表示只有一个元素的tuple应该是这样：带上逗号</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (1,)</div><div class="line">&gt;&gt;&gt; t</div><div class="line">(1,)</div></pre></td></tr></table></figure>
 <p>还有一个需要注意的地方就是，tuple的元素是不能被修改的，但是当tuple嵌套了list作为元素的时候，这个list的元素还是可以被修改的。<br>例如：在test.py里定义一个tuple和一个list</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">t = ([1, 2], 3, 4, 5)</div><div class="line">l = [6, 7]</div></pre></td></tr></table></figure>

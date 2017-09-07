@@ -6,18 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>有关Python学习与函数式编程的思考 | Edie&#39;s Blog</title>
+  <title>有关Python语言与函数式编程的思考 | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="前言这篇文章内容产生背景是我在学习python过程中的一些个人理解，主要是对python语言的辨识度较高的知识点即语法中比较特殊的地方进行考究与归纳。适合供已经掌握某一门编程语言或有一定编程知识背景的同学，想快速了解python的朋友来一起学习并分享交流。P.S.前面基本都是总结现有知识，从第7点“高阶函数”开始属于“灰色地带”，即会带有很多我个人提出的观点以及奇特的思考与理解方式的成分，同时它们">
 <meta name="keywords" content="tutorial">
 <meta property="og:type" content="article">
-<meta property="og:title" content="有关Python学习与函数式编程的思考">
+<meta property="og:title" content="有关Python语言与函数式编程的思考">
 <meta property="og:url" content="http://yoursite.com/2017/09/06/Python/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
 <meta property="og:description" content="前言这篇文章内容产生背景是我在学习python过程中的一些个人理解，主要是对python语言的辨识度较高的知识点即语法中比较特殊的地方进行考究与归纳。适合供已经掌握某一门编程语言或有一定编程知识背景的同学，想快速了解python的朋友来一起学习并分享交流。P.S.前面基本都是总结现有知识，从第7点“高阶函数”开始属于“灰色地带”，即会带有很多我个人提出的观点以及奇特的思考与理解方式的成分，同时它们">
-<meta property="og:updated_time" content="2017-09-07T16:59:33.000Z">
+<meta property="og:updated_time" content="2017-09-07T23:47:22.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="有关Python学习与函数式编程的思考">
+<meta name="twitter:title" content="有关Python语言与函数式编程的思考">
 <meta name="twitter:description" content="前言这篇文章内容产生背景是我在学习python过程中的一些个人理解，主要是对python语言的辨识度较高的知识点即语法中比较特殊的地方进行考究与归纳。适合供已经掌握某一门编程语言或有一定编程知识背景的同学，想快速了解python的朋友来一起学习并分享交流。P.S.前面基本都是总结现有知识，从第7点“高阶函数”开始属于“灰色地带”，即会带有很多我个人提出的观点以及奇特的思考与理解方式的成分，同时它们">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
@@ -183,7 +183,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      有关Python学习与函数式编程的思考
+      有关Python语言与函数式编程的思考
     </h1>
   
 
@@ -234,7 +234,7 @@
 <ul>
 <li><p>tuple<br>tuple和list非常相似，只是tuple是一旦初始化后它的元素就不可以被修改的。它没有append（），insert（）之类的方法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students(&apos;Tom&apos;,&apos;Bob&apos;,&apos;Lucy&apos;)</div></pre></td></tr></table></figure>
-<p>tuple使用括号来表示，然而在写代码进行计算的时候括号又可能是数学公式中的小括号<br>比如： t = (1)，t代表的时候1这个数，而不会是一个只有一个元素的tuple。<br>正确表示只有一个元素的tuple应该是这样：带上逗号</p>
+<p>tuple使用括号来表示，然而在写代码进行计算的时候括号又可能是数学公式中的小括号<br>比如： t = (1)，这时候t代表1这个数，而不会是一个只有一个元素的tuple。<br>正确表示只有一个元素的tuple应该是这样：带上逗号</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (1,)</div><div class="line">&gt;&gt;&gt; t</div><div class="line">(1,)</div></pre></td></tr></table></figure>
 <p>还有一个需要注意的地方就是，tuple的元素是不能被修改的，但是当tuple嵌套了list作为元素的时候，这个list的元素还是可以被修改的。<br>例如：在test.py里定义一个tuple和一个list</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">t = ([1, 2], 3, 4, 5)</div><div class="line">l = [6, 7]</div></pre></td></tr></table></figure>
