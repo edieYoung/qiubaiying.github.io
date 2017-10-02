@@ -6,22 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS - DetectScheme | Edie&#39;s Blog</title>
+  <title>Shortest Path &amp; the meaning in life|当我在考虑最短路径算法和人生的时候我在想什么 | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Targets Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp;amp; uninstalled app list.  Implementation Using method canOpenScheme, we">
-<meta name="keywords" content="iOS开发">
+  <meta name="description" content="In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other is about my life. Strictly speaking, they ar">
+<meta name="keywords" content="tittle-tattle">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS - DetectScheme">
-<meta property="og:url" content="http://yoursite.com/2017/09/04/DetectScheme/index.html">
+<meta property="og:title" content="Shortest Path &amp; the meaning in life|当我在考虑最短路径算法和人生的时候我在想什么">
+<meta property="og:url" content="http://yoursite.com/2017/09/28/pathfinding/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
-<meta property="og:description" content="Targets Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp;amp; uninstalled app list.  Implementation Using method canOpenScheme, we">
-<meta property="og:image" content="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/293d84c72cef7cd4.png">
-<meta property="og:image" content="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/b451c8b5e32177b1.png">
-<meta property="og:updated_time" content="2017-09-04T09:39:33.000Z">
+<meta property="og:description" content="In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other is about my life. Strictly speaking, they ar">
+<meta property="og:image" content="http://yoursite.com/Users/edieyoung/Downloads/shortest-path.png">
+<meta property="og:updated_time" content="2017-10-02T01:34:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS - DetectScheme">
-<meta name="twitter:description" content="Targets Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp;amp; uninstalled app list.  Implementation Using method canOpenScheme, we">
-<meta name="twitter:image" content="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/293d84c72cef7cd4.png">
+<meta name="twitter:title" content="Shortest Path &amp; the meaning in life|当我在考虑最短路径算法和人生的时候我在想什么">
+<meta name="twitter:description" content="In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other is about my life. Strictly speaking, they ar">
+<meta name="twitter:image" content="http://yoursite.com/Users/edieyoung/Downloads/shortest-path.png">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
@@ -179,57 +178,46 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-DetectScheme" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-pathfinding" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      iOS - DetectScheme
+      Shortest Path &amp; the meaning in life|当我在考虑最短路径算法和人生的时候我在想什么
     </h1>
   
 
         
-        <a href="/2017/09/04/DetectScheme/" class="archive-article-date">
-  	<time datetime="2017-09-04T01:41:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-04</time>
+        <a href="/2017/09/28/pathfinding/" class="archive-article-date">
+  	<time datetime="2017-09-28T15:52:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-28</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Targets"><a href="#Targets" class="headerlink" title="Targets"></a>Targets</h1><ul>
-<li>Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp; uninstalled app list.</li>
+        <p>In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other is about my life. Strictly speaking, they are two irrelevant things at all, however, when I am stumbled by two of them at the same time, I might coincidently find some relation between them, just put them together.</p>
+<h2 id="What-is-Pathfinding-What-is-the-life"><a href="#What-is-Pathfinding-What-is-the-life" class="headerlink" title="What is Pathfinding? What is the life?"></a>What is Pathfinding? What is the life?</h2><blockquote>
+<p>In graph theory, the shortest path problem is the problem of finding a path between two vertices in a graph such that the sum of the weights of its constituent edges is minimized.</p>
+</blockquote>
+<p>It’s so lucky that Pathfinding has its absolute definition, however, my life doesn’t have one.<br>The problem will become more easily to solve after setting up some formal notation. Let’s just use this graph for example.<br><img src="/Users/edieyoung/Downloads/shortest-path.png" alt=""></p>
+<p>Suppose A is the start node, and I is the end node, and set V is a set of all nodes(vertex) in the graph, V = {n | n = A,B,C,D,E,F,G,H,I}. The set E is a set of all edges, simply we can use a 9*9 map to interpret each edge and its weight. Now we can just find the path from A to I, and just calculate the sum of weights, find the shortest one. So easy, just make the computer to do this stupid thing.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dijkstra</div></pre></td></tr></table></figure>
+<p>Whereas, my life has no notation. What if I try to give it some notation? For example, suppose the choices in my life are the vertexes, and the set of it is<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">V* = &#123;n|n=&quot;be born&quot;, &quot;eat&quot;,&quot;go to school&quot;,&quot;be smart&quot;,&quot;learn more&quot;,&quot;be healthy&quot;,&quot;make friends&quot;,&quot;read books&quot;,&quot;get good grades&quot;,&quot;go to university&quot;,&quot;work hard&quot;,&quot;learn and speak English&quot;,&quot;win the contest&quot;,&quot;do projects&quot;,&quot;work in the lab&quot;,&quot;exchange&quot;,&quot;internship&quot;,&quot;further study&quot;,&quot;find a boyfriend&quot;,&quot;get married&quot;......&#125;</div></pre></td></tr></table></figure></p>
+<p>But it is infinite, because I am not the “god”, I can not depict every vertexes now. I only know the nodes that I have met and the next choices, however, I hardly know what will happen after I choose any one of them. So V* is an infinite set.</p>
+<p>I want to seek happiness, suppose my start node is “be born”, and my end node is “be happy”(not “be dead”, I don’t need to find the shorted path to death….). Then the question can be translated like “how can I become happy with the lowest total cost.” The single cost is the weight of each path to complete the choice.<br>Les’t draw it like this:</p>
+<p>who can help me add the weights???</p>
+<h2 id="Key-points"><a href="#Key-points" class="headerlink" title="Key points"></a>Key points</h2><ul>
+<li>生活中的大部分选择，一旦选择后，就没有办法回溯。</li>
+<li>生活中的选择成本难以确定。</li>
+<li>生活中只能确保局部最优，并不保证全局最优，因为你不知道后面的事。</li>
+<li>生活中的顶点，路径都是动态化的，不是一成不变的。讲概率。</li>
+<li>开心 是相对的，有可能会出现“假开心”（heuristic 函数受影响）。</li>
+<li>算法的复杂度，会因为不确定性，在“选择算法”上增加复杂度。</li>
 </ul>
-<h1 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h1><blockquote>
-<p>Using method canOpenScheme, we can easily detect any URL Scheme to see if the application is installed, which I have introduced in my last article.<br><a href="https://edieyoung.github.io/2017/09/04/Schemes/" target="_blank" rel="external">click here to see.</a><br>Therefore, in this task, I am going to write a runable tool module for any project(application) to complete the app-installed detection task. And I record this coding-testing process circle to mark down some usful gained knowledge and important notes for reminder. </p>
-</blockquote>
-<h2 id="1-detectWithArray-amp-detectScheme"><a href="#1-detectWithArray-amp-detectScheme" class="headerlink" title="1. detectWithArray &amp; detectScheme"></a>1. detectWithArray &amp; detectScheme</h2><ul>
-<li>Outline<br>This method is designed to return the result installed or uninstalled apps list seperated by commas as a string acording to an appList which is declared as an array. </li>
-</ul>
-<p>1、 Traverse the array<br>    So I will to get the app scheme and detect it each time by traversing the array. And this array must be made up with string objects - each object is the exact scheme of an app.<br>    since let’s simply traverse the array:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">- (void) init &#123;</div><div class="line">	self = [super init];</div><div class="line">	if(self)&#123;</div><div class="line">		NSArray *appList = @[@&quot;scheme1&quot;, @&quot;scheme2&quot;];</div><div class="line">		NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">	&#125;</div><div class="line">	return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (NSString *)detectWithArray:(NSArray *)appArray &#123;</div><div class="line">	</div><div class="line">	for ( int i = 0; i &lt; appArray.count, i++)&#123;</div><div class="line">		[detectScheme:appArray[i];</div><div class="line">	&#125;</div><div class="line">	NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    return installedList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>2、 Detect scheme<br>    As you can see above, I now need to design a method detectScheme to complete the logic.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- (void)detectScheme: (NSString *)scheme&#123;</div><div class="line">    //here the scheme need to be added with &quot;://&quot;</div><div class="line">	NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, scheme];</div><div class="line">    NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">    if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">	        //add this app scheme into the result array</div><div class="line">            [_installedApp addObject:scheme];</div><div class="line">	&#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>3、 Call the method<br>    Now we need to set the “entrance” of this method, which means I need to find a place to call the method. As I run the application, the main method will be called automatically, and also by AppDelegate class our application will do all the launching job. Ok, very cool, I can just call my method when this type of method being called.<br>    However, I wrote it as a object method(-).So I need to creat an object of my class to call the method. It will be soon found not convenient.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#import &quot;DetectScheme.h&quot;</div><div class="line"></div><div class="line"></div><div class="line">//code</div><div class="line"></div><div class="line"></div><div class="line">DetectScheme *ds = [[DetectScheme alloc] init];</div><div class="line">NSLog(@&quot;Result:%@&quot;, [ds detectWithArray:ds.appList]);</div></pre></td></tr></table></figure>
-<blockquote>
-<p>However, This is a bad example for following reasons:<br>1、 To call the method, you need to creat an object of the class because it is object method. Also it need to creat class’s properties. It is not convenient to be reused and might cause some unnecessary errors.<br>2、 In the method detectScheme, it will alloc and init some variables which are unnecessary (even not allowed) to be created many times like that. So to avoid  such as memory leaking problem, it is better to creat the variables outside the for-loop. In other words, to maintain the result variable, we don’t need to seperate the logic into two parts(methods).</p>
-</blockquote>
-<h2 id="2-detectWithDictionary-only"><a href="#2-detectWithDictionary-only" class="headerlink" title="2. detectWithDictionary only"></a>2. detectWithDictionary only</h2><p>To solve the problem above, I just comerge two method into one, and turn it into a class method.</p>
-<blockquote>
-<p>Because there are schemes which are meaningless, so I use dictionary to identify the schemes with their app names as keys. Then the result will be more readable.</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">+ (NSString *)detectWithDictionary &#123;</div><div class="line">    NSDictionary *appList = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;scheme1&quot;, @&quot;app1&quot;, @&quot;scheme2&quot;, @&quot;app2&quot;, @&quot;scheme3&quot;, @&quot;app3&quot;, nil];</div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">    </div><div class="line">    //检测这个scheme是否存在，存在即证明装有此app</div><div class="line">    for (NSString *key in appList) &#123;</div><div class="line">        NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, [appList objectForKey:key]];</div><div class="line">        NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">        if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">            [installedApp addObject:key];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //把installedapp的array变成string输出</div><div class="line">    NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line">    return installedList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>With this class method, I can simply use one line to call this method:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NSLog(@&quot;Result:%@&quot;, [DetectScheme detectWithDictionary]);</div></pre></td></tr></table></figure>
-<h2 id="3-Demo-application"><a href="#3-Demo-application" class="headerlink" title="3. Demo application"></a>3. Demo application</h2><p>To test this tool class, I creat another application to do a unit test. Also in order to make this application’s outcome more reasonable to understand, I also make it to return uninstalled apps list.<br>Have a glance at my file root:<br><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/293d84c72cef7cd4.png" alt="1.png"> </p>
-<p>rewrite the method to return both installed apps list and uninstalled apps list:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">+ (NSString *)detectWithDictionary: (BOOL) forInstalled&#123;</div><div class="line">    NSDictionary *appList = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;scheme0&quot;, @&quot;app0&quot;, @&quot;scheme1&quot;, @&quot;app1&quot;, @&quot;scheme2&quot;, @&quot;app2&quot;,  nil];</div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">    NSMutableArray *uninstalledApp = [[NSMutableArray alloc] init];</div><div class="line">    //检测这个scheme是否存在，存在即证明装有此app</div><div class="line">    for (NSString *key in appList) &#123;</div><div class="line">        NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, [appList objectForKey:key]];</div><div class="line">        NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">        if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">            [installedApp addObject:key];</div><div class="line">        &#125; else &#123;</div><div class="line">            [uninstalledApp addObject:key];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //把installedapp的array变成string输出</div><div class="line">    NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSString *uninstalledList = [uninstalledApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line">    if(forInstalled)&#123;</div><div class="line">        return installedList;</div><div class="line">    &#125; else &#123;</div><div class="line">        return uninstalledList;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Let’s run the demo to do the test.<br><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/b451c8b5e32177b1.png" alt="2.png"> </p>
-<h2 id="Ending"><a href="#Ending" class="headerlink" title="Ending"></a>Ending</h2><p>This task it self is not a complecated one, but the way to think how to implement it reminds me of how important it is to optimize the algorithm and coding structure. And the very delicate codes don’t come to our minds at the very first time, so I need to keep practicing more to polish my coding mind and skill.</p>
-
+<h2 id="Design-algorithm"><a href="#Design-algorithm" class="headerlink" title="Design algorithm"></a>Design algorithm</h2>
       
 
       
@@ -273,7 +261,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">iOS开发</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tittle-tattle</a>
         		</li>
       		
 		</ul>
@@ -329,7 +317,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/09/04/DetectScheme/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/09/28/pathfinding/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -343,18 +331,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/09/04/CNN/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          CNN
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/09/04/Schemes/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS-URLSchemes</div>
+    <a href="/2017/09/06/sync-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">”效率“与”同步空间“理论</div>
       <i class="icon-circle-right"></i>
     </a>
   
