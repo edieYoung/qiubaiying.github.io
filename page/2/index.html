@@ -6,16 +6,14 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>CNN | Edie&#39;s Blog</title>
+  <title>Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="ml">
-<meta property="og:type" content="article">
-<meta property="og:title" content="CNN">
-<meta property="og:url" content="http://yoursite.com/2017/09/04/CNN/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Edie&#39;s Blog">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
-<meta property="og:updated_time" content="2017-09-06T14:43:47.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CNN">
+<meta name="twitter:title" content="Edie&#39;s Blog">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
@@ -179,60 +177,67 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-CNN" class="article article-type-post " itemscope itemprop="blogPost">
+            
+  
+    <article id="post-pathfinding" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 class="article-title" itemprop="name">
-      CNN
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/28/pathfinding/">Shortest Path &amp; Epistemologies in Life</a>
     </h1>
   
 
         
-        <a href="/2017/09/04/CNN/" class="archive-article-date">
-  	<time datetime="2017-09-04T15:40:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-04</time>
+        <a href="/2017/09/28/pathfinding/" class="archive-article-date">
+  	<time datetime="2017-09-28T15:52:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-28</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="当我在考虑最短路径算法和人生的时候我在想什么"><a href="#当我在考虑最短路径算法和人生的时候我在想什么" class="headerlink" title="当我在考虑最短路径算法和人生的时候我在想什么"></a>当我在考虑最短路径算法和人生的时候我在想什么</h2><p>In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other one is about the life. Strictly speaking, they are two unrelated things at all, however, when I considered it at the same time, I might coincidently find some relation between them, so I just mix them together and figure out what I am thinking about.</p>
+<h2 id="What-is-Pathfinding"><a href="#What-is-Pathfinding" class="headerlink" title="What is Pathfinding?"></a>What is Pathfinding?</h2><blockquote>
+<p>In graph theory, the shortest path problem is the problem of finding a path between two vertices in a graph such that the sum of the weights of its constituent edges is minimized.</p>
+</blockquote>
+<p>It’s so lucky that Pathfinding has its absolute definition, however, the real life problem doesn’t have one. </p>
+<h2 id="How-to-solve-it"><a href="#How-to-solve-it" class="headerlink" title="How to solve it?"></a>How to solve it?</h2><p>The problem will become more easily to solve after setting up some formal notation. Let’s just use this graph for example.</p>
+<p><img src="/Users/edieyoung/my-blog/source/_posts/post_img/shortest-path.png" alt=""></p>
+<p>Suppose<code>A</code> is the start node, and <code>I</code>  is the end node, and set <code>V</code>  is a set of all nodes(vertex) in the graph,<code>V = {n | n = A,B,C,D,E,F,G,H,I}</code>. The set <code>E</code> is a set of all edges, simply we can use a 9*9 map to interpret each edge and its weight. Now we can just find the path from <code>A</code>to<code>I</code>, and just calculate the sum of weights, find the shortest one. </p>
+<p>I used Matlab to implement it, and <code>map(i,j)</code> represent the route cost between city i and j. Otherwise, <code>map(i,j)=-1</code>means there is no route between city i and j. The function <code>h(x)</code> represent the heuristic function value of city x to the endNode. With the heuristic function, we can call this type of searching technic as informed search. So we can calculate the function <code>f(x)=f(x-1)+map(x)+h(x)</code> as the cost compared during searching.</p>
+<h3 id="Greedy-A-algorithm"><a href="#Greedy-A-algorithm" class="headerlink" title="Greedy (A*) algorithm"></a>Greedy (A*) algorithm</h3><p>In my first case, I apply greedy algorithm to implement it. And there is recursion to keep expanding the best(lowest evaluation function value <code>g(x)</code>,<code>g(x)=map(x)+h(x)</code>) node, and because it is a greedy algorithm, the choice of the least costly node will not be revised. This is a very simple way to find the suboptimal path at the benefit of improvement of running time, however, because it doesn’t expand all nodes, thus it is usually not the true shortest path. Here is my implementation function search1():</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">function route = search1(route1,map,startNode,endNode,h)</div><div class="line">% Yidi: add a parameter route1 for transfering result</div><div class="line"></div><div class="line">% SEARCH serach the shotest path between 2 cities in a given map.</div><div class="line">%</div><div class="line">% [route] = search(map,startNode,endNode,h) returns the action sequence (route)</div><div class="line">% that leads from the initial state (startNode) to a goal state (endNode),</div><div class="line">% given the city map (map) and heuristic function (h).</div><div class="line">%</div><div class="line"></div><div class="line"></div><div class="line">[n,m]= size(map);</div><div class="line">currentNode = startNode;</div><div class="line"></div><div class="line">route= [route1 currentNode];</div><div class="line"></div><div class="line">while currentNode ~= endNode</div><div class="line">    count = 0;</div><div class="line">    choices = ones(1,n);</div><div class="line">    choices = 1000*choices;</div><div class="line">    for nextNode = 1: n </div><div class="line">        if map(currentNode,nextNode)&gt;0 &amp;&amp; ismember(nextNode,route)==0</div><div class="line">            choices(1,nextNode) = map(currentNode,nextNode)+ h(1,nextNode);</div><div class="line">            count= count+1;</div><div class="line">        end</div><div class="line">    end</div><div class="line">    if count == 0</div><div class="line">        map(route(end),currentNode)=-1;</div><div class="line">        nextNode = route(end);</div><div class="line">        route(end)=[];</div><div class="line">        route = search1(route,map,nextNode,endNode,h);</div><div class="line">    end</div><div class="line">    [row,nextNode]=min(choices);</div><div class="line">    route = search1(route,map,nextNode,endNode,h);</div><div class="line">return;</div><div class="line">end</div></pre></td></tr></table></figure>
+<h3 id="A-algorithm"><a href="#A-algorithm" class="headerlink" title="A* algorithm"></a>A* algorithm</h3><p>However, to find the optimal path, thanks to my partner, we need to implement other algorithm. Here we use A* algorithm, which means, with the admissible heuristics, we still need to use the uniform cost search method whose result ca be revised if another shortest path is found. The reason why adding the heuristics can help us to reduce the searching time is that we can faster find shorter path with less revision of the result(which means we try to assign the shortest path to each node at a less cost of time). Especially, if the heuristics are larger, the efficiency will be better. For example, a node’s cost may be the least in this loop, however, the path following it is very costly, and it is actually not the right node to be chosen. Therefore, to avoid this kind of situation, we plus the estimate cost (heuristic value)of the following path started from this node, which can help us discriminate the true low cost path easier and quicker.</p>
+<blockquote>
+<p>a*的h（）不等于零的情况下，能够比迪杰斯特拉算法高效的原因是，在结点的优先级上，因为加上了考虑h（）函数，因此实际最终会被选择的结点被优先考虑选择的可能性更大。另外，在到达最终结点时，如果最终结点的开销比其他任何结点都还要小的时候，就可以结束循环，不需要等到所有未extend的结点（open队列中的）都遍历过，因为其他结点的f（）值肯定是比经过这个结点的路径真实开销要小的，<code>h(n)&lt;=g(end-n) -&gt; real cost = g（n）+g（end-n)&lt;=f()=g(n)+h(n),</code> ,但是它仍然比目前到达终点的这条路径的开销大，因此可以判断，就算extend它，它的真实开销肯定会比目前已有的路径大（类似于minimax的剪枝），这个时候的heuristics就是admissible的，可以发现如果<code>h(n)&gt;g(end-n)</code>,就很有可能会变成局部最优而没有办法extend真实的最优路径了。</p>
+</blockquote>
+<p>Here is the implementation of A*, the prequisite is that <code>h(n)&lt;=g(end-n)</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">function route = search2(map,startNode,endNode,h)</div><div class="line">% Yidi: add a parameter route1 for transfering result</div><div class="line"></div><div class="line">% SEARCH serach the shotest path between 2 cities in a given map.</div><div class="line">%</div><div class="line">% [route] = search(map,startNode,endNode,h) returns the action sequence (route)</div><div class="line">% that leads from the initial state (startNode) to a goal state (endNode),</div><div class="line">% given the city map (map) and heuristic function (h).</div><div class="line">%</div><div class="line">nNodes = length (map);</div><div class="line">f = 1000 * ones(1, nNodes);</div><div class="line">g = zeros(1, nNodes);</div><div class="line">father = zeros(1, nNodes);</div><div class="line"></div><div class="line">open = [startNode];</div><div class="line">close = [];</div><div class="line">f(startNode) = h(startNode);</div><div class="line"></div><div class="line">while ~isempty(open)</div><div class="line">    [~,n] = min(f);</div><div class="line">    if n == endNode</div><div class="line">        break;</div><div class="line">    end</div><div class="line">    %Djisktra</div><div class="line">    for x = 1 : nNodes</div><div class="line">        if map(n, x) &gt; 0</div><div class="line">        	fx = g(n) + map(n, x) + h(x);</div><div class="line">            if ismember(x, open) &amp;&amp; fx &lt; f(x)</div><div class="line">                father(x) = n;</div><div class="line">                f(x) = fx;</div><div class="line">                g(x) = g(n) + map(n, x);</div><div class="line">            end</div><div class="line">            if ~ismember(x, close) &amp;&amp; ~ismember(x, open)</div><div class="line">                father(x) = n;</div><div class="line">                f(x) = fx;</div><div class="line">                g(x) = g(n) + map(n, x);</div><div class="line">                open = [open x];</div><div class="line">            end</div><div class="line">        end</div><div class="line">    end</div><div class="line">    f(n) = 1000;</div><div class="line">    open(open==n) = [];</div><div class="line">    close = [close n];</div><div class="line">end</div><div class="line">route = [];</div><div class="line">rNode = endNode;</div><div class="line">while rNode</div><div class="line">    route = [rNode route];</div><div class="line">    rNode = father(rNode);</div><div class="line">end</div><div class="line">end</div></pre></td></tr></table></figure>
+<h2 id="How-to-solve-real-life-problem"><a href="#How-to-solve-real-life-problem" class="headerlink" title="How to solve real life problem?"></a>How to solve real life problem?</h2><p>Whereas, my life has no notation. What if I try to give it some notation? I try to conceptualise the real life problem by the algorithmic scope. For example, suppose the choices in my life are the vertexes, and the set of it is </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">V* = &#123;n|n=&quot;be born&quot;, &quot;eat&quot;,&quot;go to school&quot;,&quot;think more&quot;,&quot;learn more&quot;,&quot;be healthy&quot;,&quot;make friends&quot;,&quot;read books&quot;,&quot;get good grades&quot;,&quot;go to university&quot;,&quot;work hard&quot;,&quot;win the contest&quot;,&quot;do projects&quot;,&quot;work in the lab&quot;,&quot;exchange&quot;,&quot;internship&quot;,&quot;further study&quot;,&quot;find a boyfriend&quot;,&quot;get married&quot;......&#125;</div></pre></td></tr></table></figure>
+<p>But it is infinite, because I am not the “god”, I can not depict every vertexes now. I only know the nodes that I have met and the next reachable choices, however, I hardly know what will happen after I choose any one of them. Therefor, V* is an infinite set until I kill my life.</p>
+<p>I want to seek happiness, suppose my start node is “be born”, and my end node is “be happy”(not “be dead”, I don’t need to find the shorted path to death….)which is my goal. Then the question can be translated like “how can I become happy with the lowest total cost.” The single cost is the weight of each path to complete the choice. who can help me add the weights?</p>
+<h2 id="Key-Difficulties"><a href="#Key-Difficulties" class="headerlink" title="Key Difficulties"></a>Key Difficulties</h2><ol>
+<li><p>Usually the cost of choosing certain node remains unknown until you choose it, however, once the node has been chosen, usually it is not allowed to revise the node.<br>生活中的选择成本难以确定,多半要在选择后才能知道实际的成本。生活中的大部分选择，一旦选择后，    就没有办法回溯。</p>
+</li>
+<li><p>Due to the lack of samples to calculate or estimate the real cost, people would only achieve the local optimal route, instead of perceiving the global optimal one.<br>由于缺乏足够的观测样本，生活中的选择只能确保局部最优，并不保证全局最优，因为人们很多时候无法     察觉当时之后或情形之外（时间与空间上的全局）的情况。</p>
+</li>
+<li>The pathes between nodes can be changed as time passes by.<br>生活中的顶点，路径都是动态化的，不是一成不变的。</li>
+<li>Because of the impact bias, people usually focus more on the effect of loss than gain, also we could overestimate our happiness. Availability will impact your prediction about future happiness or unhappiness because it will be set as an anchor in your mind when you make the prediction. For example, if your favorite team’s super star is injured, so the availability of winning will decrease, then the anchor is as well as become more negative, which will be closer to the lowest degree of unhappiness and your prediction on how unhappy if they lose will be based on this anchor, which is not that overestimate because you have kind of received the worst result already. The impact bias will become more notable if the availability(the anchor) is much more deviated from the prediction result. In other words, if the anchor of the team is that they can nearly to win, however when you predict your unhappiness if they loss, you will overestimate how unhappy you would be because you think that you were quite sure that they could win, so this deviation will lead to the overestimation of your future feeling. But when the availability to win is lower, which means the anchor is closer to the situation you predict, you would predict less degree of unhappiness which will not be an overestimation.<br>Therefore, in the most occasions, the goals of humans are not absolutely objective, whereas, they are normally combined with the subjective factors that self-awareness、cognition and emotions of humans.<br>很多时候人对于“开心”的预测并不是绝对客观的而是容易产生偏见的。也就是说，对于同样的结果，不同的产生方式会导致人们表现出不一样的开心或难过的程度。例如，若选择做一件难以完成的事后取得成功，相比于做一件容易的事情，人会认为这更令人兴奋。又例如，人更倾向于被动得选择不做某事，而不是主动选择做某事，因为主动的选择往往会产生更多的后悔与懊恼的成分。因此，最终人们的追求并不是一种完全的客观存在，而更多是混杂着人们的自我认知、情绪甚至包括社会意识形态等主观成分，而这一部分内容是目前A.I.等科学领域尚未能触及得到的。这也是KM所试图去厘清的关键。</li>
+</ol>
+<h2 id="Design-my-algorithm"><a href="#Design-my-algorithm" class="headerlink" title="Design my algorithm"></a>Design my algorithm</h2><p>Because it is not revisable, maybe the best method is that we can just use a greedy algorithm to pursue a suboptimal path.</p>
+<to be="" continued.="">
+
+
+
+
+
+</to>
       
 
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你给我鼓励<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    <div class="reward-box-item">
-                      <img class="reward-img" src="/img/Alipay.jpeg">
-                      <span class="reward-type">支付宝</span>
-                    </div>
-                    
-                    
-                    <div class="reward-box-item">
-                      <img class="reward-img" src="/img/Wechat.jpeg">
-                      <span class="reward-type">微信</span>
-                    </div>
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -243,7 +248,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">ml</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">aikm</a>
         		</li>
       		
 		</ul>
@@ -252,84 +257,16 @@
       
 
       
-
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/09/28/pathfinding/">see more >></a>
+        </p>
       
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
-        </div>
-      </div>
-    </span>
-  </div>
-</div>
 
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/09/04/CNN/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2017/09/06/Python/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          有关Python语言与函数式编程的思考
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2017/09/04/DetectScheme/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS - DetectScheme</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -344,61 +281,17 @@
         </div>
         
         
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    目录，不存在的…
-                    </div>
-                </span>
-            </div>
-        </div>
-        
     </div>
 </aside>
 
 
 
-  
-  <div class="duoshuo">
-	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="CNN" data-title="CNN" data-url="http://yoursite.com/2017/09/04/CNN/"></div>
-	<!-- 多说评论框 end -->
-	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-	<script type="text/javascript">
-	var duoshuoQuery = {short_name:"true"};
-	(function() {
-		var ds = document.createElement('script');
-		ds.type = 'text/javascript';ds.async = true;
-		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-		ds.charset = 'UTF-8';
-		(document.getElementsByTagName('head')[0] 
-		 || document.getElementsByTagName('body')[0]).appendChild(ds);
-	})();
-	</script>
-	<!-- 多说公共JS代码 end -->
-</div>
 
   
   
-  
-  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
-<script>
-  var cloudTieConfig = {
-    url: "http://yoursite.com/2017/09/04/CNN/", 
-    sourceId: "CNN",
-    productKey: "true",
-    target: "cloud-tie-wrapper"
-  };
-</script>
-<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
-  
-
-  
-
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+    </nav>
   
 
 
@@ -421,8 +314,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: true,
-		isHome: false,
-		isPost: true,
+		isHome: true,
+		isPost: false,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
