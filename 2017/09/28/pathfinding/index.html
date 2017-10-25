@@ -15,12 +15,12 @@
 <meta property="og:url" content="http://yoursite.com/2017/09/28/pathfinding/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
 <meta property="og:description" content="当我在考虑最短路径算法和人生的时候我在想什么In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other one is about the life.">
-<meta property="og:image" content="http://yoursite.com/Users/edieyoung/my-blog/source/_posts/post_img/shortest-path.png">
-<meta property="og:updated_time" content="2017-10-25T17:05:28.000Z">
+<meta property="og:image" content="http://yoursite.com/2017/09/28/pathfinding/post_img/shortest-path.png">
+<meta property="og:updated_time" content="2017-10-25T17:14:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Shortest Path &amp; Epistemologies in Life">
 <meta name="twitter:description" content="当我在考虑最短路径算法和人生的时候我在想什么In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other one is about the life.">
-<meta name="twitter:image" content="http://yoursite.com/Users/edieyoung/my-blog/source/_posts/post_img/shortest-path.png">
+<meta name="twitter:image" content="http://yoursite.com/2017/09/28/pathfinding/post_img/shortest-path.png">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
@@ -210,7 +210,7 @@
 </blockquote>
 <p>It’s so lucky that Pathfinding has its absolute definition, however, the real life problem doesn’t have one. </p>
 <h2 id="How-to-solve-it"><a href="#How-to-solve-it" class="headerlink" title="How to solve it?"></a>How to solve it?</h2><p>The problem will become more easily to solve after setting up some formal notation. Let’s just use this graph for example.</p>
-<p><img src="/Users/edieyoung/my-blog/source/_posts/post_img/shortest-path.png" alt=""></p>
+<p><img src="./post_img/shortest-path.png" alt=""></p>
 <p>Suppose<code>A</code> is the start node, and <code>I</code>  is the end node, and set <code>V</code>  is a set of all nodes(vertex) in the graph,<code>V = {n | n = A,B,C,D,E,F,G,H,I}</code>. The set <code>E</code> is a set of all edges, simply we can use a 9*9 map to interpret each edge and its weight. Now we can just find the path from <code>A</code>to<code>I</code>, and just calculate the sum of weights, find the shortest one. </p>
 <p>I used Matlab to implement it, and <code>map(i,j)</code> represent the route cost between city i and j. Otherwise, <code>map(i,j)=-1</code>means there is no route between city i and j. The function <code>h(x)</code> represent the heuristic function value of city x to the endNode. With the heuristic function, we can call this type of searching technic as informed search. So we can calculate the function <code>f(x)=f(x-1)+map(x)+h(x)</code> as the cost compared during searching.</p>
 <h3 id="Greedy-A-algorithm"><a href="#Greedy-A-algorithm" class="headerlink" title="Greedy (A*) algorithm"></a>Greedy (A*) algorithm</h3><p>In my first case, I apply greedy algorithm to implement it. And there is recursion to keep expanding the best(lowest evaluation function value <code>g(x)</code>,<code>g(x)=map(x)+h(x)</code>) node, and because it is a greedy algorithm, the choice of the least costly node will not be revised. This is a very simple way to find the suboptimal path at the benefit of improvement of running time, however, because it doesn’t expand all nodes, thus it is usually not the true shortest path. Here is my implementation function search1():</p>
@@ -236,13 +236,10 @@
 <li>Because of the impact bias, people usually focus more on the effect of loss than gain, also we could overestimate our happiness. Availability will impact your prediction about future happiness or unhappiness because it will be set as an anchor in your mind when you make the prediction. For example, if your favorite team’s super star is injured, so the availability of winning will decrease, then the anchor is as well as become more negative, which will be closer to the lowest degree of unhappiness and your prediction on how unhappy if they lose will be based on this anchor, which is not that overestimate because you have kind of received the worst result already. The impact bias will become more notable if the availability(the anchor) is much more deviated from the prediction result. In other words, if the anchor of the team is that they can nearly to win, however when you predict your unhappiness if they loss, you will overestimate how unhappy you would be because you think that you were quite sure that they could win, so this deviation will lead to the overestimation of your future feeling. But when the availability to win is lower, which means the anchor is closer to the situation you predict, you would predict less degree of unhappiness which will not be an overestimation.<br>Therefore, in the most occasions, the goals of humans are not absolutely objective, whereas, they are normally combined with the subjective factors that self-awareness、cognition and emotions of humans.<br>很多时候人对于“开心”的预测并不是绝对客观的而是容易产生偏见的。也就是说，对于同样的结果，不同的产生方式会导致人们表现出不一样的开心或难过的程度。例如，若选择做一件难以完成的事后取得成功，相比于做一件容易的事情，人会认为这更令人兴奋。又例如，人更倾向于被动得选择不做某事，而不是主动选择做某事，因为主动的选择往往会产生更多的后悔与懊恼的成分。因此，最终人们的追求并不是一种完全的客观存在，而更多是混杂着人们的自我认知、情绪甚至包括社会意识形态等主观成分，而这一部分内容是目前A.I.等科学领域尚未能触及得到的。这也是KM所试图去厘清的关键。</li>
 </ol>
 <h2 id="Design-my-algorithm"><a href="#Design-my-algorithm" class="headerlink" title="Design my algorithm"></a>Design my algorithm</h2><p>Because it is not revisable, maybe the best method is that we can just use a greedy algorithm to pursue a suboptimal path.</p>
-<to be="" continued.="">
+<blockquote>
+<p>To be continued</p>
+</blockquote>
 
-
-
-
-
-</to>
       
 
       
@@ -564,7 +561,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tittle-tattle</a>
+                <a href="javascript:void(0)" class="js-tag color5">aikm</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -572,7 +569,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">aikm</a>
+                <a href="javascript:void(0)" class="js-tag color4">tittle-tattle</a>
               </li>
              
               <li class="article-tag-list-item">
