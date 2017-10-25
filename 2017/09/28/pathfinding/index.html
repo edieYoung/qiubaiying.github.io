@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="Edie&#39;s Blog">
 <meta property="og:description" content="当我在考虑最短路径算法和人生的时候我在想什么In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other one is about the life.">
 <meta property="og:image" content="http://yoursite.com/Users/edieyoung/my-blog/source/_posts/post_img/shortest-path.png">
-<meta property="og:updated_time" content="2017-10-25T17:02:31.000Z">
+<meta property="og:updated_time" content="2017-10-25T17:05:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Shortest Path &amp; Epistemologies in Life">
 <meta name="twitter:description" content="当我在考虑最短路径算法和人生的时候我在想什么In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other one is about the life.">
@@ -226,11 +226,13 @@
 <p>But it is infinite, because I am not the “god”, I can not depict every vertexes now. I only know the nodes that I have met and the next reachable choices, however, I hardly know what will happen after I choose any one of them. Therefor, V* is an infinite set until I kill my life.</p>
 <p>I want to seek happiness, suppose my start node is “be born”, and my end node is “be happy”(not “be dead”, I don’t need to find the shorted path to death….)which is my goal. Then the question can be translated like “how can I become happy with the lowest total cost.” The single cost is the weight of each path to complete the choice. who can help me add the weights?</p>
 <h2 id="Key-Difficulties"><a href="#Key-Difficulties" class="headerlink" title="Key Difficulties"></a>Key Difficulties</h2><ol>
-<li><p>Usually the cost of choosing certain node remains unknown until you choose it, however, once the node has been chosen, usually it is not allowed to revise the node.<br>生活中的选择成本难以确定,多半要在选择后才能知道实际的成本。生活中的大部分选择，一旦选择后，    就没有办法回溯。</p>
-</li>
+<li>Usually the cost of choosing certain node remains unknown until you choose it, however, once the node has been chosen, usually it is not allowed to revise the node.<br>生活中的选择成本难以确定,多半要在选择后才能知道实际的成本。生活中的大部分选择，一旦选择后，    就没有办法回溯。</li>
+</ol>
+<ol>
 <li><p>Due to the lack of samples to calculate or estimate the real cost, people would only achieve the local optimal route, instead of perceiving the global optimal one.<br>由于缺乏足够的观测样本，生活中的选择只能确保局部最优，并不保证全局最优，因为人们很多时候无法     察觉当时之后或情形之外（时间与空间上的全局）的情况。</p>
 </li>
-<li>The pathes between nodes can be changed as time passes by.<br>生活中的顶点，路径都是动态化的，不是一成不变的。</li>
+<li><p>The pathes between nodes can be changed as time passes by.<br>生活中的顶点，路径都是动态化的，不是一成不变的。</p>
+</li>
 <li>Because of the impact bias, people usually focus more on the effect of loss than gain, also we could overestimate our happiness. Availability will impact your prediction about future happiness or unhappiness because it will be set as an anchor in your mind when you make the prediction. For example, if your favorite team’s super star is injured, so the availability of winning will decrease, then the anchor is as well as become more negative, which will be closer to the lowest degree of unhappiness and your prediction on how unhappy if they lose will be based on this anchor, which is not that overestimate because you have kind of received the worst result already. The impact bias will become more notable if the availability(the anchor) is much more deviated from the prediction result. In other words, if the anchor of the team is that they can nearly to win, however when you predict your unhappiness if they loss, you will overestimate how unhappy you would be because you think that you were quite sure that they could win, so this deviation will lead to the overestimation of your future feeling. But when the availability to win is lower, which means the anchor is closer to the situation you predict, you would predict less degree of unhappiness which will not be an overestimation.<br>Therefore, in the most occasions, the goals of humans are not absolutely objective, whereas, they are normally combined with the subjective factors that self-awareness、cognition and emotions of humans.<br>很多时候人对于“开心”的预测并不是绝对客观的而是容易产生偏见的。也就是说，对于同样的结果，不同的产生方式会导致人们表现出不一样的开心或难过的程度。例如，若选择做一件难以完成的事后取得成功，相比于做一件容易的事情，人会认为这更令人兴奋。又例如，人更倾向于被动得选择不做某事，而不是主动选择做某事，因为主动的选择往往会产生更多的后悔与懊恼的成分。因此，最终人们的追求并不是一种完全的客观存在，而更多是混杂着人们的自我认知、情绪甚至包括社会意识形态等主观成分，而这一部分内容是目前A.I.等科学领域尚未能触及得到的。这也是KM所试图去厘清的关键。</li>
 </ol>
 <h2 id="Design-my-algorithm"><a href="#Design-my-algorithm" class="headerlink" title="Design my algorithm"></a>Design my algorithm</h2><p>Because it is not revisable, maybe the best method is that we can just use a greedy algorithm to pursue a suboptimal path.</p>
@@ -570,11 +572,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">resume</a>
+                <a href="javascript:void(0)" class="js-tag color5">aikm</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">aikm</a>
+                <a href="javascript:void(0)" class="js-tag color2">resume</a>
               </li>
             
             <div class="clearfix"></div>
