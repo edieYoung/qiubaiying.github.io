@@ -6,22 +6,14 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS - DetectScheme | Edie&#39;s Blog</title>
+  <title>Archives: 2018/1 | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Targets Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp;amp; uninstalled app list.  Implementation Using method canOpenScheme, we">
-<meta name="keywords" content="iOS开发">
-<meta property="og:type" content="article">
-<meta property="og:title" content="iOS - DetectScheme">
-<meta property="og:url" content="http://yoursite.com/2017/09/04/DetectScheme/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Edie&#39;s Blog">
+<meta property="og:url" content="http://yoursite.com/archives/2018/01/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
-<meta property="og:description" content="Targets Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp;amp; uninstalled app list.  Implementation Using method canOpenScheme, we">
-<meta property="og:image" content="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/293d84c72cef7cd4.png">
-<meta property="og:image" content="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/b451c8b5e32177b1.png">
-<meta property="og:updated_time" content="2017-09-04T09:39:33.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS - DetectScheme">
-<meta name="twitter:description" content="Targets Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp;amp; uninstalled app list.  Implementation Using method canOpenScheme, we">
-<meta name="twitter:image" content="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/293d84c72cef7cd4.png">
+<meta name="twitter:title" content="Edie&#39;s Blog">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
@@ -185,257 +177,60 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-DetectScheme" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      iOS - DetectScheme
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/01/24/resume/" class="archive-article-date">
+  	<time datetime="2018-01-24T10:23:56.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-24</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/01/24/resume/">Resume(2014-2017)</a>
     </h1>
   
 
-        
-        <a href="/2017/09/04/DetectScheme/" class="archive-article-date">
-  	<time datetime="2017-09-04T01:41:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Targets"><a href="#Targets" class="headerlink" title="Targets"></a>Targets</h1><ul>
-<li>Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp; uninstalled app list.</li>
-</ul>
-<h1 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h1><blockquote>
-<p>Using method canOpenScheme, we can easily detect any URL Scheme to see if the application is installed, which I have introduced in my last article.<br><a href="https://edieyoung.github.io/2017/09/04/Schemes/" target="_blank" rel="external">click here to see.</a><br>Therefore, in this task, I am going to write a runable tool module for any project(application) to complete the app-installed detection task. And I record this coding-testing process circle to mark down some usful gained knowledge and important notes for reminder. </p>
-</blockquote>
-<h2 id="1-detectWithArray-amp-detectScheme"><a href="#1-detectWithArray-amp-detectScheme" class="headerlink" title="1. detectWithArray &amp; detectScheme"></a>1. detectWithArray &amp; detectScheme</h2><ul>
-<li>Outline<br>This method is designed to return the result installed or uninstalled apps list seperated by commas as a string acording to an appList which is declared as an array. </li>
-</ul>
-<p>1、 Traverse the array<br>    So I will to get the app scheme and detect it each time by traversing the array. And this array must be made up with string objects - each object is the exact scheme of an app.<br>    since let’s simply traverse the array:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">- (void) init &#123;</div><div class="line">	self = [super init];</div><div class="line">	if(self)&#123;</div><div class="line">		NSArray *appList = @[@&quot;scheme1&quot;, @&quot;scheme2&quot;];</div><div class="line">		NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">	&#125;</div><div class="line">	return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (NSString *)detectWithArray:(NSArray *)appArray &#123;</div><div class="line">	</div><div class="line">	for ( int i = 0; i &lt; appArray.count, i++)&#123;</div><div class="line">		[detectScheme:appArray[i];</div><div class="line">	&#125;</div><div class="line">	NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    return installedList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>2、 Detect scheme<br>    As you can see above, I now need to design a method detectScheme to complete the logic.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- (void)detectScheme: (NSString *)scheme&#123;</div><div class="line">    //here the scheme need to be added with &quot;://&quot;</div><div class="line">	NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, scheme];</div><div class="line">    NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">    if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">	        //add this app scheme into the result array</div><div class="line">            [_installedApp addObject:scheme];</div><div class="line">	&#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>3、 Call the method<br>    Now we need to set the “entrance” of this method, which means I need to find a place to call the method. As I run the application, the main method will be called automatically, and also by AppDelegate class our application will do all the launching job. Ok, very cool, I can just call my method when this type of method being called.<br>    However, I wrote it as a object method(-).So I need to creat an object of my class to call the method. It will be soon found not convenient.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#import &quot;DetectScheme.h&quot;</div><div class="line"></div><div class="line"></div><div class="line">//code</div><div class="line"></div><div class="line"></div><div class="line">DetectScheme *ds = [[DetectScheme alloc] init];</div><div class="line">NSLog(@&quot;Result:%@&quot;, [ds detectWithArray:ds.appList]);</div></pre></td></tr></table></figure>
-<blockquote>
-<p>However, This is a bad example for following reasons:<br>1、 To call the method, you need to creat an object of the class because it is object method. Also it need to creat class’s properties. It is not convenient to be reused and might cause some unnecessary errors.<br>2、 In the method detectScheme, it will alloc and init some variables which are unnecessary (even not allowed) to be created many times like that. So to avoid  such as memory leaking problem, it is better to creat the variables outside the for-loop. In other words, to maintain the result variable, we don’t need to seperate the logic into two parts(methods).</p>
-</blockquote>
-<h2 id="2-detectWithDictionary-only"><a href="#2-detectWithDictionary-only" class="headerlink" title="2. detectWithDictionary only"></a>2. detectWithDictionary only</h2><p>To solve the problem above, I just comerge two method into one, and turn it into a class method.</p>
-<blockquote>
-<p>Because there are schemes which are meaningless, so I use dictionary to identify the schemes with their app names as keys. Then the result will be more readable.</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">+ (NSString *)detectWithDictionary &#123;</div><div class="line">    NSDictionary *appList = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;scheme1&quot;, @&quot;app1&quot;, @&quot;scheme2&quot;, @&quot;app2&quot;, @&quot;scheme3&quot;, @&quot;app3&quot;, nil];</div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">    </div><div class="line">    //检测这个scheme是否存在，存在即证明装有此app</div><div class="line">    for (NSString *key in appList) &#123;</div><div class="line">        NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, [appList objectForKey:key]];</div><div class="line">        NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">        if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">            [installedApp addObject:key];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //把installedapp的array变成string输出</div><div class="line">    NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line">    return installedList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>With this class method, I can simply use one line to call this method:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NSLog(@&quot;Result:%@&quot;, [DetectScheme detectWithDictionary]);</div></pre></td></tr></table></figure>
-<h2 id="3-Demo-application"><a href="#3-Demo-application" class="headerlink" title="3. Demo application"></a>3. Demo application</h2><p>To test this tool class, I creat another application to do a unit test. Also in order to make this application’s outcome more reasonable to understand, I also make it to return uninstalled apps list.<br>Have a glance at my file root:<br><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/293d84c72cef7cd4.png" alt="1.png"> </p>
-<p>rewrite the method to return both installed apps list and uninstalled apps list:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">+ (NSString *)detectWithDictionary: (BOOL) forInstalled&#123;</div><div class="line">    NSDictionary *appList = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;scheme0&quot;, @&quot;app0&quot;, @&quot;scheme1&quot;, @&quot;app1&quot;, @&quot;scheme2&quot;, @&quot;app2&quot;,  nil];</div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">    NSMutableArray *uninstalledApp = [[NSMutableArray alloc] init];</div><div class="line">    //检测这个scheme是否存在，存在即证明装有此app</div><div class="line">    for (NSString *key in appList) &#123;</div><div class="line">        NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, [appList objectForKey:key]];</div><div class="line">        NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">        if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">            [installedApp addObject:key];</div><div class="line">        &#125; else &#123;</div><div class="line">            [uninstalledApp addObject:key];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //把installedapp的array变成string输出</div><div class="line">    NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSString *uninstalledList = [uninstalledApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line">    if(forInstalled)&#123;</div><div class="line">        return installedList;</div><div class="line">    &#125; else &#123;</div><div class="line">        return uninstalledList;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Let’s run the demo to do the test.<br><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/b451c8b5e32177b1.png" alt="2.png"> </p>
-<h2 id="Ending"><a href="#Ending" class="headerlink" title="Ending"></a>Ending</h2><p>This task it self is not a complecated one, but the way to think how to implement it reminds me of how important it is to optimize the algorithm and coding structure. And the very delicate codes don’t come to our minds at the very first time, so I need to keep practicing more to polish my coding mind and skill.</p>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你给我鼓励<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    <div class="reward-box-item">
-                      <img class="reward-img" src="/img/Alipay.jpeg">
-                      <span class="reward-type">支付宝</span>
-                    </div>
-                    
-                    
-                    <div class="reward-box-item">
-                      <img class="reward-img" src="/img/Wechat.jpeg">
-                      <span class="reward-type">微信</span>
-                    </div>
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">iOS开发</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">resume</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/09/04/DetectScheme/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2017/09/04/CNN/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          CNN
-        
-      </div>
-    </a>
   
   
-    <a href="/2017/09/04/Schemes/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS-URLSchemes</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Targets"><span class="toc-number">1.</span> <span class="toc-text">Targets</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Implementation"><span class="toc-number">2.</span> <span class="toc-text">Implementation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-detectWithArray-amp-detectScheme"><span class="toc-number">2.1.</span> <span class="toc-text">1. detectWithArray & detectScheme</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-detectWithDictionary-only"><span class="toc-number">2.2.</span> <span class="toc-text">2. detectWithDictionary only</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Demo-application"><span class="toc-number">2.3.</span> <span class="toc-text">3. Demo application</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ending"><span class="toc-number">2.4.</span> <span class="toc-text">Ending</span></a></li></ol></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  <div class="duoshuo">
-	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="DetectScheme" data-title="iOS - DetectScheme" data-url="http://yoursite.com/2017/09/04/DetectScheme/"></div>
-	<!-- 多说评论框 end -->
-	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-	<script type="text/javascript">
-	var duoshuoQuery = {short_name:"true"};
-	(function() {
-		var ds = document.createElement('script');
-		ds.type = 'text/javascript';ds.async = true;
-		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-		ds.charset = 'UTF-8';
-		(document.getElementsByTagName('head')[0] 
-		 || document.getElementsByTagName('body')[0]).appendChild(ds);
-	})();
-	</script>
-	<!-- 多说公共JS代码 end -->
-</div>
-
-  
-  
-  
-  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
-<script>
-  var cloudTieConfig = {
-    url: "http://yoursite.com/2017/09/04/DetectScheme/", 
-    sourceId: "DetectScheme",
-    productKey: "true",
-    target: "cloud-tie-wrapper"
-  };
-</script>
-<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+    </div></section>
   
 
-  
-
-  
+    
 
 
           </div>
@@ -458,8 +253,8 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
