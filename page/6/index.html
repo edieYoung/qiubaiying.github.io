@@ -48,7 +48,7 @@
 		  <h1 class="header-author"><a href="/">Edie Young</a></h1>
 		</hgroup>
 		
-		<p class="header-subtitle">一枚心大的程序媛 iOS</p>
+		<p class="header-subtitle">iOS Development Engineer</p>
 		
 
 		<nav class="header-menu">
@@ -116,7 +116,7 @@
 			  <h1 class="header-author js-header-author">Edie Young</h1>
 			</hgroup>
 			
-			<p class="header-subtitle"><i class="icon icon-quo-left"></i>一枚心大的程序媛 iOS<i class="icon icon-quo-right"></i></p>
+			<p class="header-subtitle"><i class="icon icon-quo-left"></i>iOS Development Engineer<i class="icon icon-quo-right"></i></p>
 			
 			
 			
@@ -179,56 +179,95 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-DetectScheme" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-sync-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/09/04/DetectScheme/">iOS - DetectScheme</a>
+      <a class="article-title" href="/2017/09/06/sync-1/">”效率“与”同步空间“理论</a>
     </h1>
   
 
         
-        <a href="/2017/09/04/DetectScheme/" class="archive-article-date">
-  	<time datetime="2017-09-04T01:41:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-04</time>
+        <a href="/2017/09/06/sync-1/" class="archive-article-date">
+  	<time datetime="2017-09-06T14:47:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-06</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Targets"><a href="#Targets" class="headerlink" title="Targets"></a>Targets</h1><ul>
-<li>Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp; uninstalled app list.</li>
-</ul>
-<h1 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h1><blockquote>
-<p>Using method canOpenScheme, we can easily detect any URL Scheme to see if the application is installed, which I have introduced in my last article.<br><a href="https://edieyoung.github.io/2017/09/04/Schemes/" target="_blank" rel="external">click here to see.</a><br>Therefore, in this task, I am going to write a runable tool module for any project(application) to complete the app-installed detection task. And I record this coding-testing process circle to mark down some usful gained knowledge and important notes for reminder. </p>
-</blockquote>
-<h2 id="1-detectWithArray-amp-detectScheme"><a href="#1-detectWithArray-amp-detectScheme" class="headerlink" title="1. detectWithArray &amp; detectScheme"></a>1. detectWithArray &amp; detectScheme</h2><ul>
-<li>Outline<br>This method is designed to return the result installed or uninstalled apps list seperated by commas as a string acording to an appList which is declared as an array. </li>
-</ul>
-<p>1、 Traverse the array<br>    So I will to get the app scheme and detect it each time by traversing the array. And this array must be made up with string objects - each object is the exact scheme of an app.<br>    since let’s simply traverse the array:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">- (void) init &#123;</div><div class="line">	self = [super init];</div><div class="line">	if(self)&#123;</div><div class="line">		NSArray *appList = @[@&quot;scheme1&quot;, @&quot;scheme2&quot;];</div><div class="line">		NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">	&#125;</div><div class="line">	return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (NSString *)detectWithArray:(NSArray *)appArray &#123;</div><div class="line">	</div><div class="line">	for ( int i = 0; i &lt; appArray.count, i++)&#123;</div><div class="line">		[detectScheme:appArray[i];</div><div class="line">	&#125;</div><div class="line">	NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    return installedList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>2、 Detect scheme<br>    As you can see above, I now need to design a method detectScheme to complete the logic.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- (void)detectScheme: (NSString *)scheme&#123;</div><div class="line">    //here the scheme need to be added with &quot;://&quot;</div><div class="line">	NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, scheme];</div><div class="line">    NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">    if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">	        //add this app scheme into the result array</div><div class="line">            [_installedApp addObject:scheme];</div><div class="line">	&#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>3、 Call the method<br>    Now we need to set the “entrance” of this method, which means I need to find a place to call the method. As I run the application, the main method will be called automatically, and also by AppDelegate class our application will do all the launching job. Ok, very cool, I can just call my method when this type of method being called.<br>    However, I wrote it as a object method(-).So I need to creat an object of my class to call the method. It will be soon found not convenient.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#import &quot;DetectScheme.h&quot;</div><div class="line"></div><div class="line"></div><div class="line">//code</div><div class="line"></div><div class="line"></div><div class="line">DetectScheme *ds = [[DetectScheme alloc] init];</div><div class="line">NSLog(@&quot;Result:%@&quot;, [ds detectWithArray:ds.appList]);</div></pre></td></tr></table></figure>
+        <h2 id="开篇语"><a href="#开篇语" class="headerlink" title="开篇语"></a>开篇语</h2><p>这是一篇prototype性质的论述（猜想），属于”洗澡时候的突发奇想“，抛砖引玉，仅供交流。没有特殊起源，暂时也没有实验背景，仅靠个人经验，突然想提一个关于“效率”和“同步空间”的概念，阐述得可能会比较抽象，语言也比较直白，如果觉得内容很扯淡请无视就好了～<br>总之，各位多多包涵，欢迎提出质疑与指正！</p>
+<h2 id="定义：效率"><a href="#定义：效率" class="headerlink" title="定义：效率"></a>定义：效率</h2><h3 id="什么是效率？"><a href="#什么是效率？" class="headerlink" title="什么是效率？"></a>什么是效率？</h3><p>效率一词在不同的角度中有不同的定义，该词的本身含义是：</p>
 <blockquote>
-<p>However, This is a bad example for following reasons:<br>1、 To call the method, you need to creat an object of the class because it is object method. Also it need to creat class’s properties. It is not convenient to be reused and might cause some unnecessary errors.<br>2、 In the method detectScheme, it will alloc and init some variables which are unnecessary (even not allowed) to be created many times like that. So to avoid  such as memory leaking problem, it is better to creat the variables outside the for-loop. In other words, to maintain the result variable, we don’t need to seperate the logic into two parts(methods).</p>
+<ol>
+<li>單位時間內完成的工作量。</li>
+<li>給定投入和技術的條件下，經濟資源沒有浪費，或對經濟資源做了能帶來最大可能性的滿足程度的利用，也是配置效率（allocative efficiency）的一個簡化表達。</li>
+</ol>
 </blockquote>
-<h2 id="2-detectWithDictionary-only"><a href="#2-detectWithDictionary-only" class="headerlink" title="2. detectWithDictionary only"></a>2. detectWithDictionary only</h2><p>To solve the problem above, I just comerge two method into one, and turn it into a class method.</p>
+<p>第一个解释很好理解，就是单位时间内完成的工作（产出）越高即效率就越高。第二个解释实际上就是在经济学中的比较专业且针对性比较强的解释了，其实已经是对第一个解释的延伸了。<br>继续对“效率”一词加以延伸（事实上也并不是我提出的延伸，大家其实早就已经接受这些延伸了）。比如，卡诺循环中的热机效率：</p>
 <blockquote>
-<p>Because there are schemes which are meaningless, so I use dictionary to identify the schemes with their app names as keys. Then the result will be more readable.</p>
+<p>是指热机工作部分中转变为机械功的热量和工质从发热器得到的热量的比。<br>热机效率公式应为η=Q有/Q放×100%</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">+ (NSString *)detectWithDictionary &#123;</div><div class="line">    NSDictionary *appList = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;scheme1&quot;, @&quot;app1&quot;, @&quot;scheme2&quot;, @&quot;app2&quot;, @&quot;scheme3&quot;, @&quot;app3&quot;, nil];</div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">    </div><div class="line">    //检测这个scheme是否存在，存在即证明装有此app</div><div class="line">    for (NSString *key in appList) &#123;</div><div class="line">        NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, [appList objectForKey:key]];</div><div class="line">        NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">        if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">            [installedApp addObject:key];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //把installedapp的array变成string输出</div><div class="line">    NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line">    return installedList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>With this class method, I can simply use one line to call this method:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NSLog(@&quot;Result:%@&quot;, [DetectScheme detectWithDictionary]);</div></pre></td></tr></table></figure>
-<h2 id="3-Demo-application"><a href="#3-Demo-application" class="headerlink" title="3. Demo application"></a>3. Demo application</h2><p>To test this tool class, I creat another application to do a unit test. Also in order to make this application’s outcome more reasonable to understand, I also make it to return uninstalled apps list.<br>Have a glance at my file root:<br><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/293d84c72cef7cd4.png" alt="1.png"> </p>
-<p>rewrite the method to return both installed apps list and uninstalled apps list:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">+ (NSString *)detectWithDictionary: (BOOL) forInstalled&#123;</div><div class="line">    NSDictionary *appList = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;scheme0&quot;, @&quot;app0&quot;, @&quot;scheme1&quot;, @&quot;app1&quot;, @&quot;scheme2&quot;, @&quot;app2&quot;,  nil];</div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">    NSMutableArray *uninstalledApp = [[NSMutableArray alloc] init];</div><div class="line">    //检测这个scheme是否存在，存在即证明装有此app</div><div class="line">    for (NSString *key in appList) &#123;</div><div class="line">        NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, [appList objectForKey:key]];</div><div class="line">        NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">        if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">            [installedApp addObject:key];</div><div class="line">        &#125; else &#123;</div><div class="line">            [uninstalledApp addObject:key];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //把installedapp的array变成string输出</div><div class="line">    NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSString *uninstalledList = [uninstalledApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line">    if(forInstalled)&#123;</div><div class="line">        return installedList;</div><div class="line">    &#125; else &#123;</div><div class="line">        return uninstalledList;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Let’s run the demo to do the test.<br><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/b451c8b5e32177b1.png" alt="2.png"> </p>
-<h2 id="Ending"><a href="#Ending" class="headerlink" title="Ending"></a>Ending</h2><p>This task it self is not a complecated one, but the way to think how to implement it reminds me of how important it is to optimize the algorithm and coding structure. And the very delicate codes don’t come to our minds at the very first time, so I need to keep practicing more to polish my coding mind and skill.</p>
+<p>可以发现，这里的效率与单位时间没有直接联系了。<br>又比如，在管理学中：</p>
+<blockquote>
+<p>效率是指在特定时间内，组织的各种投入与产出之间的比率关系。效率与投入成反比，与产出成正比。</p>
+</blockquote>
+<p>试着表达一下这个管理学中的效率公式：</p>
+<ul>
+<li>效率 = 产出／投入</li>
+</ul>
+<p>然而又需要注意到，它的前提条件是在特定时间内，因此我们应该把时间的维度也添加到这个效率的比值之中。</p>
+<ul>
+<li>效率 = 产出／（投入*特定时长）</li>
+</ul>
+<p>这个时候会发现，考虑效率的维度变成了两个，即考虑的是在特定时长内和一定投入内的产出。根据这些延伸，我就要提出我的一个大胆的想法了：</p>
+<ul>
+<li>效率 = 客观存在／多维度空间</li>
+</ul>
+<h3 id="效率-客观存在／多维度空间"><a href="#效率-客观存在／多维度空间" class="headerlink" title="效率 = 客观存在／多维度空间"></a>效率 = 客观存在／多维度空间</h3><p>有了这个对效率的统一定义，就可以帮助我们去量化生活中的很多关于“这个人做事效率如何如何”“如何提高效率“的带有主观性的问题了。<br>举一个🌰：我想衡量一个学生的学习效率，就把“客观存在”设定为考试成绩（一个数字）然后找到一个多维度空间，这个“多维度空间”的结构就比较复杂了：</p>
+<ul>
+<li>第一个维度，要定义一门或多门课程，这里就先简单定义为在英语课考试中。（多门课程可以用一个求加权平均的函数模型）。</li>
+<li>时间维度是一个学期的长度。</li>
+<li>还包括学习工具的维度，这里不同工具的衡量其实又可以用不同工具的效率来表示，比如自学效率等于单位时间内，完成章节数目与外界资源投入之比；上课效率等于单位时间内，完成章节数目与师资投入之比。</li>
+<li>其他维度</li>
+</ul>
+<p>将所有的维度的指标进行组合然后降维，即可以得到一个用于衡量这个学生的学习效率的多维度空间值（个人建议是为了方便这个空间的直观展现，最好是至少降成一个三维向量）。</p>
+<p>这样一来，我就可以利用这个多维度空间来根据任何一个学生的客观存在（考试成绩）来求他的学习效率了。</p>
+<h3 id="量效率与质效率"><a href="#量效率与质效率" class="headerlink" title="量效率与质效率"></a>量效率与质效率</h3><p>上一个例子中，重点在于多维度空间，也就是”分母“上。现在我想把思考点放在分子上，也就是”客观存在“，我会把它分为量存在与质存在这两种类型。</p>
+<ul>
+<li>质存在，0到1的过程。</li>
+<li>量存在，1到n的过程。</li>
+</ul>
+<p>用质存在除以多维度空间值即为质效率，量存在除以多维度空间值即为量效率，这是两种不同的效率。<br>举一个例子，假设有一工厂，工人们的唯一工作就是生产一种零件。车间里来了一个新人，以前从来没有生产过这个零件，因此他花了5天时间学会生产这个零件并且在第五天的时候生产出了他人生中的第一个零件，那么这个1就可以理解为质存在，假设多维度空间就只取时间，那么他的质效率就是1/5。利用质效率，就可以解释在新人入职的时候，领导是如何得出“这个新人的学习能力很强”“这个人潜力很大”之类的结论的了。</p>
+<p>那么量效率的例子就还是用这个工厂的新人的例子好了，从他第一次生产出这个零件的时候开始，他就开始做重复的生产工作，一开始每天只能生产1个，量效率为1/1。后来技术熟练之后每天可以生产10个，这时候量效率是10/1。最终这个新人已经变成了一个熟练的工人，技艺达到了炉火纯青的地步了，一天可以生产100个，量效率变成100/1。有人可能会问，那如果他每天生产的100个零件质量参差不齐怎么办，量效率还是这么多吗？其实这就刚好解释了为什么我会提出“多维度空间”作为分母的原因了，注意我在计算这个量效率的时候用到的多维度空间仅仅是时间，如果要加上多个的维度（比如每做出1个A类；生产的残次品率；甚至可以包括考勤、身体状况）那么量效率肯定就不一样了。</p>
+<p>如此重复工作下去，突然有一天，这个工人发现了一种改进生产的方法并且他用这个方法制造出了一个全新的零件，那么这个时候，我们可以联想到量变引发质变的过程，然后…不做展开了，因为这个时候的多维度空间又更复杂了，比如与这个质存在相关的时间起点需要确定，相关因素需要确定，太复杂了，以后再说吧。</p>
+<h2 id="同步空间"><a href="#同步空间" class="headerlink" title="同步空间"></a>同步空间</h2><p>终于可以来谈谈我的“同步空间”了！</p>
+<p>有了”效率“的定义之后，我又开始进一步思考了，什么叫做同步？</p>
+<blockquote>
+<p>同步（英语：Synchronization），指对在一个系统中所发生的事件（event）之间进行协调，在时间上出现一致性与统一化的现象。</p>
+</blockquote>
+<h3 id="论点"><a href="#论点" class="headerlink" title="论点"></a>论点</h3><p>直接提：</p>
+<ul>
+<li>任意一个客观存在，一定能够找到一个相对于另外一个客观存在的同步空间，在这个同步空间里，两者之间的效率是相等的。</li>
+</ul>
+<p>也就是说，如果我想把客观存在A与B进行完全同步，我只需要把B放到一个相对于A的同步空间里面就可以了。</p>
+<h3 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h3><p>举一个比较形象化的例子，在A村住着小明和小红，小明今年12岁，小红今年24岁，他们两个的年龄显然不一样。但是有一天情况出现了变化，这个世界上存在一个相对于A村的同步空间叫做B村，它之所以同步是因为这里的人都是2年才过一次生日，也就是2年才算长一岁。而恰好小红离开了A村，来到了B村，于是她就变成了12岁，在这个同步空间里，小红和小明同岁了。</p>
+<p>关于“同步空间”的想象空间还有很大很大！有兴趣的话可以再举出更多例子。</p>
+<p>比如，再举一个效率角度的例子，定义一个同学的效率为单位时间内吸收的知识量。</p>
+<ul>
+<li>效率 = 读书量／（时间／知识转化效率 ）</li>
+</ul>
+<p>比如A同学1天看一本书，10本书10天就可以看完。然而在同样的多维度空间下，然而B是1天看半本书。于是B为了和A在同一天完成任务，就只挑选5本最精华的书，即找到了一个相对于A的同步空间，提高了知识转化效率（比如B有一定基础，因此B看了这5本书后的知识量，也就相当于A看了的10本书的知识量），<br>此时对于B来说，他的效率其实就变成了：</p>
+<ul>
+<li>效率 = 读书量／（时间／（2*知识转化率））</li>
+</ul>
+<p>于是, B也在第10天的时候和A一起完成相同的知识量，即效率相同，两人同步。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>借用食蚁兽大哥的评论就是：在客观空间里任何东西都可以靠旋转和平移搞到一起。</p>
+<p>那么我的总结就是：“我为了摆正你的倒影，我可以颠覆整个世界”。</p>
+<p>感谢阅读！</p>
 
       
 
@@ -242,7 +281,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">iOS开发</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tittle-tattle</a>
         		</li>
       		
 		</ul>
@@ -252,7 +291,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2017/09/04/DetectScheme/">see more >></a>
+          <a class="article-more-a" href="/2017/09/06/sync-1/">see more >></a>
         </p>
       
 
@@ -284,7 +323,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
     </nav>
   
 
@@ -296,7 +335,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2017 Edie Young
+    		&copy; 2018 Edie Young
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -400,15 +439,19 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">tutorial</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">resume</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -417,10 +460,6 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">aikm</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">resume</a>
               </li>
             
             <div class="clearfix"></div>
