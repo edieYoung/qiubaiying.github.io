@@ -179,111 +179,27 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-Link" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-CNN" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/09/04/Link/">理解Deep Link &amp; URI Schemes &amp; Universal Link &amp; App Link</a>
+      <a class="article-title" href="/2017/09/04/CNN/">CNN</a>
     </h1>
   
 
         
-        <a href="/2017/09/04/Link/" class="archive-article-date">
-  	<time datetime="2017-09-03T16:33:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-04</time>
+        <a href="/2017/09/04/CNN/" class="archive-article-date">
+  	<time datetime="2017-09-04T15:40:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-04</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>   最近在做客户端开发的工作中，需要解决一些渠道流量监控的问题。发现在唤醒app的时候涉及到很多这样那样的link，于是就先对这几个link做了一些了解。<br>    事实上，这几个名词并不是完全区分的关系，同时这些技术都仍处在不断发展的阶段，因此面对这样碎片化的概念，很难去直接解释清楚它们之间的关系与不同，所以只能先从每个名字的概念上和实践运用中去把握了。<br>    而且，这几个概念实际上是有一些从属和时间上的关系的，其实也不复杂，只是我们不光是要了解它们的意思，还得了解它们出现的情况，怎么使用。下面我就为大家简单介绍：</p>
-<h1 id="1-Deep-Link"><a href="#1-Deep-Link" class="headerlink" title="1. Deep Link"></a>1. Deep Link</h1><p>Deep Link就是一个链接的概念，事实上我们每天都会使用到它去打开一个网站页面，只不过它是比普通的链接更加复杂一些。在web开发领域，深度链接就是说这个链接不是仅仅打开一个网站<a href="http://example.com/" target="_blank" rel="external">http://example.com/</a>,  而是直接地打开这个网站中的某个具体内容页面<a href="http://example.com/my-awesome-content-page" target="_blank" rel="external">http://example.com/my-awesome-content-page</a> 。 通常来讲，有很多链接就是深度链接，只不过大家都习惯于称之为链接。<br>在移动开发领域，深度链接的概念就是指app在处理特定的url时能够直接跳转到对应的内容页面或者触发特定的逻辑。这样的好处有：</p>
-<ul>
-<li>在web页面和app的切换过程中保留了上下文</li>
-<li>App间的切换保留了上下文，实现app间参数的传递</li>
-<li>Web页可以被搜索引擎索引，可以增加SEO的访问量从而提高app下载量和开启率。</li>
-</ul>
-<p>Android、iOS都推出了相应的概念去实现深链接。于是就有了Universal Link、App Link、URL schemes.</p>
-<h1 id="2-URI-Schemes"><a href="#2-URI-Schemes" class="headerlink" title="2. URI Schemes"></a>2. URI Schemes</h1><h2 id="URI、URL、URN"><a href="#URI、URL、URN" class="headerlink" title="URI、URL、URN"></a>URI、URL、URN</h2><p>有兴趣了解更多的话可以直接看这篇文章： <a href="https://danielmiessler.com/study/url-uri/#gs.M5gPOG4" target="_blank" rel="external">The Difference Between URLs and URIs</a><br>这里我就直接捋一捋URI、URL、URN的关系。<br>首先，先看一下它们三个分别的英文全称： </p>
-<ul>
-<li>URI : universal resource identifier</li>
-<li>URL : universal resource locator</li>
-<li>URN : universal resource name<br>这里可以看出，URI就是一个资源的统一标志符，它既可以是定位符也可以是一个名称，因此URL、URN都属于URI。</li>
-</ul>
-<h2 id="如何区分URL和URN？"><a href="#如何区分URL和URN？" class="headerlink" title="如何区分URL和URN？"></a>如何区分URL和URN？</h2><p>URL包含了找到资源的方法（路径）和资源名称，也就是当一个URI包含了一个访问机制或者网络位置的时候（e.g. http// or ftp://），它就是一个URL了。<br>URN就是一个独一无二的资源名称，它是由urn开头的一串URI。<br>e.g. urn:oasis:names:specification:docbook:dtd:xml:4.1.2<br>所以说，它们之间重要的区别就在于它的开头，也就是Scheme.</p>
-<h2 id="URI-Schemes"><a href="#URI-Schemes" class="headerlink" title="URI Schemes"></a>URI Schemes</h2><p>大家应该都对http:// 非常熟悉，而它就是一个scheme，也就是一个url的开头部分。<br>有兴趣也可以去看我在之前写过一篇关于URL scheme的介绍：<a href="https://edieyoung.github.io/2017/09/04/Schemes/" target="_blank" rel="external">iOS-URL Schemes</a>。而有了以上概念之后，我们可以了解到，实际上scheme不仅仅可以指URL的开头，URI的开头也一样的是scheme。</p>
-<p>那么回到正题，来讲它和deep link的关系。URI Schemes其实就是实现deep linking的第一代解决方案。利用它就可以在移动开发中实现从web页面或者别的app中唤起自己的app的功能，然而开发者们很快就发现，这样也还有很多限制：</p>
-<ul>
-<li>当要被唤起的app没有安装时，这个链接就会出错。</li>
-<li>当注册有多个scheme相同的时候，目前没有办法区分。</li>
-</ul>
-<p>因此为了解决以上问题，苹果和安卓都有了自己的第二套解决方案，分别是iOS的Universal Link，和安卓的App Link。</p>
-<h2 id="Custom-URL-Scheme"><a href="#Custom-URL-Scheme" class="headerlink" title="Custom URL Scheme"></a>Custom URL Scheme</h2><p>iOS在之前的很长一段时间内用来实现deep linking以及app间通信的方法就是上面提到的，被叫做custom URL scheme。处理的方法就是：</p>
-<ol>
-<li>注册一个URL type，注册的方法就是在app的info.plist文件里添加 CFBundleURLTypes 键，它包含了一个由多个字典组成的数组，每一个字典定义了这个app支持的一个URL scheme</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>Key</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CFBundleURLName</td>
-<td>一个包含了URL Scheme的抽象名字的字符串。为了保证它的唯一性，通常需要明确一个reverse-DNS的identifier，同时还应该保证它的可读性。</td>
-</tr>
-<tr>
-<td>CFBundleURLSchemes</td>
-<td>一个包含了多个URL Scheme names的字符串数组。</td>
-</tr>
-</tbody>
-</table>
-<ol>
-<li>用到<code>application:willFinishLaunchingWithOptions:</code>和<code>application:didFinishLaunchingWithOptions:</code>这两个方法去取回关于URL的信息同时决定是否要打开它。</li>
-<li>在app delegate中实现入口方法：<code>application:openURL:sourceApplication:annotation:</code>或者<code>application:openURL:options:</code> 。前一个方法从iOS9后开始被淘汰，后一个方法是在iOS 9 之后引入的，若果没有实现这个方法，在iOS 9 上也还是会向前兼容调用第一个老的方法，因此现在一般还是实现老方法）。</li>
-</ol>
-<p>在iOS中，所有传到app中的URL都是一个NSURL的对象，你可以定义URL的组成，但NSURL都遵守RFC 1808的一些规则，所以它支持大多数的传统URL组成规则。NSURL类中还有能够返回URL中的不同部分的方法，包括URL中的user、password、query、fragment、parameter strings等常见部分。<br>对于业务逻辑较少的app来说，可以直接通过url的字符串比较来区分业务逻辑。不过对于业务逻辑相对复杂，比如像现在开发团队共同维护这块逻辑的时候，就需要引入路由router来分发请求。在做上一个需求的时候有涉及，这里就不展开说了。</p>
-<h1 id="3-Universal-Link"><a href="#3-Universal-Link" class="headerlink" title="3. Universal Link"></a>3. Universal Link</h1><h2 id="什么是Universal-Link"><a href="#什么是Universal-Link" class="headerlink" title="什么是Universal Link?"></a>什么是Universal Link?</h2><p>而iOS 9之后苹果推出的一个替代之前的custom URL Scheme的新概念就是Universal Link。在苹果开发者中可以看到对它的介绍是：</p>
-<blockquote>
-<p>Seamlessly link to content inside your app, or on your website in iOS 9 or later. With universal links, you can always give users the most integrated mobile experience, even when your app isn’t installed on their device.</p>
-</blockquote>
-<p>   通俗讲，就是用了这个Universal Link，就可以让网站或者web view中的内容在用户点击跳转或安装了app之后仍然能够直接在这个app中被找到。比如，用户在官网上点击了“在app中浏览该商品”的链接，这个时候就可以通过Universal Link去唤起这个app，同时直接定位到该商品页面。</p>
-<p>   它的实现机制与之前的Deep Link相似，只不过它不是只定义一个custom URL scheme，而是匹配了多个web页面到app中相应的位置，当用户打开某个匹配的页面时，iOS会自动地将其重定向到app内。</p>
-<h2 id="Universal-Link的好处"><a href="#Universal-Link的好处" class="headerlink" title="Universal Link的好处"></a>Universal Link的好处</h2><p>接下来说Universal Link厉害的地方：</p>
-<ol>
-<li>之前的Custom URL scheme是自定义的协议，因此在没有安装该app的情况下是无法直接打开的。而Universal Links本身也就是一个能够指向一个web页面或者app中的内容页的标准的web link（形如<a href="https://example.com）" target="_blank" rel="external">https://example.com）</a> 因此能够很好的兼容其他情况。也就是说，当已经安装了这个app的时候，不需要加载任何web页面，app就会立即启动；当这个app没有安装的时候，就会默认地从当前浏览器中重定向到App Store中引导用户去下载安装这个app。</li>
-<li>Universal links是从服务器上查询是哪个app需要被打开，因此不存在Custom URL scheme那样名字被抢占、冲突的情况。</li>
-<li>Universal links支持从其他app中的UIWebView中跳转到目标app</li>
-<li>安全性，用universl link去打开的时候，只有你（开发这个app的人）可以通过创建和上传一个允许这个网页去通过这个URL去打开你的app的文件。</li>
-<li>隐私性，提供Universal link给别的app进行app间的交流，然而对方并不能够用这个方法去检测你的app是否被安装。（之前的custom scheme URL的canOpenURL方法可以，具体可以看这里<a href="https://edieyoung.github.io/2017/09/04/DetectScheme/" target="_blank" rel="external">iOS Review-DetectScheme</a> </li>
-</ol>
-<h2 id="使用Universal-Link"><a href="#使用Universal-Link" class="headerlink" title="使用Universal Link"></a>使用Universal Link</h2><p>首先，你需要创建一个 apple-app-site-association文件，它是一些JSON格式的数据，提供了你的app能够处理的URLs。然后你需要将这个文件上传到你的HTTPS web 服务器上。之后就是一些准备工作来处理这个Universal Link，有两种技术，<a href="https://developer.apple.com/library/content/documentation/UserExperience/Conceptual/Handoff/AdoptingHandoff/AdoptingHandoff.html#//apple_ref/doc/uid/TP40014338-CH2-SW10" target="_blank" rel="external">Web Browser–to–Native App Handoff</a> 和 <a href="https://developer.apple.com/documentation/security/shared_web_credentials" target="_blank" rel="external">Shared Web Credentials Reference</a>。</p>
-<p>当一个用户点击了这个universal link，iOS就会启动你的app，然后会传入一个NSUserActivity的对象，让你能够查询到你的app是如何被启动的。要实现这些，你需要做以下步骤：</p>
-<ul>
-<li>添加一个权限(entitlement)，用来具体说明你的app支持哪些域(domains)。<br>具体在xcode中，就是在Capabilities栏中找到Associated Domains，在里面添加以applinks：为前缀的域。如图：</li>
-</ul>
-<p><img src="http://upload-images.jianshu.io/upload_images/6970989-c73ccd06a24ec726.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Associated Domains"></p>
-<ul>
-<li>写app delegate的方法，使之在收到NSUserActivity对象的时候能够做出适当的响应。尤其是<code>application:continueUserActivity:restorationHandler:</code>。</li>
-</ul>
-<p>当你的app在用户点击universal link后被启动的时候，就会收到一个NSUserActivity对象，里面包括了值为NSUserActivityTypeBrowsingWeb的activityType。利用这个对象的webpageURL属性中的URL，就可以知道用户正在访问的URL地址。另外，因为这个webpageURL属性通常都会包括HTTP或者HTTPS URL，所以你还可以用NSURLComponents APIs去操纵这个URL的内容。</p>
-<h2 id="Universal-Link的缺陷"><a href="#Universal-Link的缺陷" class="headerlink" title="Universal Link的缺陷"></a>Universal Link的缺陷</h2><p>在讲它的缺陷之前，我先介绍一下iOS的Universal link的一个机制：<br>在用户点击了Universal link之后，iOS会去检测用户最近一次是选择了直接打开app还是打开网站。这个选择的步骤，实际上是在用户进入了app之后，顶部bar的右侧会出现一个通过网站打开的按钮选项。如图：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/6970989-7006ef4d51cd85b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="bar"></p>
-<p>因此，一旦用户点击了这个选项，他就会通过safiri打开你的网站。并且在之后的操作中，默认一直延续这个选择，除非用户从你的webpage上通过点击Smart App Banner上的OPEN按钮来打开。也就是说，用户非常容易在一次选择之后，使得Universal link唤醒app的功能失效了。</p>
-<h1 id="4-Deferred-Deep-Link"><a href="#4-Deferred-Deep-Link" class="headerlink" title="4. Deferred Deep Link"></a>4. Deferred Deep Link</h1><p>然而，无论是URI Scheme还是Universal Link都没有解决一个问题，就是如果设备上没有安装这个app的时候，保留住此时用户停留的上下文。例如，利用Universal Link，在没有安装app的情况下，iOS能够重定位到app store去引导用户去下载安装这个app，但是在安装之后，app只能打开首页，也就是说丢失了用户在点击跳转进入app之前的那个页面。<br>因此，有了一个非常重要的另一个概念：Deferred Deep Link。顾名思义，这里的deferred是延迟的意思，可以理解为延迟一下，在安装过程中keep住跳转前的特定页面内容，在app安装之后，再利用这个link在app里进行跳转。举个例子，用户在某个电商网站上看到一个商品，于是他点击了一个按钮“在app中查看该商品”，但他并没有下载这个app，于是iOS就引导他到了App Store安装这个app，当他安装完成之后，打开这个app，就会自动地在app中跳到他刚才想看的那个商品的页面。这对于商家来说，也就大大提高了用户的转化率。</p>
-<p>#其他 Deep Link标准<br>这里介绍的主要都是针对于iOS开发中使用到的deep link标准，那么对应安卓开发，同样也有类似的标准，大家可以自主了解：</p>
-<ul>
-<li>Facebook App Links</li>
-<li>Android App Links</li>
-<li>Chrome Intents</li>
-</ul>
-<h1 id="后话"><a href="#后话" class="headerlink" title="后话"></a>后话</h1><p>目前，移动开发Deep Link领域实际上仍然是处于一种碎片式混乱的局面，有很多问题都还有待解决，距离达到一个工业级别的标准还很远。然而，利用现有的技术去不断优化用户的体验是每一个客户端开发工程师的使命，所以我们没有任何理由去抗拒变革，在目前没有统一的标准的情况下，我们能够做到的就是，应用不同的标准去适应所有可能的情况。</p>
-
+        
       
 
       
@@ -296,7 +212,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">iOS开发</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">ml</a>
         		</li>
       		
 		</ul>
@@ -306,7 +222,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2017/09/04/Link/">see more >></a>
+          <a class="article-more-a" href="/2017/09/04/CNN/">see more >></a>
         </p>
       
 
@@ -338,7 +254,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/10/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/12/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/10/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/12/">Next &raquo;</a>
     </nav>
   
 
@@ -454,11 +370,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">
