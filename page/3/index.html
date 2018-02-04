@@ -200,7 +200,22 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>Among all of the computational models, Finite Automata is the simplest one, however, it plays an important role in the development of computers. Nowadays, though computers are much more complicated and powerful, Finite Automata still lies the heart of many electromechanical devices. This article is a review of my learning process and my ideas during the implementation practice of a simple Lexical Analyzer applying the Finite Automata.</p>
-<h2 id="Finite-Automata"><a href="#Finite-Automata" class="headerlink" title="Finite Automata"></a>Finite Automata</h2><p>Finite Automata is math model to make decision according to the terminal states which can be approached by reading the input strings and consequently making transitions of the states according to both the current state and input.<br>Here is a simple Finite Automata which recognize<br><img src="/img/fa.png" alt="Finite Automata"><br>Finite Automata is a good model for computers with a limited memory. For example, the automatic door is a kind of electromechanical devices controlled by the Finite Automaton. In this case, I will consider Finite Automata as a formularized model used to control a “doorman” machine. The model in general is a </p>
+<h2 id="Finite-Automata"><a href="#Finite-Automata" class="headerlink" title="Finite Automata"></a>Finite Automata</h2><p>Finite Automata is math model to make decision according to the terminal states which can be approached by reading the input strings and consequently making transitions of the states according to both the current state and input.<br>Here is a simple Finite Automata which recognizes all strings on 0,1 ending up with a 1. The figure is called the state diagram of it.<br><img src="/img/fa.png" alt="Finite Automata"><br>To understand this figure, we need some definitions on these notations. There are mainly two components, the circles and the arrows with alphabets on them. The first circle represents a start state because there is an empty arrow pointing it, and the second one with double circles represents the accept state. Then, obviously, these arrows with alphabets on them represent the transitions from one state to the next, and it will transit only when the currently inputting part hits on these alphabets. To fully understand it, we need to try a specific strings and put them in, let’s say 1101. See what will happen step by step. Imagine that you are standing in front of this Finite Automata, and now you are in the start state p. According to the input strings 1101, the working process will be as follow:</p>
+<ol>
+<li><p>You are in state p, and you get the first number 1. Look at the round arrow above state p, it means that if you get a 1 or 0, the next state could be p again. So you will still in p after reading the first 1. Actually, there is a little trick here, notice that the other arrow with 1 also means that when receiving a 1, you could go to the state q. So here comes to the idea of Nondeterministic Finite Automata, which means that the  different transitions will happen even resulting from a same input. In other words, the decision-making is not deterministic, there exists some multiple choices, and it depends on some specific situations such as the following parts of the input. For example in this case, though receiving a 1, you may follow the round arrow above to continue working the FA but not the straight one pointing to an accept state directly because you are still holding with the rest alphabets of string. </p>
+</li>
+<li><p>Then is another 1. Similarly, you will go back to p according to the round arrow.</p>
+</li>
+<li>Then is a 0. Notice that the round arrow also says that when receiving a 0, you should go to p again. So you are still in p after reading this 0.</li>
+<li>Finally, the last one is a 1. This time, you don’t have any other following alphabets, so you can choose the straight arrow and go through it, and you will go to the state q. </li>
+<li>After reading all of the string, you are now on the state q, and it is an accept state, so this we call this string is accepted by this FA.</li>
+</ol>
+<h3 id="DFA-and-NFA"><a href="#DFA-and-NFA" class="headerlink" title="DFA and NFA"></a>DFA and NFA</h3><p>Deterministic Finite Automata is a kind of Finite Automata that allows no uncertainty in the transitions. To be more specific, it doesn’t allow the distinctive arrows with same transition conditions(normally it is the alphabet) on one state, also it doesn’t include the empty string ‘ε’ to be served as the transition condition. Besides, every alphabet should has its transition in each state. Apparently, the FA I just introduced is not a Deterministic Finite Automata, therefore, it is a Nondeterministic Finite Automata, which allows the uncertainty.</p>
+<blockquote>
+<p>The empty string ‘ε’ means that without any condition the transition can be done as long as it is staying in that state. From a state q, all states that can be approached by ε are called the ε-closure of q.</p>
+</blockquote>
+<p>Finite Automata is a good model for computers with a limited memory. For example, the automatic door is a kind of electromechanical devices controlled by the Finite Automaton.</p>
+<h3 id="Formal-Definition"><a href="#Formal-Definition" class="headerlink" title="Formal Definition"></a>Formal Definition</h3><p> The formal definition of a Finite Automata is a tuple contains five components, writes ( Q, ∑, δ, q0, F).</p>
 <h2 id="Regular-Experssion"><a href="#Regular-Experssion" class="headerlink" title="Regular Experssion"></a>Regular Experssion</h2>
       
 
@@ -457,11 +472,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color4">tutorial</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tutorial</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">
