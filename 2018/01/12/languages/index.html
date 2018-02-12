@@ -6,16 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Context-Free Languages - Introduction to the Theory of Computation | Edie&#39;s Blog</title>
+  <title>Context-Free Languages and Syntax Analyzer | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="tutorial">
+  <meta name="description" content="Context-free grammar is a more powerful method to describe languages. Such grammars can describe certain features that have a recursive structure, which is useful in various of applications. And cont">
+<meta name="keywords" content="tutorial">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Context-Free Languages - Introduction to the Theory of Computation">
+<meta property="og:title" content="Context-Free Languages and Syntax Analyzer">
 <meta property="og:url" content="http://yoursite.com/2018/01/12/languages/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
-<meta property="og:updated_time" content="2018-02-02T07:55:46.000Z">
+<meta property="og:description" content="Context-free grammar is a more powerful method to describe languages. Such grammars can describe certain features that have a recursive structure, which is useful in various of applications. And cont">
+<meta property="og:updated_time" content="2018-02-12T02:43:46.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Context-Free Languages - Introduction to the Theory of Computation">
+<meta name="twitter:title" content="Context-Free Languages and Syntax Analyzer">
+<meta name="twitter:description" content="Context-free grammar is a more powerful method to describe languages. Such grammars can describe certain features that have a recursive structure, which is useful in various of applications. And cont">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
@@ -186,7 +189,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Context-Free Languages - Introduction to the Theory of Computation
+      Context-Free Languages and Syntax Analyzer
     </h1>
   
 
@@ -199,7 +202,18 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <blockquote>
+<p>Context-free grammar is a more powerful method to describe languages. Such grammars can describe certain features that have a recursive structure, which is useful in various of applications. And context-free grammars  were first to used in the study of human languages, which include many terms, such as noun, verb, preposition. Because while understanding their relationships and their respective phrases, it will lead to the natural recursion. Context-free grammars have the ability to capture these important patterns of the relationships among these languages. The collection of languages associated with context-free grammars are called the context-free languages. The grammar is often used in the parser, which is contained in the compiler and interpreter for programming languages to extract the meanings of a program in advance of generating the complied code or performing the interpreted execution. Applying the context-free grammars, we can construct the parser for the programming languages. In this article I will introduce the concepts of Context-free languages and program a syntax analyzer for SL for practicing. Besides, I will introduce Pushdown Automata, which is a class of powerful machines to recognize context-free languages.</p>
+</blockquote>
+<p>Reference: </p>
+<ol>
+<li>Introduction to the theory of computation —Michael. Sipser</li>
+<li>Teaching Materials in the course of System Programming — Zili Shao.</li>
+</ol>
+<h2 id="Context-free-Grammars"><a href="#Context-free-Grammars" class="headerlink" title="Context-free Grammars"></a>Context-free Grammars</h2><p>If you try to use regular expressions to describe the language L = {a^nb^n, n&gt;=0}, you will soon find it impossible. Because the pattern of counting the same numbers of alphabets can not be performed by regular expressions. However, this pattern is quite commonly used in human’s communicating and understanding of languages, therefore, we need another more powerful grammars.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">S -&gt; aSb|T</div><div class="line">T -&gt;ab</div></pre></td></tr></table></figure></p>
+<p>This is an example of context-free languages, and it describes the language L = {a^nb^n, n&gt;=0}.<br>A grammar consists of a collection of substitution rules, also called productions. Each rule appears line by line, comprising a symbol and a string separated by an arrow. The symbol is called a variable. The string consists of variables and other symbols is called terminals. Usually, the symbol variable is represented by the capital letters, and the terminals are represented by lowercase letters, numbers and special symbols. One variable in these rules is called start variable, which is the left-most symbol of the top-most rule.<br>Take the grammar above for an example, S is its start variable, another variable is T, and its terminals are a and b.<br>When we use this grammar to generate a string, say string ‘aaabbb’, the process will be as follow:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">S -&gt; aSb -&gt; aaSbb -&gt; aaabbbb</div></pre></td></tr></table></figure></p>
+<p>This process is called derivation. Step by step, we replace the symbol on the left-hand side with terminals according to the rules, and derive the string from the one another, finally when there is no more symbols in the string, there is it.</p>
+
       
 
       
@@ -351,7 +365,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Context-free-Grammars"><span class="toc-number">1.</span> <span class="toc-text">Context-free Grammars</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -365,7 +379,7 @@
   
   <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="languages" data-title="Context-Free Languages - Introduction to the Theory of Computation" data-url="http://yoursite.com/2018/01/12/languages/"></div>
+	<div class="ds-thread" data-thread-key="languages" data-title="Context-Free Languages and Syntax Analyzer" data-url="http://yoursite.com/2018/01/12/languages/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
@@ -525,11 +539,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">informal</a>
+                <a href="javascript:void(0)" class="js-tag color2">resume</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">resume</a>
+                <a href="javascript:void(0)" class="js-tag color4">informal</a>
               </li>
              
               <li class="article-tag-list-item">
