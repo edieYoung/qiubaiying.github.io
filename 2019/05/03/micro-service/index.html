@@ -6,14 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018/1 | Edie&#39;s Blog</title>
+  <title>Micro-Service Tutorial | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Edie&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/01/index.html">
+  <meta name="description" content="Canary DeployDeployment Blue-green Rolling deployment##Service Meshes   Routing &amp;amp; load balancing Service discovery Timeout &amp;amp; retries Policy enforcement Monitoring &amp;amp; tracing  Mixer Precondi">
+<meta name="keywords" content="backend">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Micro-Service Tutorial">
+<meta property="og:url" content="http://yoursite.com/2019/05/03/micro-service/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
+<meta property="og:description" content="Canary DeployDeployment Blue-green Rolling deployment##Service Meshes   Routing &amp;amp; load balancing Service discovery Timeout &amp;amp; retries Policy enforcement Monitoring &amp;amp; tracing  Mixer Precondi">
+<meta property="og:updated_time" content="2019-05-05T18:50:36.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Edie&#39;s Blog">
+<meta name="twitter:title" content="Micro-Service Tutorial">
+<meta name="twitter:description" content="Canary DeployDeployment Blue-green Rolling deployment##Service Meshes   Routing &amp;amp; load balancing Service discovery Timeout &amp;amp; retries Policy enforcement Monitoring &amp;amp; tracing  Mixer Precondi">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
@@ -183,98 +188,277 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-micro-service" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/01/12/languages/" class="archive-article-date">
-  	<time datetime="2018-01-12T21:55:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-12</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/01/12/languages/">Context-Free Languages and Syntax Analyzer</a>
+    <h1 class="article-title" itemprop="name">
+      Micro-Service Tutorial
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2019/05/03/micro-service/" class="archive-article-date">
+  	<time datetime="2019-05-03T18:26:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Canary-Deploy"><a href="#Canary-Deploy" class="headerlink" title="Canary Deploy"></a>Canary Deploy</h1><h2 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h2><ol>
+<li>Blue-green</li>
+<li>Rolling deployment<br>##Service Meshes</li>
+</ol>
+<ul>
+<li>Routing &amp; load balancing</li>
+<li>Service discovery</li>
+<li>Timeout &amp; retries</li>
+<li>Policy enforcement</li>
+<li>Monitoring &amp; tracing</li>
+</ul>
+<h2 id="Mixer"><a href="#Mixer" class="headerlink" title="Mixer"></a>Mixer</h2><ul>
+<li>Precondition checking = access control<br>Adapters:<ol>
+<li>Denier</li>
+<li>List(white/blacklist)</li>
+<li>OPA</li>
+<li>RBAC</li>
+</ol>
+</li>
+<li><p>Quota management</p>
+<ol>
+<li>Mem Quota</li>
+<li>Redis Quota</li>
+</ol>
+</li>
+<li><p>Telemetry reporting</p>
+<ol>
+<li>Prometheus</li>
+<li>StatsD</li>
+<li>DogStatsD</li>
+<li>Many more<h2 id="Canary-Strategy"><a href="#Canary-Strategy" class="headerlink" title="Canary Strategy"></a>Canary Strategy</h2></li>
+</ol>
+</li>
+<li>Random</li>
+<li><p>Representative</p>
+<ol>
+<li>Geography</li>
+<li>Time</li>
+<li>Use patterns</li>
+</ol>
+</li>
+<li>Granularity</li>
+<li>Resource mapping</li>
+</ul>
+<h3 id="Monitoring-Strategy"><a href="#Monitoring-Strategy" class="headerlink" title="Monitoring Strategy"></a>Monitoring Strategy</h3><ul>
+<li>Tags</li>
+<li>p90, p95, p99</li>
+<li>outliers - the one doesn’t look like the other.</li>
+<li>anomaly (make use of machine learning, anomaly detection) -the thing doesn’t look like it has in the past.<br>###Signal to watch</li>
+<li>Latency</li>
+<li>Errors</li>
+<li>Traffic</li>
+<li>Saturation</li>
+</ul>
+<h3 id="ISTIO-services"><a href="#ISTIO-services" class="headerlink" title="ISTIO services"></a>ISTIO services</h3><ol>
+<li>istio pilot</li>
+<li>istio mixer</li>
+<li>istio ingress</li>
+</ol>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你给我鼓励<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/Alipay.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/Wechat.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">backend</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2019/05/03/micro-service/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/01/10/auto/" class="archive-article-date">
-  	<time datetime="2018-01-11T01:12:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-10</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/05/01/system_application/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Notes of Designing Data-Intensive Application</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/01/10/auto/">Finite Automata and Lexical Analyzer</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Canary-Deploy"><span class="toc-number">1.</span> <span class="toc-text">Canary Deploy</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Deployment"><span class="toc-number">1.1.</span> <span class="toc-text">Deployment</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mixer"><span class="toc-number">1.2.</span> <span class="toc-text">Mixer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Canary-Strategy"><span class="toc-number">1.3.</span> <span class="toc-text">Canary Strategy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Monitoring-Strategy"><span class="toc-number">1.3.1.</span> <span class="toc-text">Monitoring Strategy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ISTIO-services"><span class="toc-number">1.3.2.</span> <span class="toc-text">ISTIO services</span></a></li></ol></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
+  
+  <div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="micro-service" data-title="Micro-Service Tutorial" data-url="http://yoursite.com/2019/05/03/micro-service/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
   
   
-    </div></section>
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://yoursite.com/2019/05/03/micro-service/", 
+    sourceId: "micro-service",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -297,8 +481,8 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

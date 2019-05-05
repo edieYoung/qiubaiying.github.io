@@ -6,14 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018/1 | Edie&#39;s Blog</title>
+  <title>Notes of Designing Data-Intensive Application | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Edie&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/01/index.html">
+  <meta name="description" content="Data-intensive ApplicationScalability Percentiles  tail latency amplification Dashboard: forward decay, t-digest, HdrHistogram SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s, a">
+<meta name="keywords" content="backend">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Notes of Designing Data-Intensive Application">
+<meta property="og:url" content="http://yoursite.com/2019/05/01/system_application/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
+<meta property="og:description" content="Data-intensive ApplicationScalability Percentiles  tail latency amplification Dashboard: forward decay, t-digest, HdrHistogram SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s, a">
+<meta property="og:updated_time" content="2019-05-05T18:50:11.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Edie&#39;s Blog">
+<meta name="twitter:title" content="Notes of Designing Data-Intensive Application">
+<meta name="twitter:description" content="Data-intensive ApplicationScalability Percentiles  tail latency amplification Dashboard: forward decay, t-digest, HdrHistogram SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s, a">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
@@ -183,98 +188,353 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-system_application" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/01/12/languages/" class="archive-article-date">
-  	<time datetime="2018-01-12T21:55:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-12</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/01/12/languages/">Context-Free Languages and Syntax Analyzer</a>
+    <h1 class="article-title" itemprop="name">
+      Notes of Designing Data-Intensive Application
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2019/05/01/system_application/" class="archive-article-date">
+  	<time datetime="2019-05-01T20:56:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Data-intensive-Application"><a href="#Data-intensive-Application" class="headerlink" title="Data-intensive Application"></a>Data-intensive Application</h1><h2 id="Scalability"><a href="#Scalability" class="headerlink" title="Scalability"></a>Scalability</h2><ul>
+<li><p>Percentiles</p>
+<ol>
+<li>tail latency amplification</li>
+<li>Dashboard: forward decay, t-digest, HdrHistogram</li>
+<li>SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s, and the service may be required to be up at least 99.9% of the time.</li>
+<li>Queueing delay, head-of-line blocking.</li>
+</ol>
+</li>
+<li><p>Coping with Load</p>
+<ol>
+<li>scaling up, vertical moving to a more powerful machine</li>
+<li>scaling out, horizontal distributing the load across multiple smaller machines</li>
+<li>elastic, automatically add computing resources.</li>
+<li>easy for stateless services to be distributed but complex for stateful one.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Maintainability"><a href="#Maintainability" class="headerlink" title="Maintainability"></a>Maintainability</h2><ul>
+<li>fixing bugs</li>
+<li>keeping its systems operational investigating failures</li>
+<li>adapting it to new platform</li>
+<li>modifying it for new use cases</li>
+<li>repaying technical debt</li>
+<li>adding new features</li>
+</ul>
+<ol>
+<li>Operability - easy to keep the system running smoothly</li>
+<li><p>Simplicity - easy to understand the system<br> Avoid:</p>
+<ul>
+<li>explosion of the state space</li>
+<li>tight coupling of modules</li>
+<li>tangled dependencies</li>
+<li>inconsistent naming and terminology</li>
+</ul>
+</li>
+<li><p>Evolvability - easy to change the system, adapt it for new use cases.</p>
+</li>
+</ol>
+<h1 id="Data-Models-and-Query-Languages"><a href="#Data-Models-and-Query-Languages" class="headerlink" title="Data Models and Query Languages"></a>Data Models and Query Languages</h1><p>Examples</p>
+<ul>
+<li>Model the real world in terms of objects or data     structures, and APIs that manipulate those data     structures.</li>
+<li>Express them in terms of a general-purpose data model, such as JSON, XML documents, tables in relational databases, or a graph model.</li>
+<li>Decide a way of representing that JSON/XML/relational/graph data in terms of bytes in memory, on disk, or on a network. Allow the data to be queried, searched, manipulated and processed in various ways.</li>
+<li>Lower layer, hardware engineers represent bytes in terms of electrical currents, pulses of light, magnetic fields, and more.</li>
+</ul>
+<h2 id="Relational-Model-Versus-Document-Model"><a href="#Relational-Model-Versus-Document-Model" class="headerlink" title="Relational Model Versus Document Model"></a>Relational Model Versus Document Model</h2><ul>
+<li>SQL - transaction processing, batch processing</li>
+<li>Relational model dominates other competitors - network model, hierarchical model, Object data bases, XML databases.</li>
+<li><p>NoSQL: driving forces behind the adoption of NoSQL are:</p>
+<ol>
+<li>greater scalability can be achieved, very large datasets or very high write throughput.</li>
+<li>preference for free and open source software over commercial database products.</li>
+<li>Specialized query operations</li>
+<li>Frustration with restrictiveness of relational schemas, and a desire for a more dynamic and expressive data model.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Object-Relational-Mismatch"><a href="#Object-Relational-Mismatch" class="headerlink" title="Object-Relational Mismatch"></a>Object-Relational Mismatch</h2><p>Needs a translation layer between the objects in the application code and the databases model of tables, rows and  columns.</p>
+<ul>
+<li>ORM(Object-relational mapping) framework like ActiveRecord and Hibernate</li>
+<li><p>one-to-many relationship from the user to these items, which can be represented in various ways:</p>
+<ol>
+<li>put them in separate tables with a foreign key reference to the users table.</li>
+<li>support for structured datatypes and XML data; </li>
+<li>encode them as a JSON or XML document, store it on a text column in the database, and let the application interpret its structure and content. </li>
+</ol>
+</li>
+</ul>
+<h2 id="Many-to-One-and-Many-to-Many-Relationships"><a href="#Many-to-One-and-Many-to-Many-Relationships" class="headerlink" title="Many-to-One and Many-to-Many Relationships"></a>Many-to-One and Many-to-Many Relationships</h2><p>There are advantages to having standardized lists of geographic regions and industries, and letting users choose from a drop-down list or auto-completer:</p>
+<ol>
+<li>Consistent style and spelling across profiles</li>
+<li>Avoid ambiguity</li>
+<li>Ease of updating</li>
+<li>Localization support</li>
+<li>Better search</li>
+</ol>
+<h3 id="many-to-one-relationship"><a href="#many-to-one-relationship" class="headerlink" title="many-to-one relationship"></a>many-to-one relationship</h3><ul>
+<li><p>Store an ID instead of a text string is a question of duplication</p>
+<p>  Because an ID has no meaning to humans, it never needs to change. If the information is duplicated, all the redundant copies need to be updated, that incurs write overheads, and risks inconsistencies.<br>  Removing such duplication is the key idea behind normalization in databases.</p>
+</li>
+</ul>
+<h3 id="Many-to-Many-relationship"><a href="#Many-to-Many-relationship" class="headerlink" title="Many-to-Many relationship"></a>Many-to-Many relationship</h3><ul>
+<li><p>Organizations and schools as entities</p>
+<p>  each organization, school and university could have its own web page, each resume could link to it, includes their logos and other information.</p>
+</li>
+<li>Recommendations</li>
+</ul>
+<h2 id="Compare"><a href="#Compare" class="headerlink" title="Compare"></a>Compare</h2><ul>
+<li><p>Document data model: </p>
+<p>  schema flexibility, better performance due to locality,     closer to the data structures used by the application</p>
+</li>
+<li><p>Relational model:</p>
+<p>  providing better support for joins, and many-to-one and many-to-many relationships.</p>
+</li>
+<li><p>polyglot</p>
+</li>
+</ul>
+<h2 id="Query-Languages-for-Data"><a href="#Query-Languages-for-Data" class="headerlink" title="Query Languages for Data"></a>Query Languages for Data</h2><p>SQL: declarative - just specify the pattern of the data you want. And databases system’s query optimizer to decide how to achieve the goal.</p>
+<p>IMS, CODASYL and others programming languages: imperative - step through the code line by line, evaluating conditions, updating variables, and deciding whether to go around the loop one more time.</p>
+<p>Declarative query language is attractive because:</p>
+<ul>
+<li>Possible for the database system to introduce performance improvements without requiring any changes to queries.</li>
+<li>Have a better chance of getting faster in parallel execution they specify only the pattern of the results, not the algorithm that is used to determine the results.</li>
+</ul>
+<h2 id="Declarative-Queries-on-the-Web"><a href="#Declarative-Queries-on-the-Web" class="headerlink" title="Declarative Queries on the Web"></a>Declarative Queries on the Web</h2><p>Specify the selected item “Sharks” as blue background:<br>CSS example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">li.selected &gt; p&#123;</div><div class="line">	background-color: blue;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>XSL example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;xsl:template match=&quot;li[@class=&apos;selected&apos;]/p&quot;&gt;</div><div class="line">	&lt;fo:block background-color=&quot;bule&quot;&gt;</div><div class="line">		&lt;xsl:apply-templates/&gt;</div><div class="line">	&lt;/fo:block&gt;</div><div class="line">&lt;/xsl:template&gt;</div></pre></td></tr></table></figure></p>
+<p>They are both declarative languages for specifying the styling of a document. If we use a imperative approach, like Java-script, using the core Document Object Model(DOM) API, the result might look like:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var liElements = document.getElementsByTagName(&quot;li&quot;);</div><div class="line">for(var i = 0; i&lt;liElements.length;i++)&#123;</div><div class="line">	if(liEelements[i].className==&quot;selected&quot;)&#123;</div><div class="line">		var children = liElements[i].childNodes;</div><div class="line">		for(var j=0; j&lt;children.length;j++)&#123;</div><div class="line">			var child = children[j];</div><div class="line">			if(child.nodeType == Node.ELEMENT_NODE &amp;&amp; child.tagName === &quot;p&quot;)&#123;</div><div class="line">				child.setAttribute(&quot;style&quot;, &quot;background-color:blue&quot;);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Not only longer and harder to read, but also:</p>
+<ol>
+<li>If the selected class is removed(select other page), the background color won’t be removed, until the entire page is reloaded. With CSS, the browser automatically detects when the <figure class="highlight plain"><figcaption><span>> p``` rule no longer applies.</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">2. If you want to take advantage of a new API, say to use ```document.getElementsByClassName(&quot;selected&quot;)``` or ```document.evaluate()```, you have to rewrite the code. But CSS can do it without breaking compatibility.</div><div class="line">## MapReduce Querying</div><div class="line">MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between. It is based on the map(collect) and reduce(fold, inject) functions that exist in many functional programming languages.</div><div class="line"></div><div class="line">An example to report how many sharks you have sighted per month:</div><div class="line">In PostgreSQL:</div></pre></td></tr></table></figure></li>
+</ol>
+<p>SELECT data_trunc(‘month’, observation_timestamp) AS observatin_month, sum(num_animals) AS total_animals<br>FROM observations<br>WHERE family = ‘Sharks’<br>GROUP BY observation_month;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">The same can be expressed with MongoDB&apos;s MapReduce features as follows:</div></pre></td></tr></table></figure></p>
+<p>db.observations.mapReduce(<br>    function map(){<br>        var yer = this.observationTimestamp.getFullYear();<br>        var month = this.observationTimestamp.getMonth()+1;<br>        emit(year + “-“ +month, this.numAnimals;<br>    }<br>    function reduce(key, values){<br>        return Array.sum(values);<br>    }<br>    {<br>        query: { family: “Sharks”},<br>        out: “monthlySharkReport”<br>    }<br>};<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Result: </div><div class="line">map: emit(&quot;1995-12&quot;, 3) and emit(&quot;1995-12&quot;,4)</div><div class="line">reduce: reduce(&quot;1995-12&quot;, [3,4]) -&gt; 7</div><div class="line"></div><div class="line">* Restricted in: They must be pure function, cannot perform additional databases queries, and they must not have any side effects.</div><div class="line"></div><div class="line">MapReduce is a fairly low-level programming model for distributed execution on a cluster of machines. Higher-level query languages like SQL can be implemented as a pipeline of MapReduce operations, but there are also many distributed implementations of SQL that don&apos;t use MapReduce. </div><div class="line"></div><div class="line">MongoDB 2.2 added support for a declarative query language called the aggregation pipeline:</div></pre></td></tr></table></figure></p>
+<p>db.observations.aggregate([<br>    { $match:{family:”Sharks”}},<br>    { $group: {<br>        _id: {<br>            year:{$year: “$observationTimestamp”},<br>            month:{$month:”$ovservationTimestamp”}<br>        },<br>        totalAnimals:{$sum:”$numAnimals”}<br>    }}<br>]};<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">## Graph-like data models</div><div class="line">Many-to-many relationships are an important distinguishing feature between different data models.</div><div class="line">A graph consists of two kinds of objects: vertices, edges</div><div class="line">Social graphs, The web graph, Road or rail networks.</div><div class="line"></div><div class="line">### Property Graphs</div><div class="line">Each vertex consists of:</div><div class="line">* A unique identifier</div><div class="line">* A set of outgoing edges</div><div class="line">* A set of incoming edges</div><div class="line">* A collection of properties(key-value pairs)</div><div class="line"></div><div class="line">Each edge consists of:</div><div class="line">* A unique identifier</div><div class="line">* The vertex at which the edge starts(the tail vertex)</div><div class="line">* The vertex at which the edge ends(the head vertex)</div><div class="line">* A label to describe the kind of relationship between the two vertices</div><div class="line">* A collection of properties(key-value pairs)</div><div class="line"></div><div class="line">### The Cypher Query Language</div><div class="line">Cypher is a declarative query language for property graphs, create for the Neo4j graph database.</div><div class="line"></div><div class="line">### Recursive common table expression</div><div class="line">find all nodes that are within &quot;us&quot;</div><div class="line">### Triple-Stores and SPARQL</div><div class="line">simple three-part statements: subject, predicate, object -&gt; Jim likes bananas.</div><div class="line"></div><div class="line">* Semantic web</div><div class="line">	Resource Description Framework(RDF) was intended as a mechanism for different websites to publish data in a consistent format, allowing data from different websites to be automatically combined into a web of data.</div><div class="line">	* RDF data model</div><div class="line">		The subject, predicate and object of a triple are often URIs, &lt;http://my-company.com/namespace#within&gt;</div><div class="line">	</div><div class="line"></div><div class="line">* SPARQL query language</div><div class="line">query a person born in somewhere:</div><div class="line">	Cypher:</div></pre></td></tr></table></figure></p>
+<pre><code>(person) -[:BORN_IN]-&gt; () -[:WITHIN*0..]-&gt;(location)
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SPARQL:</div></pre></td></tr></table></figure>
+
+?person :bornIn / : within* ?location.
+```
+</code></pre><h3 id="Datalog"><a href="#Datalog" class="headerlink" title="Datalog"></a>Datalog</h3><p>is similar to triple-store model, writing as <code>predicate(subject, object)</code>.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Besides from relational databases.<br>NoSQL datastores have diverged in two main directions:</p>
+<ol>
+<li>Document databases target use cases where data comes in self-contained documents and relationships between one document and another are rare.</li>
+<li>Graph databases go in the opposite direction, targeting use cases where anything is potentially to related to everything.</li>
+</ol>
+<h1 id="Storage-and-Retrieval"><a href="#Storage-and-Retrieval" class="headerlink" title="Storage and Retrieval"></a>Storage and Retrieval</h1>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你给我鼓励<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/Alipay.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/Wechat.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">backend</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2019/05/01/system_application/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/01/10/auto/" class="archive-article-date">
-  	<time datetime="2018-01-11T01:12:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-10</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2019/05/03/micro-service/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Micro-Service Tutorial
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/12/languages/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Context-Free Languages and Syntax Analyzer</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/01/10/auto/">Finite Automata and Lexical Analyzer</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Data-intensive-Application"><span class="toc-number">1.</span> <span class="toc-text">Data-intensive Application</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scalability"><span class="toc-number">1.1.</span> <span class="toc-text">Scalability</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maintainability"><span class="toc-number">1.2.</span> <span class="toc-text">Maintainability</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Data-Models-and-Query-Languages"><span class="toc-number">2.</span> <span class="toc-text">Data Models and Query Languages</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Relational-Model-Versus-Document-Model"><span class="toc-number">2.1.</span> <span class="toc-text">Relational Model Versus Document Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-Relational-Mismatch"><span class="toc-number">2.2.</span> <span class="toc-text">Object-Relational Mismatch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Many-to-One-and-Many-to-Many-Relationships"><span class="toc-number">2.3.</span> <span class="toc-text">Many-to-One and Many-to-Many Relationships</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#many-to-one-relationship"><span class="toc-number">2.3.1.</span> <span class="toc-text">many-to-one relationship</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Many-to-Many-relationship"><span class="toc-number">2.3.2.</span> <span class="toc-text">Many-to-Many relationship</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compare"><span class="toc-number">2.4.</span> <span class="toc-text">Compare</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Query-Languages-for-Data"><span class="toc-number">2.5.</span> <span class="toc-text">Query Languages for Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Declarative-Queries-on-the-Web"><span class="toc-number">2.6.</span> <span class="toc-text">Declarative Queries on the Web</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Datalog"><span class="toc-number">2.6.1.</span> <span class="toc-text">Datalog</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-number">2.7.</span> <span class="toc-text">Summary</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Storage-and-Retrieval"><span class="toc-number">3.</span> <span class="toc-text">Storage and Retrieval</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
+  
+  <div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="system_application" data-title="Notes of Designing Data-Intensive Application" data-url="http://yoursite.com/2019/05/01/system_application/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
   
   
-    </div></section>
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://yoursite.com/2019/05/01/system_application/", 
+    sourceId: "system_application",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -297,8 +557,8 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
