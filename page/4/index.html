@@ -179,96 +179,27 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-sync-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-network" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/09/06/sync-1/">”效率“与”同步空间“理论</a>
+      <a class="article-title" href="/2017/09/30/network/">Deep Learning (1)</a>
     </h1>
   
 
         
-        <a href="/2017/09/06/sync-1/" class="archive-article-date">
-  	<time datetime="2017-09-07T03:47:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-06</time>
+        <a href="/2017/09/30/network/" class="archive-article-date">
+  	<time datetime="2017-09-30T17:28:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-30</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="开篇语"><a href="#开篇语" class="headerlink" title="开篇语"></a>开篇语</h2><p>这是一篇prototype性质的论述（猜想），属于”洗澡时候的突发奇想“，抛砖引玉，仅供交流。没有特殊起源，暂时也没有实验背景，仅靠个人经验，突然想提一个关于“效率”和“同步空间”的概念，阐述得可能会比较抽象，语言也比较直白，如果觉得内容很扯淡请无视就好了～<br>总之，各位多多包涵，欢迎提出质疑与指正！</p>
-<h2 id="定义：效率"><a href="#定义：效率" class="headerlink" title="定义：效率"></a>定义：效率</h2><h3 id="什么是效率？"><a href="#什么是效率？" class="headerlink" title="什么是效率？"></a>什么是效率？</h3><p>效率一词在不同的角度中有不同的定义，该词的本身含义是：</p>
-<blockquote>
-<ol>
-<li>單位時間內完成的工作量。</li>
-<li>給定投入和技術的條件下，經濟資源沒有浪費，或對經濟資源做了能帶來最大可能性的滿足程度的利用，也是配置效率（allocative efficiency）的一個簡化表達。</li>
-</ol>
-</blockquote>
-<p>第一个解释很好理解，就是单位时间内完成的工作（产出）越高即效率就越高。第二个解释实际上就是在经济学中的比较专业且针对性比较强的解释了，其实已经是对第一个解释的延伸了。<br>继续对“效率”一词加以延伸（事实上也并不是我提出的延伸，大家其实早就已经接受这些延伸了）。比如，卡诺循环中的热机效率：</p>
-<blockquote>
-<p>是指热机工作部分中转变为机械功的热量和工质从发热器得到的热量的比。<br>热机效率公式应为η=Q有/Q放×100%</p>
-</blockquote>
-<p>可以发现，这里的效率与单位时间没有直接联系了。<br>又比如，在管理学中：</p>
-<blockquote>
-<p>效率是指在特定时间内，组织的各种投入与产出之间的比率关系。效率与投入成反比，与产出成正比。</p>
-</blockquote>
-<p>试着表达一下这个管理学中的效率公式：</p>
-<ul>
-<li>效率 = 产出／投入</li>
-</ul>
-<p>然而又需要注意到，它的前提条件是在特定时间内，因此我们应该把时间的维度也添加到这个效率的比值之中。</p>
-<ul>
-<li>效率 = 产出／（投入*特定时长）</li>
-</ul>
-<p>这个时候会发现，考虑效率的维度变成了两个，即考虑的是在特定时长内和一定投入内的产出。根据这些延伸，我就要提出我的一个大胆的想法了：</p>
-<ul>
-<li>效率 = 客观存在／多维度空间</li>
-</ul>
-<h3 id="效率-客观存在／多维度空间"><a href="#效率-客观存在／多维度空间" class="headerlink" title="效率 = 客观存在／多维度空间"></a>效率 = 客观存在／多维度空间</h3><p>有了这个对效率的统一定义，就可以帮助我们去量化生活中的很多关于“这个人做事效率如何如何”“如何提高效率“的带有主观性的问题了。<br>举一个🌰：我想衡量一个学生的学习效率，就把“客观存在”设定为考试成绩（一个数字）然后找到一个多维度空间，这个“多维度空间”的结构就比较复杂了：</p>
-<ul>
-<li>第一个维度，要定义一门或多门课程，这里就先简单定义为在英语课考试中。（多门课程可以用一个求加权平均的函数模型）。</li>
-<li>时间维度是一个学期的长度。</li>
-<li>还包括学习工具的维度，这里不同工具的衡量其实又可以用不同工具的效率来表示，比如自学效率等于单位时间内，完成章节数目与外界资源投入之比；上课效率等于单位时间内，完成章节数目与师资投入之比。</li>
-<li>其他维度</li>
-</ul>
-<p>将所有的维度的指标进行组合然后降维，即可以得到一个用于衡量这个学生的学习效率的多维度空间值（个人建议是为了方便这个空间的直观展现，最好是至少降成一个三维向量）。</p>
-<p>这样一来，我就可以利用这个多维度空间来根据任何一个学生的客观存在（考试成绩）来求他的学习效率了。</p>
-<h3 id="量效率与质效率"><a href="#量效率与质效率" class="headerlink" title="量效率与质效率"></a>量效率与质效率</h3><p>上一个例子中，重点在于多维度空间，也就是”分母“上。现在我想把思考点放在分子上，也就是”客观存在“，我会把它分为量存在与质存在这两种类型。</p>
-<ul>
-<li>质存在，0到1的过程。</li>
-<li>量存在，1到n的过程。</li>
-</ul>
-<p>用质存在除以多维度空间值即为质效率，量存在除以多维度空间值即为量效率，这是两种不同的效率。<br>举一个例子，假设有一工厂，工人们的唯一工作就是生产一种零件。车间里来了一个新人，以前从来没有生产过这个零件，因此他花了5天时间学会生产这个零件并且在第五天的时候生产出了他人生中的第一个零件，那么这个1就可以理解为质存在，假设多维度空间就只取时间，那么他的质效率就是1/5。利用质效率，就可以解释在新人入职的时候，领导是如何得出“这个新人的学习能力很强”“这个人潜力很大”之类的结论的了。</p>
-<p>那么量效率的例子就还是用这个工厂的新人的例子好了，从他第一次生产出这个零件的时候开始，他就开始做重复的生产工作，一开始每天只能生产1个，量效率为1/1。后来技术熟练之后每天可以生产10个，这时候量效率是10/1。最终这个新人已经变成了一个熟练的工人，技艺达到了炉火纯青的地步了，一天可以生产100个，量效率变成100/1。有人可能会问，那如果他每天生产的100个零件质量参差不齐怎么办，量效率还是这么多吗？其实这就刚好解释了为什么我会提出“多维度空间”作为分母的原因了，注意我在计算这个量效率的时候用到的多维度空间仅仅是时间，如果要加上多个的维度（比如每做出1个A类；生产的残次品率；甚至可以包括考勤、身体状况）那么量效率肯定就不一样了。</p>
-<p>如此重复工作下去，突然有一天，这个工人发现了一种改进生产的方法并且他用这个方法制造出了一个全新的零件，那么这个时候，我们可以联想到量变引发质变的过程，然后…不做展开了，因为这个时候的多维度空间又更复杂了，比如与这个质存在相关的时间起点需要确定，相关因素需要确定，太复杂了，以后再说吧。</p>
-<h2 id="同步空间"><a href="#同步空间" class="headerlink" title="同步空间"></a>同步空间</h2><p>终于可以来谈谈我的“同步空间”了！</p>
-<p>有了”效率“的定义之后，我又开始进一步思考了，什么叫做同步？</p>
-<blockquote>
-<p>同步（英语：Synchronization），指对在一个系统中所发生的事件（event）之间进行协调，在时间上出现一致性与统一化的现象。</p>
-</blockquote>
-<h3 id="论点"><a href="#论点" class="headerlink" title="论点"></a>论点</h3><p>直接提：</p>
-<ul>
-<li>任意一个客观存在，一定能够找到一个相对于另外一个客观存在的同步空间，在这个同步空间里，两者之间的效率是相等的。</li>
-</ul>
-<p>也就是说，如果我想把客观存在A与B进行完全同步，我只需要把B放到一个相对于A的同步空间里面就可以了。</p>
-<h3 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h3><p>举一个比较形象化的例子，在A村住着小明和小红，小明今年12岁，小红今年24岁，他们两个的年龄显然不一样。但是有一天情况出现了变化，这个世界上存在一个相对于A村的同步空间叫做B村，它之所以同步是因为这里的人都是2年才过一次生日，也就是2年才算长一岁。而恰好小红离开了A村，来到了B村，于是她就变成了12岁，在这个同步空间里，小红和小明同岁了。</p>
-<p>关于“同步空间”的想象空间还有很大很大！有兴趣的话可以再举出更多例子。</p>
-<p>比如，再举一个效率角度的例子，定义一个同学的效率为单位时间内吸收的知识量。</p>
-<ul>
-<li>效率 = 读书量／（时间／知识转化效率 ）</li>
-</ul>
-<p>比如A同学1天看一本书，10本书10天就可以看完。然而在同样的多维度空间下，然而B是1天看半本书。于是B为了和A在同一天完成任务，就只挑选5本最精华的书，即找到了一个相对于A的同步空间，提高了知识转化效率（比如B有一定基础，因此B看了这5本书后的知识量，也就相当于A看了的10本书的知识量），<br>此时对于B来说，他的效率其实就变成了：</p>
-<ul>
-<li>效率 = 读书量／（时间／（2*知识转化率））</li>
-</ul>
-<p>于是, B也在第10天的时候和A一起完成相同的知识量，即效率相同，两人同步。</p>
-<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>借用食蚁兽大哥的评论就是：在客观空间里任何东西都可以靠旋转和平移搞到一起。</p>
-<p>那么我的总结就是：“我为了摆正你的倒影，我可以颠覆整个世界”。</p>
-<p>感谢阅读！</p>
-
+        
       
 
       
@@ -281,7 +212,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">informal</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
         		</li>
       		
 		</ul>
@@ -291,7 +222,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2017/09/06/sync-1/">see more >></a>
+          <a class="article-more-a" href="/2017/09/30/network/">see more >></a>
         </p>
       
 
@@ -321,138 +252,55 @@
 
 
   
-    <article id="post-Python" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-pathfinding" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/09/06/Python/">有关Python语言与函数式编程的思考</a>
+      <a class="article-title" href="/2017/09/28/pathfinding/">Shortest Path &amp; Epistemologies in Life</a>
     </h1>
   
 
         
-        <a href="/2017/09/06/Python/" class="archive-article-date">
-  	<time datetime="2017-09-06T21:31:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-06</time>
+        <a href="/2017/09/28/pathfinding/" class="archive-article-date">
+  	<time datetime="2017-09-29T04:52:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-28</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这篇文章内容产生背景是我在学习python过程中的一些个人理解，主要是对python语言的辨识度较高的知识点即语法中比较特殊的地方进行考究与归纳。<br>适合供已经掌握某一门编程语言或有一定编程知识背景的同学，想快速了解python的朋友来一起学习并分享交流。<br>P.S.前面基本都是总结现有知识，从第7点“高阶函数”开始属于“灰色地带”，即会带有很多我个人提出的观点以及奇特的思考与理解方式的成分，同时它们也是我下一步想要研究的方向，若有兴趣，欢迎交流讨论，同时欢迎指正！</p>
-<p>学习资料：<br>《python学习手册》（第4版）<br>《Introduction to the Theory of Computation》<br><a href="https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000" target="_blank" rel="external">廖海峰python教程</a><br>知乎<br>Google</p>
-<h1 id="Content"><a href="#Content" class="headerlink" title="Content"></a>Content</h1><h3 id="1-数据类型-动态语言"><a href="#1-数据类型-动态语言" class="headerlink" title="1. 数据类型-动态语言"></a>1. 数据类型-动态语言</h3><p>什么是动态语言，就是变量本身的数据类型是不固定的，可变的语言。与之相反的就是静态语言，比如JAVA、Objective-C。<br>声明一个Objective-C的变量为整型，那么之后无论你用任何操作，都不能改变它的数据类型（除非你直接改变它的声明的类型）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//Objective-C声明一个整型</div><div class="line">NSInteger a = 0;</div></pre></td></tr></table></figure>
-<p>而python是一种动态语言，因此python没有类型声明，即创建对象的时候你不需要花时间去预先定义它的数据类型，你使用的运行的表达式和语法会帮你决定这个对象的类型。因此在python中，你可以这样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//python声明语句</div><div class="line">a = &apos;dead&apos;</div><div class="line">b = 2</div><div class="line">c = &apos;sketch&apos;</div><div class="line">a=b</div><div class="line">print(a,b,c)</div></pre></td></tr></table></figure></p>
-<p>运行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ python test.py</div><div class="line">(2, 2, &apos;sketch&apos;)</div></pre></td></tr></table></figure></p>
-<p>可以发现a的数据类型在执行a=b后发生了改变。<br>那么你可能会认为这样可能会有危险，会出现乱套了的情况，因此这就要求，一旦对象创建之后，它就应该和它对应的操作集合绑定了，例如只可以对字符串进行字符串相关操作，对列表进行列表相关操作。<br>总结上面两点：</p>
-<ol>
-<li>python是动态类型的，它自动地追踪你的类型而不是声明代码。</li>
-<li>python也是强类型语言，你只能对一个对象进行适合该类型的有效的操作。</li>
-</ol>
-<p>这里我还想补充的就是，实际中python中的某个类型的操作集合会比想象的要多，比如对于字符串来讲，是可以对两个字符串使用“+”来进行合并的。很多我们在其他语言中不被允许的操作，在python都是合法的，例如重访嵌套：在一个字典中嵌套一个字典或列表，并对嵌入的字典或列表进行扩展，嵌入的字典或列表是字典包含的一部分独立内存，它可以自由地增加或减少。关于对象的内存部署会在之后讨论。</p>
-<p>因此，这也就是为什么python使用起来会觉得非常灵活的原因吧。</p>
-<h3 id="2-list和tuple"><a href="#2-list和tuple" class="headerlink" title="2. list和tuple"></a>2. list和tuple</h3><ul>
-<li>list</li>
-</ul>
-<p>list是一种有序集合，是python内置的一种数据类型，可以随时添加和删除其中的元素。</p>
-<ol>
-<li>设置一个list</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">students = [&apos;Tom&apos;,&apos;Bob&apos;,&apos;Tracy&apos;]</div></pre></td></tr></table></figure>
-<p>2.获取list元素的个数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; len(students)</div><div class="line">3</div></pre></td></tr></table></figure></p>
-<p>3.用索引来访问list中每一个位置的元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//访问第一个元素</div><div class="line">&gt;&gt;&gt; students[0]</div><div class="line">&apos;Tom&apos;</div><div class="line">&gt;&gt;&gt; students[1]</div><div class="line">&apos;Bob&apos;</div><div class="line">&gt;&gt;&gt; students[2]</div><div class="line">&apos;Tracy&apos;</div></pre></td></tr></table></figure>
-<p>要确保索引不要越界。<br>还可以用负数来表示倒序的索引<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students[-1]</div><div class="line">&apos;Tracy&apos;</div></pre></td></tr></table></figure></p>
-<p>4.追加到list到末尾</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students.append(&apos;Edie&apos;)</div><div class="line">&gt;&gt;&gt; students</div><div class="line">[&apos;Tom&apos;,&apos;Bob&apos;,&apos;Tracy&apos;, &apos;Edie&apos;]</div></pre></td></tr></table></figure>
-<p>5.把元素插入到指定位置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students.insert(1,&apos;Edie&apos;)</div><div class="line">&gt;&gt;&gt; students</div><div class="line">[&apos;Tom&apos;,&apos;Edie&apos;,&apos;Bob&apos;,&apos;Tracy&apos;,&apos;Adam&apos;]</div></pre></td></tr></table></figure>
-<p>6.删除list末尾的元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students.pop()</div><div class="line">&apos;Adam&apos;</div><div class="line">&gt;&gt;&gt; students</div><div class="line">[&apos;Tom&apos;,&apos;Edie&apos;,&apos;Bob&apos;,&apos;Tracy&apos;]</div></pre></td></tr></table></figure>
-<p>7.替换list中某个元素<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students[2]=&apos;Sarah&apos;</div><div class="line">&gt;&gt;&gt; students</div><div class="line">[&apos;Tom&apos;,&apos;Edie&apos;,&apos;Sarah&apos;,&apos;Tracy&apos;]</div></pre></td></tr></table></figure></p>
-<p>8.list元素的数据类型可以不同<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">L = [&apos;Apple&apos;, 123, True]</div></pre></td></tr></table></figure></p>
-<p>9.list的元素也可以是list<br>就是说可以在list里嵌套一个list，并且可以对嵌入的list进行操作，也就是刚才提到的重访嵌套。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; profile = [&apos;Name&apos;,&apos;Gender&apos;,&apos;Add&apos;,[19970101,20]]</div><div class="line">&gt;&gt;&gt; len(profile)</div><div class="line">4</div></pre></td></tr></table></figure></p>
-<p>访问嵌入的list中的元素<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; profile[3][1]</div><div class="line">20</div></pre></td></tr></table></figure></p>
-<ul>
-<li><p>tuple<br>tuple和list非常相似，只是tuple是一旦初始化后它的元素就不可以被修改的。它没有append（），insert（）之类的方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students(&apos;Tom&apos;,&apos;Bob&apos;,&apos;Lucy&apos;)</div></pre></td></tr></table></figure>
-<p>tuple使用括号来表示，然而在写代码进行计算的时候括号又可能是数学公式中的小括号<br>比如： t = (1)，这时候t代表1这个数，而不会是一个只有一个元素的tuple。<br>正确表示只有一个元素的tuple应该是这样：带上逗号</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (1,)</div><div class="line">&gt;&gt;&gt; t</div><div class="line">(1,)</div></pre></td></tr></table></figure>
-<p>还有一个需要注意的地方就是，tuple的元素是不能被修改的，但是当tuple嵌套了list作为元素的时候，这个list的元素还是可以被修改的。<br>例如：在test.py里定义一个tuple和一个list</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">t = ([1, 2], 3, 4, 5)</div><div class="line">l = [6, 7]</div></pre></td></tr></table></figure>
-<p>交互式运行：<br>1.不能对tuple添加元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; test.t</div><div class="line">([1, 2], 3, 4, 5)</div><div class="line">&gt;&gt;&gt; test.t.insert(4)</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">AttributeError: &apos;tuple&apos; object has no attribute &apos;insert&apos;</div></pre></td></tr></table></figure>
-<p>2.不能改变tuple中的list这个元素<br>这里尝试把tuple中的第一个list元素替换成另一个list l，失败。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; test.t[0] = test.l</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">TypeError: &apos;tuple&apos; object does not support item assignment</div></pre></td></tr></table></figure>
-<p>3.可以改变tuple中的list中的元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; test.t[0][0]</div><div class="line">1</div><div class="line">&gt;&gt;&gt; test.t[0][0] = 3</div><div class="line">&gt;&gt;&gt; test.t[0][0]</div><div class="line">3</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p> 使用tuple的好处就在于因为它是不可变的，因此代码会更安全。</p>
-<h3 id="3-dict和set"><a href="#3-dict和set" class="headerlink" title="3. dict和set"></a>3. dict和set</h3><ul>
-<li>dict<br>python内置的字典dict，在其他语言中也被称作map，就是使用键-值（key-value）存储数据，便于查找。dict用一对花括号表示，一个键值对用冒号区分键与值：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; d = &#123;‘A’:apple，‘B&apos;:blue，‘C’:cat&#125;</div></pre></td></tr></table></figure>
-<p>一个key只能对应一个value，重复对一个key放入value会把之前的value覆盖掉。</p>
-<blockquote>
-<p>小提示，如果实际情况是想要同一个key对应多个value，那不妨把这个key对应的value设置成一个list就好了，把想要存放的这些多个数值作为这个list中的元素。</p>
+        <h2 id="当我在考虑最短路径算法和人生的时候我在想什么"><a href="#当我在考虑最短路径算法和人生的时候我在想什么" class="headerlink" title="当我在考虑最短路径算法和人生的时候我在想什么"></a>当我在考虑最短路径算法和人生的时候我在想什么</h2><p>In this article, I just want to illustrate two main questions that confused me recently. One is the assignment project in Artificial Intelligent, the other one is about the life. Strictly speaking, they are two unrelated things at all, however, when I considered it at the same time, I might coincidently find some relation between them, so I just mix them together and figure out what I am thinking about.</p>
+<h2 id="What-is-Pathfinding"><a href="#What-is-Pathfinding" class="headerlink" title="What is Pathfinding?"></a>What is Pathfinding?</h2><blockquote>
+<p>In graph theory, the shortest path problem is the problem of finding a path between two vertices in a graph such that the sum of the weights of its constituent edges is minimized.</p>
 </blockquote>
-<p>然而必须要注意的一点是，dict中的key必须是不可变对象，例如python中的字符串、整型都是不可变对象，因此可以放心作为key来使用，但是绝对不能把key设置成一个可变对象list。这是因为dict中会根据key来计算value存储的位置。如果key是一个可变的对象，那么当这个key发生改变，用原来的查找算法的计算结果就不同，那dict的查找机制就乱套了，就会出错。这种通过key计算位置的算法便是哈希算法（Hash)。</p>
-<p>另外，访问一个不存在的key是会报错的。<br>以上其实和一般的字典都差不多。</p>
-<ul>
-<li>set<br>set其实就是我们数学中学到的集合的概念，它的一个重要特性就是没有重复的元素。也可以理解为它是一个存放key的集合，但不存储value。可以重复添加元素，但它会自动过滤掉重复的元素。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; s = set([2,3,4,5])</div><div class="line">&gt;&gt;&gt; s</div><div class="line">set([2,3,4,5])</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>既然set是一组key的集合，那么自然这些key同样也就不可以是可变的，这和dict是一样的。</p>
-<h3 id="4-不可变对象"><a href="#4-不可变对象" class="headerlink" title="4.不可变对象"></a>4.不可变对象</h3><p>list是一个可变对象，而str（字符串）是一个不可变对象。那么是否意味着我们就不能对一个str进行更改的操作呢？实际上，我们是可以用replace（）这样的方法去引用str对象所指向的内容来进行更改操作，然而这个对象本身却不会改变。<br>例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = &quot;I love you&quot;</div><div class="line">&gt;&gt;&gt; a</div><div class="line">&apos;I love you&apos;</div><div class="line">&gt;&gt;&gt; a.replace(&apos;love&apos;,&apos;hate&apos;)</div><div class="line">&apos;I hate you&apos;</div><div class="line">&gt;&gt;&gt; a</div><div class="line">&apos;I love you&apos;</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
-<p>执行完replace（）方法的时候，确实得到了一个改变后的句子，然而再访问a对象时，会发现它没有变，这就是不可变对象。实际上我们在对它进行更改操作的时候，可以理解为是把对象a复制为一个新对象b，然后更改操作是对b对象所指的内容进行更改。</p>
-<h3 id="5-切片"><a href="#5-切片" class="headerlink" title="5. 切片"></a>5. 切片</h3><p>切片（Slice）是python中非常常用的一个操作。它用于对一个list或者tupe取其一部分的元素。</p>
-<p>切片操作符使用非常简单，就是一个取制定索引的符号：[:]<br>[0:3]表示取前3个元素<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; L = [&apos;Tom&apos;,&apos;Bob&apos;,&apos;Mary&apos;,&apos;John&apos;]</div><div class="line">&gt;&gt;&gt; L[0:3]</div><div class="line">[&apos;Tom&apos;,&apos;Bob&apos;,&apos;Mary&apos;]</div></pre></td></tr></table></figure></p>
-<p>以此类推，[1:3]就是从第一个元素（第一个不算）开始取两个元素，[2:3]就是取第三个元素。<br>又根据python支持用L[-1]表示倒序的第一个，那么它同样也可以支持倒序切片：<br>L[-2:]表示从倒数第二个开始（包括倒数第二个）到最后一个。<br>L[-2:-1]表示从倒数第二开始到倒数第一个（不包括倒数第一个）<br>根据以上可以发现切片操作符是一个左闭右开的取值范围。<br>那么我很好奇[-2:0]的情况会是如何：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; L = [1,2,3,4,5,6]</div><div class="line">&gt;&gt;&gt; L[-2:0]</div><div class="line">[]</div></pre></td></tr></table></figure></p>
-<p>返回的是一个空列表，这个切片操作失败了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; L[-2:2]</div><div class="line">[]</div></pre></td></tr></table></figure></p>
-<p>这就告诉我们，切片是不支持“循环”列表的，也就是索引的头尾不会相接，即不能从倒数跨到正数。另外，切片符中前面的数不能大于后面的数，既索引总是从左向右的。<br>切片符还支持定义隔多少个元素取一个，只需要再定义个“切片步长”就好了，例如[::2]就代表在整个列表中，下一元素总取从这一元素开始（不包括这个元素）的第二个元素。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; L[::2]</div><div class="line">[1, 3, 5]</div></pre></td></tr></table></figure></p>
-<p>那么L[:]其实就是默认slice step为1，相当于L[::1]。<br>切片同样也可以用在tuple和字符串上。<br>用切片的主要好处就是省去了很多像遍历列表这样繁琐的循环。 </p>
-<h3 id="6-生成器"><a href="#6-生成器" class="headerlink" title="6. 生成器"></a>6. 生成器</h3><p>讲生成器之前，我先大概说一下python的列表生成式。</p>
-<h4 id="列表生成式"><a href="#列表生成式" class="headerlink" title="列表生成式"></a>列表生成式</h4><p>列表生成式List Comprehensions，用于按照自定义的规则来创建一个列表。<br>例如生成一定范围的数字：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; range(1,13)</div><div class="line">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]</div></pre></td></tr></table></figure></p>
-<p>这个range只能用于integer的范围。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; range(&apos;a&apos;,10)</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">TypeError: range() integer start argument expected, got str.</div></pre></td></tr></table></figure></p>
-<p>又根据这个基础，我们可以生成某个定义域下的x*x的列表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; [x*x for x in range(1,11)]</div><div class="line">[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]</div></pre></td></tr></table></figure></p>
-<p>又比如，在两个变量各自的定义域内，生成某种函数下两个变量的函数值的列表：<br>举两个字符串各个字符全排列的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; [x+y for x in &apos;abcde&apos; for y in &apos;1234567&apos;]</div><div class="line">[&apos;a1&apos;, &apos;a2&apos;, &apos;a3&apos;, &apos;a4&apos;, &apos;a5&apos;, &apos;a6&apos;, &apos;a7&apos;, &apos;b1&apos;, &apos;b2&apos;, &apos;b3&apos;, &apos;b4&apos;, &apos;b5&apos;, &apos;b6&apos;, &apos;b7&apos;, &apos;c1&apos;, &apos;c2&apos;, &apos;c3&apos;, &apos;c4&apos;, &apos;c5&apos;, &apos;c6&apos;, &apos;c7&apos;, &apos;d1&apos;, &apos;d2&apos;, &apos;d3&apos;, &apos;d4&apos;, &apos;d5&apos;, &apos;d6&apos;, &apos;d7&apos;, &apos;e1&apos;, &apos;e2&apos;, &apos;e3&apos;, &apos;e4&apos;, &apos;e5&apos;, &apos;e6&apos;, &apos;e7&apos;]</div></pre></td></tr></table></figure></p>
-<p>另外for循环中也可以有多个变量，当然这个循环器需要能够同时迭代多个变量。<br>例如dict中的iteriems（）可以同时迭代key和value：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; d = &#123;1:&apos;a&apos;,2:&apos;b&apos;,3:&apos;c&apos;&#125;</div><div class="line">&gt;&gt;&gt; [str(k) + &apos;=&apos; + v for k,v in d.iteritems()]</div><div class="line">[&apos;1=a&apos;, &apos;2=b&apos;, &apos;3=c&apos;]</div></pre></td></tr></table></figure></p>
-<p>还可以加入if判断<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; d = &#123;1,&apos;a&apos;,2,&apos;b&apos;,3,&apos;c&apos;&#125;</div><div class="line">&gt;&gt;&gt; [x*x for x in d if isinstance(x,int)]</div><div class="line">[1, 9, 4]</div><div class="line">&gt;&gt;&gt; d</div><div class="line">set([&apos;a&apos;, 1, &apos;c&apos;, 3, 2, &apos;b&apos;])</div></pre></td></tr></table></figure></p>
-<h4 id="生成器"><a href="#生成器" class="headerlink" title="生成器"></a>生成器</h4><p>列表生成式是按照一定规则生成一个列表，那么如果我们只是需要定义这个规则而不需要一次就把这个列表创建出来的时候呢？这时候我们就要用到python的生成器。<br>生成器generator，就是一种实现一边循环一遍计算的机制。<br>将列表生成式的方括号[]改为（），即可以创建一个生成器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; (x*x for x in range(10))</div><div class="line">&lt;generator object &lt;genexpr&gt; at 0x10d028af0&gt;</div></pre></td></tr></table></figure></p>
-<p>那么这个生成器要怎么用呢？首先我们可以用它的next()方法来generate列表中的每个元素：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = (x*x for x in range(10))</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">0</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">1</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
-<p>然而事实上我们会用for循环来迭代它。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = (x*x for x in range(10))</div><div class="line">&gt;&gt;&gt; g</div><div class="line">&lt;generator object &lt;genexpr&gt; at 0x10d028a00&gt;</div><div class="line">&gt;&gt;&gt; for n in g:</div><div class="line">...     print n</div><div class="line">...</div><div class="line">0</div><div class="line">1</div><div class="line">4</div><div class="line">9</div><div class="line">16</div><div class="line">25</div><div class="line">36</div><div class="line">49</div><div class="line">64</div><div class="line">81</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
-<p>生成器还被用于处理一些复杂的推算规则，以著名的斐波那契数列为例：后一个数字为前两个数字相加之和<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">def fib(max):</div><div class="line">    n, a, b = 1, 0, 1</div><div class="line">    while n &lt; max:</div><div class="line">        a, b = b, a+b</div><div class="line">        n = n+1</div><div class="line">    print b</div></pre></td></tr></table></figure></p>
-<p>这个函数能够打印出斐波那契数列的第max个数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; fib(3)</div><div class="line">2</div><div class="line">&gt;&gt;&gt; fib(4)</div><div class="line">3</div><div class="line">&gt;&gt;&gt; fib(6)</div><div class="line">8</div><div class="line">&gt;&gt;&gt;fib(100)</div><div class="line">354224848179261915075</div><div class="line">&gt;&gt;&gt; fib(9)</div><div class="line">34</div></pre></td></tr></table></figure></p>
-<p>如果我把print b放进while循环，那么这个函数就会一次性打印出斐波那契数列的前max个数。<br>那么其实这个fib函数已经非常像一个生成器了，那如果我不想要一次性打印出来，想把它变成一个生成器，那就只需要这样：<br>把print b 改为 yield b。<br>这就创建了一个按照斐波那契数列规则，最多执行到第五个数的生成器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">def fib(max):</div><div class="line">    n, a, b = 1, 0, 1</div><div class="line">    while n &lt; max:</div><div class="line">        yield b</div><div class="line">        a, b = b, a+b</div><div class="line">        n = n+1</div></pre></td></tr></table></figure></p>
-<p>这里的yield可以当作为一个“闸”的效果，即生成器执行一次next（），它就会输出一次，并且停在这里。下一次执行会从这里开始。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = mylife.fib(5)</div><div class="line">&gt;&gt;&gt; g</div><div class="line">&lt;generator object fib at 0x1080b6aa0&gt;</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">1</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">1</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">2</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">3</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">StopIteration</div></pre></td></tr></table></figure></p>
-<p>通过我的实验发现，一个生成器创建之后，它的循环周期就只有一次，不能重新开始，除非你重新创建一个。也就是说，如果我一次没有循环完这个生成器，那么下一次它还会从它上次循环停止的地方继续开始。如果最后我循环完了这个生成器，那么这个生成器的周期就结束了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = mylife.fib(10)</div><div class="line">&gt;&gt;&gt; for n in range(3):</div><div class="line">...     g.next()</div><div class="line">...</div><div class="line">1</div><div class="line">1</div><div class="line">2</div><div class="line">&gt;&gt;&gt; for n in range(3):</div><div class="line">...     g.next()</div><div class="line">...</div><div class="line">3</div><div class="line">5</div><div class="line">8</div><div class="line">&gt;&gt;&gt; for n in g:</div><div class="line">...     print n</div><div class="line">...</div><div class="line">13</div><div class="line">21</div><div class="line">34</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">StopIteration</div><div class="line">&gt;&gt;&gt; g</div><div class="line">&lt;generator object fib at 0x1080b6a50&gt;</div></pre></td></tr></table></figure></p>
-<h3 id="7-高阶函数"><a href="#7-高阶函数" class="headerlink" title="7. 高阶函数"></a>7. 高阶函数</h3><p>高阶函数的英文是Higher-oder function。简单来说，高阶函数的概念就是把函数泛化为普通的参数，既函数能够作为参数被传入。</p>
-<p>深入理解，主要总结为以下几点：</p>
-<p>1.函数的结果可以赋值给变量。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; x = abs(-10)</div><div class="line"> &gt;&gt;&gt; x</div><div class="line">10</div></pre></td></tr></table></figure>
-<p>2.函数本身可以赋值给变量,并且通过这个变量可以调用这个函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; f = abs</div><div class="line">&gt;&gt;&gt; f</div><div class="line">&lt;built-in function abs&gt;</div><div class="line">&gt;&gt;&gt; f(-10)</div><div class="line">10</div></pre></td></tr></table></figure>
-<p>3.函数名是指向函数的变量<br>这就是说，在python中，函数名可以完全当作一个普通的变量来使用。<br>可以给函数名这个变量赋值试试：</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; abs = 10</div><div class="line">&gt;&gt;&gt; abs(-10)</div><div class="line">Traceback (most recent call last):</div><div class="line">File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">TypeError: &apos;int&apos; object is not callable</div></pre></td></tr></table></figure>
-<p>因为这个函数名被重新赋值成了一个整型变量10，abs这个变量就不代表这个函数，也就不能被调用了。</p>
-<p>4.函数作为参数<br>当一个函数的参数中包含一个函数的时候，这种函数就被称之为高阶函数。<br>其实用数学里的表达就是：f(g(x))，f函数的参数又是一个g函数。来感受一下“阶”的概念：例如对这个二阶函数求导，就是二阶求导。</p>
-<p>一个最简单的高阶函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">def add(x, y, f)</div><div class="line">	return f(x)+f(y)</div></pre></td></tr></table></figure></p>
-<p>用数学表达式去理解，例如：g(x, y, f)= f(x)+f(y)</p>
-<p>这个函数g可以理解为是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">一个</div><div class="line">	通过</div><div class="line">		1.用一个处理“分支问题”的方法f来计算若干中间结果</div><div class="line">			[方法甚至可以是再调用一个方法解决分支的“分支问题”...]</div><div class="line">		2.然后将最终的最上层结果用以产生某种关系（这里是数值相加）</div><div class="line">		</div><div class="line">	来解决“主要问题”</div><div class="line">的方法。</div></pre></td></tr></table></figure></p>
-<p>假设我们把这个函数掏空，剩下的这个函数的骨架实际上就是一个“产生某种关系”的方法。这个方法组合了更多的方法以完成更庞大的任务。<br>根据不同的分支计算方法与产生关系方法，高阶函数就会发挥出不同的效果，而其潜在的无穷能力也正是无数计算机科学家、数学家为之着迷的原因所在吧。</p>
-<h3 id="8-函数式编程"><a href="#8-函数式编程" class="headerlink" title="8. 函数式编程"></a>8. 函数式编程</h3><p>像这种高度抽象的编程范式，我们就把它称作函数式编程。<br>Python对函数式编程提供部分支持。但由于Python允许使用变量，因此，Python不是纯函数式编程语言。<br>满足函数式编程的条件中还有一条，那就是允许函数返回一个函数。<br>实际上我认为，这与是否满足“函数可以作为参数”并不是独立开的。<br>因为当函数A可以作为函数B的参数传入时，是否需要返回一个函数只取决于B函数的骨架，也就是“产生某种关系“的方法。如果这种关系需要通过返回函数来产生（维持），那么它就是如此这般的一类特殊的高阶函数，仅此而已，并不代表它是一个独立的概念。</p>
-<ul>
-<li>思考：return是不是可以理解成一个函数呢？那么返回一个函数是不是也就是把函数作为参数(或者构成了一个表达式)传给了return这个“函数”呢？</li>
-</ul>
-<h3 id="9-递归"><a href="#9-递归" class="headerlink" title="9. 递归"></a>9. 递归</h3><p>揭开这这种特殊的高阶函数的面纱，没错，它就是 ”递归“。</p>
-<p>假如说某个问题是一个能够通过方法迭代的关系来解决的过程，也就是我们可以把它分解成多个可重复解决的小问题，那么我们就只需要找到解决这一种小问题的方法，然后对这个方法进行递归调用，就可以解决这整一个问题。<br>递归的执行过程可以理解为，当停止条件存在且为A时，从问题的起点开始计算n次，n即代表达到停止条件所需要迭代方法f的次数：<br>g（f，A）= f(f(f(f(f(f(f…(A)…)))))</p>
+<p>It’s so lucky that Pathfinding has its absolute definition, however, the real life problem doesn’t have one. </p>
+<h2 id="How-to-solve-it"><a href="#How-to-solve-it" class="headerlink" title="How to solve it?"></a>How to solve it?</h2><p>The problem will become more easily to solve after setting up some formal notation. Let’s just use this graph for example.<br><img src="/img/shortestpath.png" alt=""></p>
+<p>Suppose<code>A</code> is the start node, and <code>I</code>  is the end node, and set <code>V</code>  is a set of all nodes(vertex) in the graph,<code>V = {n | n = A,B,C,D,E,F,G,H,I}</code>. The set <code>E</code> is a set of all edges, simply we can use a 9*9 map to interpret each edge and its weight. Now we can just find the path from <code>A</code>to<code>I</code>, and just calculate the sum of weights, find the shortest one. </p>
+<p>I used Matlab to implement it, and <code>map(i,j)</code> represent the route cost between city i and j. Otherwise, <code>map(i,j)=-1</code>means there is no route between city i and j. The function <code>h(x)</code> represent the heuristic function value of city x to the endNode. With the heuristic function, we can call this type of searching technic as informed search. So we can calculate the function <code>f(x)=f(x-1)+map(x)+h(x)</code> as the cost compared during searching.</p>
+<h3 id="Greedy-A-algorithm"><a href="#Greedy-A-algorithm" class="headerlink" title="Greedy (A*) algorithm"></a>Greedy (A*) algorithm</h3><p>In my first case, I apply greedy algorithm to implement it. And there is recursion to keep expanding the best(lowest evaluation function value <code>g(x)</code>,<code>g(x)=map(x)+h(x)</code>) node, and because it is a greedy algorithm, the choice of the least costly node will not be revised. This is a very simple way to find the suboptimal path at the benefit of improvement of running time, however, because it doesn’t expand all nodes, thus it is usually not the true shortest path. Here is my implementation function search1():</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">function route = search1(route1,map,startNode,endNode,h)</div><div class="line">% Yidi: add a parameter route1 for transfering result</div><div class="line"></div><div class="line">% SEARCH serach the shotest path between 2 cities in a given map.</div><div class="line">%</div><div class="line">% [route] = search(map,startNode,endNode,h) returns the action sequence (route)</div><div class="line">% that leads from the initial state (startNode) to a goal state (endNode),</div><div class="line">% given the city map (map) and heuristic function (h).</div><div class="line">%</div><div class="line"></div><div class="line"></div><div class="line">[n,m]= size(map);</div><div class="line">currentNode = startNode;</div><div class="line"></div><div class="line">route= [route1 currentNode];</div><div class="line"></div><div class="line">while currentNode ~= endNode</div><div class="line">    count = 0;</div><div class="line">    choices = ones(1,n);</div><div class="line">    choices = 1000*choices;</div><div class="line">    for nextNode = 1: n </div><div class="line">        if map(currentNode,nextNode)&gt;0 &amp;&amp; ismember(nextNode,route)==0</div><div class="line">            choices(1,nextNode) = map(currentNode,nextNode)+ h(1,nextNode);</div><div class="line">            count= count+1;</div><div class="line">        end</div><div class="line">    end</div><div class="line">    if count == 0</div><div class="line">        map(route(end),currentNode)=-1;</div><div class="line">        nextNode = route(end);</div><div class="line">        route(end)=[];</div><div class="line">        route = search1(route,map,nextNode,endNode,h);</div><div class="line">    end</div><div class="line">    [row,nextNode]=min(choices);</div><div class="line">    route = search1(route,map,nextNode,endNode,h);</div><div class="line">return;</div><div class="line">end</div></pre></td></tr></table></figure>
+<h3 id="A-algorithm"><a href="#A-algorithm" class="headerlink" title="A* algorithm"></a>A* algorithm</h3><p>However, to find the optimal path, thanks to my partner, we need to implement other algorithm. Here we use A* algorithm, which means, with the admissible heuristics, we still need to use the uniform cost search method whose result ca be revised if another shortest path is found. The reason why adding the heuristics can help us to reduce the searching time is that we can faster find shorter path with less revision of the result(which means we try to assign the shortest path to each node at a less cost of time). Especially, if the heuristics are larger, the efficiency will be better. For example, a node’s cost may be the least in this loop, however, the path following it is very costly, and it is actually not the right node to be chosen. Therefore, to avoid this kind of situation, we plus the estimate cost (heuristic value)of the following path started from this node, which can help us discriminate the true low cost path easier and quicker.</p>
 <blockquote>
-<p>发现递归函数其实就是一种高阶函数，这个函数对各层计算得到的“参数”的组合方式就是“重复调用直到结束条件满足为止”。</p>
+<p>a*的h（）不等于零的情况下，能够比迪杰斯特拉算法高效的原因是，在结点的优先级上，因为加上了考虑h（）函数，因此实际最终会被选择的结点被优先考虑选择的可能性更大。另外，在到达最终结点时，如果最终结点的开销比其他任何结点都还要小的时候，就可以结束循环，不需要等到所有未extend的结点（open队列中的）都遍历过，因为其他结点的f（）值肯定是比经过这个结点的路径真实开销要小的，<code>h(n)&lt;=g(end-n) -&gt; real cost = g（n）+g（end-n)&lt;=f()=g(n)+h(n),</code> ,但是它仍然比目前到达终点的这条路径的开销大，因此可以判断，就算extend它，它的真实开销肯定会比目前已有的路径大（类似于minimax的剪枝），这个时候的heuristics就是admissible的，可以发现如果<code>h(n)&gt;g(end-n)</code>,就很有可能会变成局部最优而没有办法extend真实的最优路径了。</p>
 </blockquote>
+<p>Here is the implementation of A*, the prequisite is that <code>h(n)&lt;=g(end-n)</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">function route = search2(map,startNode,endNode,h)</div><div class="line">% Yidi: add a parameter route1 for transfering result</div><div class="line"></div><div class="line">% SEARCH serach the shotest path between 2 cities in a given map.</div><div class="line">%</div><div class="line">% [route] = search(map,startNode,endNode,h) returns the action sequence (route)</div><div class="line">% that leads from the initial state (startNode) to a goal state (endNode),</div><div class="line">% given the city map (map) and heuristic function (h).</div><div class="line">%</div><div class="line">nNodes = length (map);</div><div class="line">f = 1000 * ones(1, nNodes);</div><div class="line">g = zeros(1, nNodes);</div><div class="line">father = zeros(1, nNodes);</div><div class="line"></div><div class="line">open = [startNode];</div><div class="line">close = [];</div><div class="line">f(startNode) = h(startNode);</div><div class="line"></div><div class="line">while ~isempty(open)</div><div class="line">    [~,n] = min(f);</div><div class="line">    if n == endNode</div><div class="line">        break;</div><div class="line">    end</div><div class="line">    %Djisktra</div><div class="line">    for x = 1 : nNodes</div><div class="line">        if map(n, x) &gt; 0</div><div class="line">        	fx = g(n) + map(n, x) + h(x);</div><div class="line">            if ismember(x, open) &amp;&amp; fx &lt; f(x)</div><div class="line">                father(x) = n;</div><div class="line">                f(x) = fx;</div><div class="line">                g(x) = g(n) + map(n, x);</div><div class="line">            end</div><div class="line">            if ~ismember(x, close) &amp;&amp; ~ismember(x, open)</div><div class="line">                father(x) = n;</div><div class="line">                f(x) = fx;</div><div class="line">                g(x) = g(n) + map(n, x);</div><div class="line">                open = [open x];</div><div class="line">            end</div><div class="line">        end</div><div class="line">    end</div><div class="line">    f(n) = 1000;</div><div class="line">    open(open==n) = [];</div><div class="line">    close = [close n];</div><div class="line">end</div><div class="line">route = [];</div><div class="line">rNode = endNode;</div><div class="line">while rNode</div><div class="line">    route = [rNode route];</div><div class="line">    rNode = father(rNode);</div><div class="line">end</div><div class="line">end</div></pre></td></tr></table></figure>
+<h2 id="How-to-solve-real-life-problem"><a href="#How-to-solve-real-life-problem" class="headerlink" title="How to solve real life problem?"></a>How to solve real life problem?</h2><p>Whereas, my life has no notation. What if I try to give it some notation? I try to conceptualise the real life problem by the algorithmic scope. For example, suppose the choices in my life are the vertexes, and the set of it is </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">V* = &#123;n|n=&quot;be born&quot;, &quot;eat&quot;,&quot;go to school&quot;,&quot;think more&quot;,&quot;learn more&quot;,&quot;be healthy&quot;,&quot;make friends&quot;,&quot;read books&quot;,&quot;get good grades&quot;,&quot;go to university&quot;,&quot;work hard&quot;,&quot;win the contest&quot;,&quot;do projects&quot;,&quot;work in the lab&quot;,&quot;exchange&quot;,&quot;internship&quot;,&quot;further study&quot;,&quot;find a boyfriend&quot;,&quot;get married&quot;......&#125;</div></pre></td></tr></table></figure>
+<p>But it is infinite, because I am not the “god”, I can not depict every vertexes now. I only know the nodes that I have met and the next reachable choices, however, I hardly know what will happen after I choose any one of them. Therefor, V* is an infinite set until I kill my life.</p>
+<p>I want to seek happiness, suppose my start node is “be born”, and my end node is “be happy”(not “be dead”, I don’t need to find the shorted path to death….)which is my goal. Then the question can be translated like “how can I become happy with the lowest total cost.” The single cost is the weight of each path to complete the choice. who can help me add the weights?</p>
+<h2 id="Key-Difficulties"><a href="#Key-Difficulties" class="headerlink" title="Key Difficulties"></a>Key Difficulties</h2><ol>
+<li>Usually the cost of choosing certain node remains unknown until you choose it, however, once the node has been chosen, usually it is not allowed to revise the node.<br>生活中的选择成本难以确定,多半要在选择后才能知道实际的成本。生活中的大部分选择，一旦选择后，    就没有办法回溯。</li>
+<li><p>Due to the lack of samples to calculate or estimate the real cost, people would only achieve the local optimal route, instead of perceiving the global optimal one.<br>由于缺乏足够的观测样本，生活中的选择只能确保局部最优，并不保证全局最优，因为人们很多时候无法     察觉当时之后或情形之外（时间与空间上的全局）的情况。</p>
+</li>
+<li><p>The pathes between nodes can be changed as time passes by.<br>生活中的顶点，路径都是动态化的，不是一成不变的。</p>
+</li>
+<li>Because of the impact bias, people usually focus more on the effect of loss than gain, also we could overestimate our happiness. Availability will impact your prediction about future happiness or unhappiness because it will be set as an anchor in your mind when you make the prediction. For example, if your favorite team’s super star is injured, so the availability of winning will decrease, then the anchor is as well as become more negative, which will be closer to the lowest degree of unhappiness and your prediction on how unhappy if they lose will be based on this anchor, which is not that overestimate because you have kind of received the worst result already. The impact bias will become more notable if the availability(the anchor) is much more deviated from the prediction result. In other words, if the anchor of the team is that they can nearly to win, however when you predict your unhappiness if they loss, you will overestimate how unhappy you would be because you think that you were quite sure that they could win, so this deviation will lead to the overestimation of your future feeling. But when the availability to win is lower, which means the anchor is closer to the situation you predict, you would predict less degree of unhappiness which will not be an overestimation.<br>Therefore, in the most occasions, the goals of humans are not absolutely objective, whereas, they are normally combined with the subjective factors that self-awareness、cognition and emotions of humans.<br>很多时候人对于“开心”的预测并不是绝对客观的而是容易产生偏见的。也就是说，对于同样的结果，不同的产生方式会导致人们表现出不一样的开心或难过的程度。例如，若选择做一件难以完成的事后取得成功，相比于做一件容易的事情，人会认为这更令人兴奋。又例如，人更倾向于被动得选择不做某事，而不是主动选择做某事，因为主动的选择往往会产生更多的后悔与懊恼的成分。因此，最终人们的追求并不是一种完全的客观存在，而更多是混杂着人们的自我认知、情绪甚至包括社会意识形态等主观成分，而这一部分内容是目前A.I.等科学领域尚未能触及得到的。这也是KM所试图去厘清的关键。</li>
+</ol>
+<h2 id="Design-my-algorithm"><a href="#Design-my-algorithm" class="headerlink" title="Design my algorithm"></a>Design my algorithm</h2><p>Because it is not revisable, maybe the best method is that we can just use a greedy algorithm to pursue a suboptimal path.<br><em><!----></em>To be continued</p>
 
       
 
@@ -466,7 +314,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">aikm</a>
         		</li>
       		
 		</ul>
@@ -476,7 +324,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2017/09/06/Python/">see more >></a>
+          <a class="article-more-a" href="/2017/09/28/pathfinding/">see more >></a>
         </p>
       
 
@@ -508,7 +356,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
   
 
@@ -520,7 +368,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 Edie Young
+    		&copy; 2019 Edie Young
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -624,11 +472,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">

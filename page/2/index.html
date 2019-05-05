@@ -179,79 +179,139 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-resume" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-languages" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/24/resume/">Resume(2014-2017)</a>
+      <a class="article-title" href="/2018/01/12/languages/">Context-Free Languages and Syntax Analyzer</a>
     </h1>
   
 
         
-        <a href="/2017/12/24/resume/" class="archive-article-date">
-  	<time datetime="2017-12-25T00:23:56.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-24</time>
+        <a href="/2018/01/12/languages/" class="archive-article-date">
+  	<time datetime="2018-01-12T21:55:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-12</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><ul>
-<li>iOS Development Engineer with Alibaba, wireless technology department of ICBU (International Core Business Unit).</li>
-<li>Experience with wireless development, data mining, computer vision, spatial analysis and B2B E-commerce.</li>
-<li>Hong Kong Polytechnic University exchange study in Computer Science.</li>
-<li>Wuhan University B.S. in Spatial Information &amp; Digital Technology.</li>
-</ul>
-<h2 id="Education"><a href="#Education" class="headerlink" title="Education"></a>Education</h2><ul>
-<li>Rice University, Master of Computer Science, Aug 2018 - Dec 2019</li>
-<li>Wuhan University, International School of Software (Software Engineering) - Bachelor of Engineering in Spatial Information and Digital Technology, Sep 2014 – Jun 2018</li>
-</ul>
+        <blockquote>
+<p>Context-free grammar is a more powerful method to describe languages. Such grammars can describe certain features that have a recursive structure, which is useful in various of applications. And context-free grammars  were first to used in the study of human languages, which include many terms, such as noun, verb, preposition. Because while understanding their relationships and their respective phrases, it will lead to the natural recursion. Context-free grammars have the ability to capture these important patterns of the relationships among these languages. The collection of languages associated with context-free grammars are called the context-free languages. The grammar is often used in the parser, which is contained in the compiler and interpreter for programming languages to extract the meanings of a program in advance of generating the complied code or performing the interpreted execution. Applying the context-free grammars, we can construct the parser for the programming languages. In this article I will introduce the concepts of Context-free languages and program a syntax analyzer for SL for practicing. Besides, I will introduce Pushdown Automata, which is a class of powerful machines to recognize context-free languages.</p>
+</blockquote>
+<p>Reference: </p>
+<ol>
+<li>Introduction to the theory of computation —Michael. Sipser</li>
+<li>Teaching Materials in the course of System Programming — Zili Shao.</li>
+</ol>
+<h2 id="Context-free-Grammars"><a href="#Context-free-Grammars" class="headerlink" title="Context-free Grammars"></a>Context-free Grammars</h2><p>If you try to use regular expressions to describe the language L = {a^nb^n, n&gt;=0}, you will soon find it impossible. Because the pattern of counting the same numbers of alphabets can not be performed by regular expressions. However, this pattern is quite commonly used in human’s communicating and understanding of languages, therefore, we need another more powerful grammars.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">S -&gt; aSb|T</div><div class="line">T -&gt;ab</div></pre></td></tr></table></figure></p>
+<p>This is an example of context-free languages, and it describes the language L = {a^nb^n, n&gt;=0}.<br>A grammar consists of a collection of substitution rules, also called productions. Each rule appears line by line, comprising a symbol and a string separated by an arrow. The symbol is called a variable. The string consists of variables and other symbols is called terminals. Usually, the symbol variable is represented by the capital letters, and the terminals are represented by lowercase letters, numbers and special symbols. One variable in these rules is called start variable, which is the left-most symbol of the top-most rule.<br>Take the grammar above for an example, S is its start variable, another variable is T, and its terminals are a and b.<br>When we use this grammar to generate a string, say string ‘aaabbb’, the process will be as follow:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">S -&gt; aSb -&gt; aaSbb -&gt; aaabbbb</div></pre></td></tr></table></figure></p>
+<p>This process is called derivation. Step by step, we replace the symbol on the left-hand side with terminals according to the rules, and derive the string from the one another, finally when there is no more symbols in the string, there is it.</p>
+<h3 id="Formal-Description-for-CFG"><a href="#Formal-Description-for-CFG" class="headerlink" title="Formal Description for CFG"></a>Formal Description for CFG</h3><p>A context-free grammar is a 4-tuple (V, ∑, R, S), where </p>
+<ol>
+<li>V is a finite set of variables.</li>
+<li>∑ is a finite set of terminals, disjoint from V.</li>
+<li>R is a finite set of rules, which turn the variables into the terminals.</li>
+<li>S ⊆ V is the start variable.</li>
+</ol>
+<p>Take the formal grammar as example, its context-free grammar is ({S, T}, {a, b}, R, S), where R is<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">S -&gt; aSb|T</div><div class="line">T -&gt;ab</div></pre></td></tr></table></figure></p>
+<h2 id="Parsing-Tree"><a href="#Parsing-Tree" class="headerlink" title="Parsing Tree"></a>Parsing Tree</h2><p>Consider there is a context-free grammar G1 ({<expr>, <term>, <factor>}, {a, +, -, ×, ÷, (, )}, R, {<expr>}), R is<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;EXPR&gt; -&gt; &lt;EXPR&gt; + &lt;TERM&gt;| &lt;TERM&gt;</div><div class="line">&lt;TERM&gt; -&gt; &lt;TERM&gt; × &lt;FACTOR&gt;| &lt;FACTOR&gt;</div><div class="line">&lt;FACTOR&gt; -&gt; (&lt;EXPR&gt;)| a</div></pre></td></tr></table></figure></expr></factor></term></expr></p>
+<p>With this grammar, we can generate strings, say a+a×a and (a+a)×a as follow:</p>
 <ul>
-<li>Hong Kong Polytechnic University, Department of Computing - Exchange Programme BSc(Hons) in Computer Science, Sep 2017 – Jan 2018</li>
+<li>a+a×a</li>
 </ul>
-<h2 id="Research-Project"><a href="#Research-Project" class="headerlink" title="Research Project"></a>Research Project</h2><ul>
-<li><p>Face Recognition Model Developing and Application, Department of Computing, Hong Kong Polytechnic University, Hong Kong, Sep 2017 – Present</p>
-</li>
-<li><p>Deep Learning Modeling on Advertisements Evaluation, Intel Software Innovation Organization, International Software School, WHU, Feb 2017 – Jun 2017</p>
-</li>
-<li>Star &amp; Light - A Remote Treatment Platform for Autistic Children and Family, Joint International Center for Resource, Environment Management and Digital Technologies (JIC-REDT) International School of Software, WHU, Mar 2016 – Nov 2016<h2 id="Working-Experience"><a href="#Working-Experience" class="headerlink" title="Working Experience"></a>Working Experience</h2></li>
-<li>Deep Learning Intern, Intel Corporation. May 2018 - Aug 2018</li>
-<li>iOS Wireless Developing Engineering (Offer received), ICBU Technology Department, Alibaba, Hangzhou, China, , July 2018 – August 2018</li>
-<li>iOS Wireless Developing Engineering Internship, ICBU Technology Department, Alibaba, Hangzhou, China, , July 2017 – August 2017</li>
-<li>Marketing Assistant, Campus Technology Service Dept., HP Development Company, L.P. (student position), April 2015 - May 2016</li>
-</ul>
-<h2 id="Scholarships-and-Awards"><a href="#Scholarships-and-Awards" class="headerlink" title="Scholarships and Awards"></a>Scholarships and Awards</h2><ul>
-<li><p>National First Prize in the 5th China Software Cup National College Students Software Designing Contest (Awarded only for top 17/4093 teams including international ones from UK、Canada and South Korea)</p>
-</li>
-<li><p>National First Prize in the 10th  National College Students Computing Designing Contest in Software Applications Developing (Awarded only for top 10/7423 teams)</p>
-</li>
-</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;EXPR&gt; -&gt; &lt;EXPR&gt; + &lt;TERM&gt;</div><div class="line">       -&gt; &lt;TERM&gt; + &lt;TERM&gt;</div><div class="line">       -&gt; &lt;FACTOR&gt; + &lt;TERM&gt;</div><div class="line">       -&gt; a + &lt;TERM&gt;</div><div class="line">       -&gt; a + &lt;TERM&gt; × &lt;FACTOR&gt;</div><div class="line">       -&gt; a + &lt;FACTOR&gt; × &lt;FACTOR&gt;</div><div class="line">       -&gt; a + a × &lt;FACTOR&gt;</div><div class="line">       -&gt; a + a × a</div></pre></td></tr></table></figure>
 <ul>
-<li><p>The Provincial Silver Award in the 2nd China Internet Plus Innovation Contest in Hubei</p>
-</li>
-<li><p>National Third Prize in 2016 China Mobile Application Innovation Tournament (Awarded only for top 8/ 3203 teams)</p>
-</li>
+<li>(a+a)× a</li>
 </ul>
-<ul>
-<li><p>Wuhan University First-class Scholarship 5000 RMB, 2016 (Awarded only for top 2/79 students)</p>
-</li>
-<li><p>Wuhan University Second-class Scholarship 3000 RMB, 2017 (Awarded only for top 5/79 students)</p>
-</li>
-<li><p>Yazhong Innovation and Education Scholarship 10，000 RMB, 2016 (Awarded only for top 5 students including graduate and doctoral students all over Wuhan University)</p>
-</li>
-<li><p>Merit Students, Wuhan University, 2016／Merit Students, Wuhan University, 2017</p>
-</li>
-</ul>
-<h2 id="Publications-and-Patents"><a href="#Publications-and-Patents" class="headerlink" title="Publications and Patents"></a>Publications and Patents</h2><h4 id="National-Invention-Patent-No-2017101385486"><a href="#National-Invention-Patent-No-2017101385486" class="headerlink" title="National Invention Patent No. 2017101385486"></a>National Invention Patent No. 2017101385486</h4><p>Patentee: Yang Yidi<br>Inventor: Zhu Siyu, Yang Yidi<br>Patent Name: An Evaluating and Decision-making Method of Advertising based on the Technology of Face Recognition and Big Data Mining</p>
-<h4 id="Software-copyright-No-01656298"><a href="#Software-copyright-No-01656298" class="headerlink" title="Software copyright No. 01656298"></a>Software copyright No. 01656298</h4><p>Copyright owner: Wuhan University<br>Inventor: Zhu Siyu, Yang Yidi<br>Software Name: An Expert System of Advertising based on the Technology of Face Recognition and Big Data Mining</p>
-<h2 id="Computer-Skills"><a href="#Computer-Skills" class="headerlink" title="Computer Skills"></a>Computer Skills</h2><ul>
-<li>Languages: C/C++, Java, Objective-C, Shell, Scala Swift, C#, HTML, CSS, JavaScript, Python, Haskell</li>
-<li>Operating System: Linux, UNIX, Windows 2010, 08, Mac OS</li>
-<li>Software:  IDEA, Xcode, Eclipse, MATLAB, Reveal, Gitlab, SourceTree, Visio Studio 2012, Pycharm, Sql Server, Unity3D, ArcGIS, Photoshop, Axure RP</li>
-</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;EXPR&gt; -&gt;  &lt;TERM&gt;</div><div class="line">       -&gt; &lt;TERM&gt; × &lt;FACTOR&gt;</div><div class="line">       -&gt; &lt;FACTOR&gt; × &lt;FACTOR&gt;</div><div class="line">       -&gt; (&lt;EXPR&gt;) × &lt;FACTOR&gt;</div><div class="line">       -&gt; (&lt;EXPR&gt; + &lt;TERM&gt;) × &lt;FACTOR&gt;</div><div class="line">       -&gt; (&lt;TERM&gt; + &lt;TERM&gt;) × &lt;FACTOR&gt;</div><div class="line">       -&gt; (&lt;FACTOR&gt; + &lt;TERM&gt;) × &lt;FACTOR&gt;</div><div class="line">       -&gt; (&lt;FACTOR&gt; + &lt;FACTOR&gt;) × &lt;FACTOR&gt;</div><div class="line">       -&gt; ( a + &lt;FACTOR&gt;) × &lt;FACTOR&gt;</div><div class="line">       -&gt; ( a + a) × &lt;FACTOR&gt;</div><div class="line">       -&gt; ( a + a) × a</div></pre></td></tr></table></figure>
+<p>The process could be drawn as the parsing tree.<br><img src="/img/parse-tree.png" alt=""></p>
+<p>A compiler is a specific program to translate the code written in programming language into another form, which is more suitable for execution. Therefore, the compiler’t job is to extracting the meaning of the code to be compiled in a process called parsing.<br>One way of representing the parsing process is to draw a parsing tree for the code, in the context-free grammar for the programming language.</p>
+<h2 id="Syntax-Analyzer"><a href="#Syntax-Analyzer" class="headerlink" title="Syntax Analyzer"></a>Syntax Analyzer</h2><p>In the practice part of context-free language, I implemented a syntax analyzer utilizing the recursive descent parser for the SL on the context-free grammar (for its lexical analyzer part, please see : <a href="https://edieyoung.github.io/2018/01/10/auto/" target="_blank" rel="external">Simple Language</a> ). The syntax analyzer can parse the program segment and judge if it could be accepted according to its context-free grammar.<br>The context-free grammar is as follow:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">PROG -&gt; PROG_BODY.</div><div class="line">PROG_BODY -&gt; var ID_LIST; STATEMENT_LIST</div><div class="line">ID_LIST -&gt; id ID_LIST’</div><div class="line">ID_LIST’ -&gt; , id ID_LIST’ | ε</div><div class="line">STATEMENT_LIST -&gt; begin STATEMENT end</div><div class="line">STATEMENT -&gt; id=EXP; STATEMENT’</div><div class="line">STATEMENT’-&gt; id=EXP; STATEMENT’ | STATEMENT_LIST STATEMENT’ | ε </div><div class="line">EXP -&gt;TERM E’</div><div class="line">E’-&gt; + TERM E’ | - TERM E’ | ε</div><div class="line">TERM -&gt; FAC T&apos;</div><div class="line">T’ -&gt; *FAC T’| /FAC T’|ε</div><div class="line">FAC -&gt; (EXP) | num | id</div></pre></td></tr></table></figure></p>
+<p>Notice that this grammar has no right-recursion, which avoids the endless loop in the process of parsing.<br>Now let’s add the token name into this grammar for reference. In order to shorten the written job, I simply replace the token name with a single alphabet as a symbol.</p>
+<table>
+<thead>
+<tr>
+<th>Token Name</th>
+<th>Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KEYWORD var</td>
+<td>A</td>
+</tr>
+<tr>
+<td>KEYWORD begin</td>
+<td>a</td>
+</tr>
+<tr>
+<td>KEYWORD end</td>
+<td>b</td>
+</tr>
+<tr>
+<td>PLUS</td>
+<td>F</td>
+</tr>
+<tr>
+<td>MINUS</td>
+<td>G</td>
+</tr>
+<tr>
+<td>COMMA</td>
+<td>B</td>
+</tr>
+<tr>
+<td>DIV</td>
+<td>I</td>
+</tr>
+<tr>
+<td>SEMICOLON</td>
+<td>C</td>
+</tr>
+<tr>
+<td>LBRACE</td>
+<td>J</td>
+</tr>
+<tr>
+<td>ASSIGN</td>
+<td>D</td>
+</tr>
+<tr>
+<td>RBRACE</td>
+<td>K</td>
+</tr>
+<tr>
+<td>PERIOD</td>
+<td>E</td>
+</tr>
+<tr>
+<td>ID</td>
+<td>L</td>
+</tr>
+<tr>
+<td>NUM</td>
+<td>M</td>
+</tr>
+<tr>
+<td>Unrecognized</td>
+<td>N</td>
+</tr>
+</tbody>
+</table>
+<p>Then the grammar will look like this:<br>R<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">PROG -&gt; PROG_BODY E</div><div class="line">PROG_BODY -&gt;A ID_LIST C STATEMENT_LIST </div><div class="line">ID_LIST -&gt; L ID_LIST’</div><div class="line">ID_LIST’ -&gt; B L ID_LIST’ | ε</div><div class="line">STATEMENT_LIST -&gt; a STATEMENT b</div><div class="line">STATEMENT -&gt; L D EXP C STATEMENT’</div><div class="line">STATEMENT’-&gt; L D EXP C STATEMENT’ | STATEMENT_LIST STATEMENT’ | ε </div><div class="line">EXP -&gt;TERM E’</div><div class="line">E’-&gt; F TERM E’ | G TERM E’ | ε</div><div class="line">TERM -&gt; FAC T’</div><div class="line">T’ -&gt; H FAC T’| I FAC T’|ε</div><div class="line">FAC -&gt; J EXP K | M | L</div></pre></td></tr></table></figure></p>
+<p>So the grammar can be written formally as G({PROG, PROG_BODY, ID_LIST, STATEMENT_LIST, ID_LIST’, STATEMENT, STATEMENT’, EXP, TERM, E’, FAC, T’}, {A, a, b, B, C, D, E, F, G, H, I, J, K, L, M}, R, {PROG}).</p>
+<h3 id="Implement"><a href="#Implement" class="headerlink" title="Implement"></a>Implement</h3><p>Firstly, I continued using the scan() part in the lexical analyzer for extract the tokens in the program segment.<br>After it gets the tokens and translate them into a string of symbols, it uses the string as the input and the point p can help to locate the symbols. Finally, it starts doing the parsing job with the code below:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div></pre></td><td class="code"><pre><div class="line">int EXP1()&#123;</div><div class="line">	if(*p == &apos;F&apos;|*p == &apos;G&apos;|*p == &apos;H&apos;|*p == &apos;I&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		if(*p ==&apos;L&apos;|*p == &apos;M&apos;)&#123;</div><div class="line">			p++;</div><div class="line">			if(EXP1()== 1)&#123;</div><div class="line">				//p++;</div><div class="line">				return 1;</div><div class="line">				</div><div class="line">			&#125;</div><div class="line">			return 0;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 1;</div><div class="line">	p--;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/*EXP -&gt; L EXP1| M EXP1| J EXP K EXP1</div><div class="line">*/</div><div class="line">int EXP()&#123;</div><div class="line">	if(*p == &apos;L&apos;|*p == &apos;M&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		if(EXP1()==1)&#123;</div><div class="line">			//p++;</div><div class="line">			return 1;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;else if(*p == &apos;J&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		if(EXP()== 1)&#123;</div><div class="line">			//p++;</div><div class="line">			if(*p == &apos;K&apos;)&#123;</div><div class="line">				p++;</div><div class="line">				if(EXP1()==1)&#123;</div><div class="line">					return 1;</div><div class="line">				&#125;</div><div class="line">				return 0;</div><div class="line">			&#125;</div><div class="line">			return 0;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">/*STATEMENT1 -&gt; L D EXP C STATEMENT1 | STATEMENT_LIST STATEMENT1 |ε</div><div class="line">*/</div><div class="line">int STATEMENT1()&#123;</div><div class="line">	if(*p==&apos;L&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		if(*p==&apos;D&apos;)&#123;</div><div class="line">			p++;</div><div class="line">			if(EXP()==1)&#123;</div><div class="line">				//p++;</div><div class="line">				if(*p==&apos;C&apos;)&#123;</div><div class="line">					p++;</div><div class="line">					if(STATEMENT1()==1)&#123;</div><div class="line">						</div><div class="line">						return 1;</div><div class="line">					&#125;</div><div class="line">					return 0;</div><div class="line">				&#125;</div><div class="line">				return 0;</div><div class="line">			&#125;</div><div class="line">			return 0;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;else if(STATEMENT_LIST() == 1)&#123;</div><div class="line">			p++;</div><div class="line">			if(STATEMENT1()== 1)&#123;</div><div class="line">				//p++;</div><div class="line">				return 1;</div><div class="line">			&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 1;</div><div class="line">	p--;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/*STATEMENT -&gt; L D EXP C STATEMENT1</div><div class="line">*/</div><div class="line">int STATEMENT()&#123;</div><div class="line">	printf(&quot;\t\t\tAssignment begins\n&quot;);</div><div class="line">	if(*p ==&apos;L&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		if(*p ==&apos;D&apos;)&#123;</div><div class="line">			p++;</div><div class="line">			if(EXP()==1)&#123;</div><div class="line">				//p++;</div><div class="line">				if(*p == &apos;C&apos;)&#123;</div><div class="line">					printf(&quot;\t\t\tAssignment ends\n&quot;);</div><div class="line">					p++;</div><div class="line">					if(STATEMENT1()==1)&#123;</div><div class="line">						//p++;</div><div class="line">						return 1;</div><div class="line">					&#125;</div><div class="line">					return 0;</div><div class="line">				&#125;</div><div class="line">				return 0;</div><div class="line">			&#125;</div><div class="line">			return 0;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/*STATEMENT_LIST -&gt; a STATEMENT b</div><div class="line">*/</div><div class="line">int STATEMENT_LIST()&#123;</div><div class="line">	if(*p == &apos;a&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		printf(&quot;\t\tStatement begins\n&quot;);</div><div class="line">		if(STATEMENT()==1)&#123;</div><div class="line">			//p++;</div><div class="line">			//printf(&quot;checked %s\n&quot;, p);</div><div class="line">			if(*p==&apos;b&apos;)&#123;</div><div class="line">				p++;</div><div class="line">				printf(&quot;\t\tStatement ends\n&quot;);</div><div class="line">				return 1;</div><div class="line">			&#125;</div><div class="line">			return 0;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/* ID_LIST1 -&gt;B L ID_LIST1| ε</div><div class="line">*/</div><div class="line">int ID_LIST1()&#123;</div><div class="line">	if(*p ==&apos;B&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		if(*p ==&apos;L&apos;)&#123;</div><div class="line">			p++;</div><div class="line">			if(ID_LIST1()==1)&#123;</div><div class="line">				//p++;</div><div class="line">				return 1;</div><div class="line">			&#125;</div><div class="line">			return 0;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 1;</div><div class="line">	p--;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/*ID_LIST -&gt; L ID_LIST1</div><div class="line">*/</div><div class="line"></div><div class="line">int ID_LIST()&#123;</div><div class="line">	if(*p==&apos;L&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		if(ID_LIST1()==1)&#123;</div><div class="line">			//p++;</div><div class="line">			return 1;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/*PROG_BODY -&gt; A ID_LIST C STATEMENT_LIST</div><div class="line">*/</div><div class="line">int PROG_BODY()&#123;</div><div class="line">	if(*p==&apos;A&apos;)&#123;</div><div class="line">		p++;</div><div class="line">		printf(&quot;\tDeclaration begins\n&quot;);</div><div class="line">		if(ID_LIST()==1)&#123;</div><div class="line">			//p++;</div><div class="line">			//printf(&quot;checked %s\n&quot;, p);</div><div class="line">			if(*p ==&apos;C&apos;)&#123;</div><div class="line">				p++;</div><div class="line">				printf(&quot;\tDeclaration ends\n&quot;);</div><div class="line">				if(STATEMENT_LIST()==1)&#123;</div><div class="line">					//p++;</div><div class="line">					return 1;</div><div class="line">				&#125;</div><div class="line">				return 0;</div><div class="line">			&#125;</div><div class="line">			return 0;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/*PROG -&gt; PROG_BODY E</div><div class="line">*/</div><div class="line">int PROG()&#123;</div><div class="line">	printf(&quot;Assignment 4:\n\n&quot;);</div><div class="line">	printf(&quot;Program begins\n&quot;);</div><div class="line">	if(PROG_BODY()==1)&#123;</div><div class="line">		//p++;</div><div class="line">		if(*p==&apos;E&apos;)&#123;</div><div class="line">			p++;</div><div class="line"></div><div class="line">			printf(&quot;Program ends\n&quot;);</div><div class="line">			return 1;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Using recursion, the code will be so concise and easy to understand, that the variable could be treated as a function could be called in itself, and the terminals are detected as an alphabet as the string.<br>And in the main, it opens the input_file and execute these lines to process both the lexical and the syntax analyses.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/* Process lexical analysis*/</div><div class="line">	if (scan() &gt; 0)&#123;</div><div class="line">		/* Process syntax analysis*/</div><div class="line">		p=token_list;</div><div class="line">		printf(&quot;p:%s\n&quot;,p);</div><div class="line">		if( (PROG()==1) &amp;&amp; (*p == &apos;$&apos;) )&#123;</div><div class="line">                printf(&quot;Accept.\n&quot;);</div><div class="line">        &#125;else&#123;</div><div class="line">                printf(&quot;Reject.\n&quot;);</div><div class="line">        &#125;</div><div class="line">		return 1;</div><div class="line">	&#125;else&#123;</div><div class="line">		return -1;</div></pre></td></tr></table></figure></p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Let’s test it with an example:<br>Example 1:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var A, B, C; </div><div class="line">begin </div><div class="line">	A = 5;</div><div class="line">	B = 6;</div><div class="line">	C = (a + b) / 2.0; </div><div class="line">end.</div></pre></td></tr></table></figure></p>
+<p>The result:<br><img src="/img/syntax_result.png" alt=""></p>
+<p>Let’s test a negative example with the syntax error:<br>Example 2:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var a;</div><div class="line">begin</div><div class="line">a = 5</div><div class="line">end.</div></pre></td></tr></table></figure></p>
+<p>It misses a ‘;’ after ‘5’<br>The result:<br><img src="/img/syntax_result1.png" alt=""></p>
+<p>All in all, I have to say this practice sample is just my personal version of implementation, so there must be some things could be revised and improved. I just wrote them down in case the situation I need to find and keep them in mind.</p>
+<p>This is the end of my review article, feel free to contact with me if you have any problem with my article.</p>
 
       
 
@@ -265,7 +325,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">resume</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
         		</li>
       		
 		</ul>
@@ -275,7 +335,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/24/resume/">see more >></a>
+          <a class="article-more-a" href="/2018/01/12/languages/">see more >></a>
         </p>
       
 
@@ -305,35 +365,192 @@
 
 
   
-    <article id="post-card" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-auto" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/10/27/card/">An Evaluating and Decision-Making Method of Advertising Based on the Technology of Face Recognition and Big Data Mining</a>
+      <a class="article-title" href="/2018/01/10/auto/">Finite Automata and Lexical Analyzer</a>
     </h1>
   
 
         
-        <a href="/2017/10/27/card/" class="archive-article-date">
-  	<time datetime="2017-10-27T21:37:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-10-27</time>
+        <a href="/2018/01/10/auto/" class="archive-article-date">
+  	<time datetime="2018-01-11T01:12:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-10</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>In this article, we describe a method to apply the technology of face recognition and big data mining into assessing the feedback from the customers to the advertisements which they are watching, thus elevating the precision of commercial delivery. Our system (CARD) installed on the billboards bridges advertisements with customers. Firstly, by automatically recognizing the faces of customers in front of this piece of advertisement and then only collecting the facial data for assessing this time’s delivery feedback. Furthermore, applying the technology of big data mining, it is designed to make an overall assessment automatically about this certain piece of advertisement according to inference rules in the evaluation model(FAEM). For example, to what degree does it appeal to the customers, what kind of customers are obsessed in it the most, and what is the relations of it with the objective factors such as the place, time and weather respectively. We will introduce a new method for matching the fittest advertisement for customers by accurately assessing both of them, which successfully eliminates the feeling of disgust generated by customers for watching an irrelevant and prolix piece of advertisement their mobile devices.</p>
-<h2 id="Awards"><a href="#Awards" class="headerlink" title="Awards"></a>Awards</h2><ul>
-<li>National First Prize in the 5th China Software Cup National College Students Software Designing Contest (Awarded only for top 17/4093 teams including international ones from UK、Canada and South Korea)<br><img src="/img/posts.jpg" alt=""></li>
+        <blockquote>
+<p>Among all of the computational models, Finite Automata is the simplest one, however, it plays an important role in the development of computers. Nowadays, though computers are much more complicated and powerful, Finite Automata still lies the heart of many electromechanical devices. This article is a review of my learning process and my ideas during the implementation practice of a simple Lexical Analyzer applying the Finite Automata.</p>
+</blockquote>
+<p>Reference: </p>
+<ol>
+<li>Introduction to the theory of computation —Michael. Sipser</li>
+<li>Teaching Materials in the course of System Programming — Zili Shao.</li>
+</ol>
+<h2 id="Finite-Automata"><a href="#Finite-Automata" class="headerlink" title="Finite Automata"></a>Finite Automata</h2><p>Finite Automata is math model to make decision according to the terminal states which can be approached by reading the input strings and consequently making transitions of the states according to both the current state and input.<br>Here is a simple Finite Automata M1 which recognizes all strings on 0,1 ending up with a 1. The figure is called the state diagram of it.<br><img src="/img/fa.png" alt="Finite Automata M1"><br>To understand this figure, we need some definitions on these notations. There are mainly two components, the circles and the arrows with alphabets on them. The first circle represents a start state because there is an empty arrow pointing it, and the second one with double circles represents the accept state. Then, obviously, these arrows with alphabets on them represent the transitions from one state to the next, and it will transit only when the currently inputting part hits on these alphabets. To fully understand it, we need to try a specific strings and put them in, let’s say 1101. See what will happen step by step. Imagine that you are standing in front of this Finite Automata, and now you are in the start state p. According to the input strings 1101, the working process will be as follow:</p>
+<ol>
+<li><p>You are in state p, and you get the first number 1. Look at the round arrow above state p, it means that if you get a 1 or 0, the next state could be p again. So you will still in p after reading the first 1. Actually, there is a little trick here, notice that the other arrow with 1 also means that when receiving a 1, you could go to the state q. So here comes to the idea of Nondeterministic Finite Automata, which means that the  different transitions will happen even resulting from a same input. In other words, the decision-making is not deterministic, there exists some multiple choices, and it depends on some specific situations such as the following parts of the input. For example in this case, though receiving a 1, you may follow the round arrow above to continue working the FA but not the straight one pointing to an accept state directly because you are still holding with the rest alphabets of string. </p>
+</li>
+<li><p>Then is another 1. Similarly, you will go back to p according to the round arrow.</p>
+</li>
+<li>Then is a 0. Notice that the round arrow also says that when receiving a 0, you should go to p again. So you are still in p after reading this 0.</li>
+<li>Finally, the last one is a 1. This time, you don’t have any other following alphabets, so you can choose the straight arrow and go through it, and you will go to the state q. </li>
+<li>After reading all of the string, you are now on the state q, and it is an accept state, so this we call this string is accepted by this FA.</li>
+</ol>
+<h3 id="DFA-and-NFA"><a href="#DFA-and-NFA" class="headerlink" title="DFA and NFA"></a>DFA and NFA</h3><p>Deterministic Finite Automata is a kind of Finite Automata that allows no uncertainty in the transitions. To be more specific, it doesn’t allow the distinctive arrows with same transition conditions(normally it is the alphabet) on one state, also it doesn’t include the empty string ‘ε’ to be served as the transition condition. Besides, every alphabet should has its transition in each state. Apparently, the FA I just introduced is not a Deterministic Finite Automata, therefore, it is a Nondeterministic Finite Automata, which allows the uncertainty.</p>
+<blockquote>
+<p>The empty string ‘ε’ means that without any condition the transition can be done as long as it is staying in that state. From a state q, all states that can be approached by ε are called the ε-closure of q.</p>
+</blockquote>
+<p>Finite Automata is a good model for computers with a limited memory. For example, the automatic door is a kind of electromechanical devices controlled by the Finite Automaton.</p>
+<h3 id="Formal-Definition"><a href="#Formal-Definition" class="headerlink" title="Formal Definition"></a>Formal Definition</h3><p> The formal definition of a Finite Automata is a tuple contains five components, writes ( Q, ∑, δ, q0, F).</p>
+<ol>
+<li>Q is a finite set called the states.</li>
+<li>∑ is a finite set called the alphabet.</li>
+<li>δ = Q × ∑ -&gt; Q is the transition function.</li>
+<li>q0 is the start state.</li>
+<li><p>F ⊆ Q is a set of accept states.</p>
+<p>Take the M1 just mentioned as example. Let’t use this formal definition to describe it:</p>
+<p>Q = {p, q}<br>∑ = {0,1}<br>δ is :        </p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>p</th>
+<th>q</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  0</td>
+<td>p</td>
+<td>∅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>p, q</td>
+<td>∅ </td>
+</tr>
+</tbody>
+</table>
+<p>q0 = p<br>F = {q}</p>
+<h3 id="Regular-Language"><a href="#Regular-Language" class="headerlink" title="Regular Language"></a>Regular Language</h3><p>If a set A is the set of all strings that can be accepted by a Finite Automata M, we call this set the regular language of Finite Automata M, writes L(M) = A.</p>
+<blockquote>
+<p>A machine may recognize several strings, but it only recognize one language.</p>
+</blockquote>
+<p>Furthermore, a language is called regular language if some finite automata recognize it.</p>
+<h3 id="Regular-Operation"><a href="#Regular-Operation" class="headerlink" title="Regular Operation"></a>Regular Operation</h3><p>There are three operations can be exerted on Languages. They are Union, Concatenation, Star.</p>
+<ol>
+<li>Union: A ∪ B = {x| x ⊆ A or x ⊆ B}.</li>
+<li>Concatenation : A∘B = {x y| x ⊆ A and y ⊆ B}.</li>
+<li>Star: A∗ = {x1x2x3x4….x k|k≥0, and each xi ⊆ A}.</li>
+</ol>
+<h2 id="Regular-Expressions"><a href="#Regular-Expressions" class="headerlink" title="Regular Expressions"></a>Regular Expressions</h2><p>Since we already get both the idea of regular language and regular operations, now we use these regular operations to describe the languages, which are called regular expressions.</p>
+<p>For example,<br>(0∪1)*1 </p>
+<p>is a regular expression, which describes the language that starts with several 0s and 1s and ending up with a 1. The first part<br>  (0∪1)*<br>means to “star” the union of  {1} and {0}, which is to contain any number of the strings in {1} or {0}. The second part means the first part to concatenate with a 1, here we have omitted a concatenation symbol ∘.</p>
+<p>Regular Expression is very useful in the applications of computer science, as we use it to express the pattern of strings. For example, a programming language could use it for the mechanism to describe the patterns of the tokens such as the key words, and this mechanism to recognize the tokens in the language can be called a lexical analyzer.</p>
+<h2 id="Practice"><a href="#Practice" class="headerlink" title="Practice"></a>Practice</h2><p>Here is the practice from my course “System Programming”.</p>
+<blockquote>
+<p>Write a program (a lexical analyzer) with C or Java Program Language for SL based on the FA. For tokens with the types ID, KEYWORD and NUM, you should give the lexeme (value) of the token (see the sample output as an example). </p>
+</blockquote>
+<p>SL is a simple language, The following is a sample program with SL.</p>
+<p>The sample test program:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var A, B, C; </div><div class="line">begin </div><div class="line">	A = 5;</div><div class="line">	B = 6;</div><div class="line">	C = (a + b) / 2.0; </div><div class="line">end.</div></pre></td></tr></table></figure></p>
+<p>In SL, a program begins with the declaration for variables using the keyword “var” following variable names. The program segment starts with the keyword “begin” and ends with the keyword “end” and “.”. A program segment consists of statements. A statement has two cases: (1) It can be another program segment; (2) It can be an assignment statement consisting of identifiers, “=” and expressions. An expression consists of number (integer and real number), operators (+,-, <em>, /). For numbers, you only need to consider integer and real number. For operators, you only need to consider +, -, </em> , and /. For all other symbols that are not defined can be reported as “Unrecognized” and in any case, your program should be able to finish to scan all inputs.<br>The syntactic elements and their corresponding tokens are listed as follows: </p>
+<table>
+<thead>
+<tr>
+<th>Syntactic Element</th>
+<th>Token Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>var</td>
+<td>KEYWORD</td>
+</tr>
+<tr>
+<td>begin</td>
+<td>KEYWORD </td>
+</tr>
+<tr>
+<td>+</td>
+<td>PLUS </td>
+</tr>
+<tr>
+<td>-</td>
+<td>MINUS </td>
+</tr>
+<tr>
+<td>end</td>
+<td>KEYWORD </td>
+</tr>
+<tr>
+<td>*</td>
+<td>MUL </td>
+</tr>
+<tr>
+<td>,</td>
+<td>COMMA </td>
+</tr>
+<tr>
+<td>/</td>
+<td>DIV </td>
+</tr>
+<tr>
+<td>;</td>
+<td>SEMICOLON </td>
+</tr>
+<tr>
+<td>(</td>
+<td>LBRACE </td>
+</tr>
+<tr>
+<td>=</td>
+<td>ASSIGN </td>
+</tr>
+<tr>
+<td>)</td>
+<td>RBRACE </td>
+</tr>
+<tr>
+<td>.</td>
+<td>PERIOD </td>
+</tr>
+<tr>
+<td>Integer (e.g. 124) or real number (e.g. 1.2)</td>
+<td>NUM </td>
+</tr>
+<tr>
+<td>A string starting with letter and following with letter or digit</td>
+<td>ID </td>
+</tr>
+</tbody>
+</table>
+<h3 id="Design-a-lexical-analyzer"><a href="#Design-a-lexical-analyzer" class="headerlink" title="Design a lexical analyzer"></a>Design a lexical analyzer</h3><ul>
+<li>Regular Expression for the tokens</li>
 </ul>
-<p><img src="/img/scup.jpeg" alt=""></p>
-<h2 id="Publications"><a href="#Publications" class="headerlink" title="Publications"></a>Publications</h2><h4 id="National-Invention-Patent-No-2017101385486"><a href="#National-Invention-Patent-No-2017101385486" class="headerlink" title="National Invention Patent No. 2017101385486"></a>National Invention Patent No. 2017101385486</h4><p>Patentee: Yang Yidi<br>Inventor: Zhu Siyu, Yang Yidi<br>Patent Name: An Evaluating and Decision-making Method of Advertising based on the Technology of Face Recognition and Big Data Mining<br>URL: <a href="https://patents.google.com/patent/CN106971317A/zh" target="_blank" rel="external">https://patents.google.com/patent/CN106971317A/zh</a></p>
-<h4 id="Software-copyright-No-01656298"><a href="#Software-copyright-No-01656298" class="headerlink" title="Software copyright No. 01656298"></a>Software copyright No. 01656298</h4><p>Copyright owner: Wuhan University<br>Inventor: Zhu Siyu, Yang Yidi<br>Software Name: An Expert System of Advertising based on the Technology of Face Recognition and Big Data Mining</p>
-<h2 id="Video-Demo"><a href="#Video-Demo" class="headerlink" title="Video Demo"></a>Video Demo</h2><p>YouTube: <a href="https://www.youtube.com/watch?v=t6wdY4XG1u0&amp;t=33s" target="_blank" rel="external">https://www.youtube.com/watch?v=t6wdY4XG1u0&amp;t=33s</a></p>
-<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/edieYoung/face_detect_for_advertising" target="_blank" rel="external">https://github.com/edieYoung/face_detect_for_advertising</a></p>
+<p>VAR -&gt; var<br>BEGIN -&gt; begin<br>END -&gt; end<br>KEYWORD -&gt; VAR| BEGIN| END<br>PLUS -&gt; +<br>MINUS -&gt; -<br>COMMA -&gt; ,<br>DIV -&gt; /<br>SEMICOLON -&gt; ;<br>LBRACE -&gt; (<br>ASSIGN -&gt; =<br>RBRACE -&gt; )<br>PERIOD -&gt; .</p>
+<p>LETTER -&gt; a|b|c|d|….|z|A|B|C|D|…..|Z<br>DIGIT -&gt; 1|2|3|4|5|6|7|8|9|0<br>ID -&gt; LETTER(LETTER|DIGIT)<em><br>INTEGER -&gt; DIGIT(DIGIT)</em><br>NUM -&gt; INTEGER(.|ℇ) INTEGER</p>
+<ul>
+<li>Finite Automata to recognize SL<br><img src="/img/fa2.png" alt=""><br><img src="/img/fa1.png" alt=""></li>
+</ul>
+<h3 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h3><p>I wrote three functions besides the main function to complete the analysis job.<br>They are respectively scan(), get_next_token() and print_token(). And here is some heading definitions and global variables of my program.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &lt;string.h&gt;</div><div class="line">#include &lt;fcntl.h&gt;</div><div class="line"></div><div class="line">/* Some definitions */</div><div class="line">#define MAXBUFSIZE  1000</div><div class="line">#define Max_Token_Size 100</div><div class="line">#define AB TOKEN_AB</div><div class="line"></div><div class="line">typedef enum &#123;</div><div class="line">	KEYWORD, COMMA, SEMICOLON, ASSIGN, PERIOD, PLUS, MINUS, MUL, DIV, LBRACE, RBRACE, ID, NUM, Unrecognized</div><div class="line">&#125;TokenType;</div><div class="line"></div><div class="line"></div><div class="line">/*----- The prototype of functions in this functions---*/</div><div class="line">int  get_next_token(void);</div><div class="line">int scan(void);</div><div class="line">void print_token(TokenType);</div><div class="line">int fail(int);</div><div class="line"></div><div class="line">/*--------------- The Global variables----------------*/</div><div class="line">int  fd;			  /* File descriptor to the input file*/</div><div class="line"></div><div class="line">char input_buf[MAXBUFSIZE];  /* Maximum buffer size */</div><div class="line"></div><div class="line"></div><div class="line">char *start_pt;		/*The pointer pointing to the starting  position for </div><div class="line">                                    the current token recongnizatioin*/	  </div><div class="line"></div><div class="line">int forward;			  /*The distance from start_pt for the </div><div class="line">                                    current token recongnization*/	</div><div class="line">char token_val[Max_Token_Size];	  /* The token lexeme value*/</div><div class="line"></div><div class="line">char letter[] =&#123;&apos;a&apos;,&apos;b&apos;,&apos;c&apos;,&apos;d&apos;,&apos;e&apos;,&apos;f&apos;,&apos;g&apos;,&apos;h&apos;,&apos;i&apos;,&apos;j&apos;,&apos;k&apos;,&apos;l&apos;,&apos;m&apos;,&apos;n&apos;,&apos;o&apos;,&apos;p&apos;,&apos;q&apos;,&apos;r&apos;,&apos;s&apos;,&apos;t&apos;,&apos;u&apos;,&apos;v&apos;,&apos;w&apos;,&apos;x&apos;,&apos;y&apos;,&apos;z&apos;,&apos;A&apos;,&apos;B&apos;,&apos;C&apos;,</div><div class="line">&apos;D&apos;,&apos;E&apos;,&apos;F&apos;,&apos;G&apos;,&apos;H&apos;,&apos;I&apos;,&apos;J&apos;,&apos;K&apos;,&apos;L&apos;,&apos;M&apos;,&apos;N&apos;,&apos;O&apos;,&apos;P&apos;,&apos;Q&apos;,&apos;R&apos;,&apos;S&apos;,&apos;T&apos;,&apos;U&apos;,&apos;V&apos;,&apos;W&apos;,&apos;X&apos;,&apos;Y&apos;,&apos;Z&apos;&#125;;   </div><div class="line"></div><div class="line">char digit[] =&#123;&apos;1&apos;,&apos;2&apos;,&apos;3&apos;,&apos;4&apos;,&apos;5&apos;,&apos;6&apos;,&apos;7&apos;,&apos;8&apos;,&apos;9&apos;,&apos;0&apos;&#125;;</div><div class="line"></div><div class="line">int current_state;</div></pre></td></tr></table></figure></p>
+<p>The scan() function is to open the input file and take charge of making decision about moving the start point or terminating the prorcess while looping function get_next_token().</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">int scan()</div><div class="line">&#123;</div><div class="line">	int  ret, rbytes;</div><div class="line"></div><div class="line">	start_pt=input_buf;</div><div class="line">	</div><div class="line">	/* Read the input file into a buffer */</div><div class="line">      /* Only consider the simple case when the buffer is big enough*/</div><div class="line">      rbytes = read( fd, input_buf, MAXBUFSIZE );</div><div class="line"></div><div class="line">	if( rbytes  &lt; 0 )&#123;</div><div class="line">		printf(&quot;Could not read from the file\n&quot;);</div><div class="line">		close(fd);</div><div class="line">		return -1;</div><div class="line">	&#125;else if (rbytes == 0 )&#123;</div><div class="line">		printf(&quot;The input file is empty.\n&quot;);	</div><div class="line">		close(fd);</div><div class="line">		return -1;</div><div class="line">	&#125;else&#123;</div><div class="line">		input_buf[rbytes-1]=&apos;\0&apos;;  /*the file ends with \0*/</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	printf(&quot;Token Name\t\t|Token Value \n&quot;);</div><div class="line">	printf(&quot;--------------------------------------------\n&quot;);</div><div class="line"></div><div class="line">		while( ( ret=get_next_token() ) &gt;= 0 )&#123;</div><div class="line">			print_token(ret); </div><div class="line">			start_pt = start_pt + forward +1;</div><div class="line">			//handle the space and \n</div><div class="line">			int i = 0;</div><div class="line">			while(start_pt[0]==32|start_pt[0]==&apos;\n&apos;)&#123;</div><div class="line">				start_pt++;</div><div class="line">				i++;</div><div class="line">				if(!start_pt[0])&#123;</div><div class="line">					printf(&quot;\nSucessfuly finish scan. Normal terminates.\n&quot;);</div><div class="line">					return 1;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			current_state = 0;</div><div class="line">			//initialize the token_val to null</div><div class="line">			for(int i = 0; i&lt;sizeof(token_val)/sizeof(token_val[0]); i++)&#123;</div><div class="line">				token_val[i]=&apos;\0&apos;;</div><div class="line">			&#125;</div><div class="line">			</div><div class="line">		&#125;	</div><div class="line">	</div><div class="line"></div><div class="line">	if (ret == -1 )</div><div class="line">		printf(&quot;\nSucessfuly finish scan.\n&quot;);</div><div class="line">	else</div><div class="line">		printf(&quot;\nError: Non-recongnizable character in the input file.\n&quot;);</div><div class="line">	</div><div class="line">	close(fd);</div><div class="line">	return 1;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>The key function is the get_next_token(), in this function I implemented the finite automata by using the mechanism of  “cases-switch” to represent each state.<br>BTW, I wrote a function named isMember(), which can be commonly used.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/*--------Function: isMember(c,a)-----------------------</div><div class="line">   Return 1 if c is a member of a.</div><div class="line">   Return 0 if c is not a member of a;</div><div class="line">---------------------------------------------------------*/</div><div class="line">int isMember(char c, int n, char a[])&#123;</div><div class="line">	</div><div class="line">	for (int i=0; i &lt; n; i++)                                         </div><div class="line">    &#123;</div><div class="line">        if(c== a[i])&#123;</div><div class="line">        	return 1;</div><div class="line">        &#125;                                                                                              </div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div></pre></td><td class="code"><pre><div class="line">/*--------Function: get_next_token()-----------------------</div><div class="line">   Return the next token. </div><div class="line">   Note: Return -1 if normal finish;</div><div class="line">         Return -2 if there is non-recongnizd character </div><div class="line">---------------------------------------------------------*/</div><div class="line">int  get_next_token()</div><div class="line">&#123;</div><div class="line">//start a new round of FA</div><div class="line">	char c;</div><div class="line">	int i;</div><div class="line">	current_state = 0;</div><div class="line">	forward = 0;</div><div class="line">//loop until find a token is returned, the range is from start_pt to start_pt+foward</div><div class="line">	while(1)&#123;</div><div class="line">		//from the first +forward in this turn</div><div class="line">		c = start_pt[forward];</div><div class="line">	</div><div class="line">		switch (current_state )&#123;</div><div class="line"></div><div class="line">			case 0:</div><div class="line">				if(c==&apos;,&apos;)&#123;</div><div class="line">					return COMMA;</div><div class="line">				&#125;else if(c==&apos;;&apos;)&#123;</div><div class="line">					return SEMICOLON;</div><div class="line">				&#125;else if(c==&apos;=&apos;)&#123;</div><div class="line">					return ASSIGN;</div><div class="line">				&#125;else if(c==&apos;.&apos;)&#123;</div><div class="line">					return PERIOD;</div><div class="line">				&#125;else if(c==&apos;+&apos;)&#123;</div><div class="line">					return PLUS;</div><div class="line">				&#125;else if(c==&apos;-&apos;)&#123;</div><div class="line">					return MINUS;</div><div class="line">				&#125;else if(c==&apos;*&apos;)&#123;</div><div class="line">					return MUL;</div><div class="line">				&#125;else if(c==&apos;/&apos;)&#123;</div><div class="line">					return DIV;</div><div class="line">				&#125;else if(c==&apos;(&apos;)&#123;</div><div class="line">					return LBRACE;</div><div class="line">				&#125;else if(c==&apos;)&apos;)&#123;</div><div class="line">					return RBRACE;</div><div class="line">					//finish this turn</div><div class="line">				&#125;else&#123;</div><div class="line">					current_state=1;</div><div class="line">					//go to state 1</div><div class="line">				&#125;</div><div class="line"></div><div class="line"></div><div class="line">				</div><div class="line">//state 1</div><div class="line">			case 1:</div><div class="line">			    //printf(&quot;in state 1\n&quot;);</div><div class="line">				if(isMember(c, 52, letter))&#123;</div><div class="line">					token_val[0]=start_pt[0];</div><div class="line">					current_state = 2;</div><div class="line">					//go to state 2</div><div class="line">					forward++;</div><div class="line">				&#125;else&#123;</div><div class="line">					current_state=3;</div><div class="line">					//go to state 3</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line">				//keep the this turn of loop, but change the state</div><div class="line">//state 2</div><div class="line">			case 2:</div><div class="line">				</div><div class="line">				if(isMember(c, 52, letter)|isMember(c, 10, digit))&#123;</div><div class="line">                    //give this char to token_val</div><div class="line">                    //printf(&quot;forward=%d\n&quot;,forward);</div><div class="line">					token_val[forward]= start_pt[forward];</div><div class="line">					token_val[forward+1]=&apos;\0&apos;;</div><div class="line">					current_state = 2;</div><div class="line">					forward++;</div><div class="line">				&#125;else&#123;</div><div class="line">					//printf(&quot;This token has been finished\n&quot;);</div><div class="line">					//printf(&quot;forward=%d\n&quot;,forward);</div><div class="line">					current_state=0;</div><div class="line">					forward--;</div><div class="line">					if (!strcmp(token_val, &quot;var&quot;)|!strcmp(token_val, &quot;begin&quot;)|!strcmp(token_val, &quot;end&quot;))&#123;</div><div class="line">						return KEYWORD;</div><div class="line">					&#125;else&#123;</div><div class="line">					 	return ID;</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line">				</div><div class="line">//state 3</div><div class="line">			case 3:	</div><div class="line">				if(isMember(c, 10, digit))&#123;</div><div class="line">					token_val[forward]= start_pt[forward];</div><div class="line">					current_state= 4;</div><div class="line">				&#125;else if(c==&apos;$&apos;)&#123;</div><div class="line">					//end successfully</div><div class="line">					return -1;</div><div class="line">				&#125;else&#123;</div><div class="line">					return Unrecognized;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line">//state 4</div><div class="line">		    case 4:</div><div class="line">		    	if(isMember(c, 10, digit))&#123;</div><div class="line">		    		token_val[forward]= start_pt[forward];</div><div class="line">					token_val[forward+1]=&apos;\0&apos;;</div><div class="line">					current_state = 4;</div><div class="line">					forward++;</div><div class="line">		    	&#125;else if(c==&apos;.&apos;)&#123;</div><div class="line">		    		current_state = 5;</div><div class="line">		    		forward++;</div><div class="line">		    	&#125;else&#123;</div><div class="line">					//printf(&quot;This token has been finished\n&quot;);</div><div class="line">					</div><div class="line">					forward=forward-1;</div><div class="line">					current_state=0;</div><div class="line">					return NUM;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line">//state 5   </div><div class="line">			case 5:</div><div class="line">				if(isMember(c, 10, digit))&#123;</div><div class="line">					//give it the dot symbol</div><div class="line">					token_val[forward-1]= start_pt[forward-1];</div><div class="line">					current_state = 6;</div><div class="line">				&#125;else&#123;</div><div class="line">					forward = forward-2;</div><div class="line">					return NUM;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line">			case 6:</div><div class="line">				//end state</div><div class="line">				if(isMember(c, 10, digit))&#123;</div><div class="line">					//give the decimal part</div><div class="line">					token_val[forward]= start_pt[forward];</div><div class="line">					current_state = 6;</div><div class="line">					forward++;</div><div class="line">				&#125;else&#123;</div><div class="line">					forward=forward-1;</div><div class="line">					current_state=0;</div><div class="line">					return NUM;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line"></div><div class="line">		    			</div><div class="line">			default:</div><div class="line">				printf(&quot;Wrong state (should not occur)\n&quot;);</div><div class="line">				return -1;</div><div class="line">			&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>After that, I wrote a function print_token() which takes in the token number and value and then prints its name and token value into a certain format.<br>Finally, the main function, which opens the input_file, and calls the scan() function to run.<br>But this rest part of functions are omitted since they are not related to the process of the finite automata. </p>
+<p>This output sample looks like this:<br>The sample SL:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var A, B, C; </div><div class="line">begin </div><div class="line">	A = 5;</div><div class="line">	B = 6;</div><div class="line">	C = (a + b) / 2.0; </div><div class="line">end.</div></pre></td></tr></table></figure></p>
+<p>The output:<br><img src="/img/ans.jpg" alt=""></p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>Here is the end of my review article about Finite Automata and Lexical Analyzer homework, hope it can help. Thanks for reading. </p>
 
       
 
@@ -347,7 +564,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">resume</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
         		</li>
       		
 		</ul>
@@ -357,7 +574,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2017/10/27/card/">see more >></a>
+          <a class="article-more-a" href="/2018/01/10/auto/">see more >></a>
         </p>
       
 
@@ -389,7 +606,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 
@@ -401,7 +618,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 Edie Young
+    		&copy; 2019 Edie Young
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -505,11 +722,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">
