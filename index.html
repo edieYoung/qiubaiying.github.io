@@ -507,13 +507,19 @@
 <p>strcut Person{<br>    1: required string userName,<br>    2: optional i64 favoriteNumber,<br>    3: optional list<string> interests<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">In Protocol Buffers looks like similar:</div></pre></td></tr></table></figure></string></p>
 <p>message Person {<br>    required string userName = 1;<br>    optional int64 favoriteNumber = 2;<br>    repeated string interests = 3;<br>}<br>```</p>
 <ul>
-<li>BinaryProtocal<br><img src="img/thift.jpg" alt="example encoding in Thrift"></li>
+<li>BinaryProtocal<br><img src="img/thrift.jpg" alt="example encoding in Thrift"></li>
 </ul>
 <p>Using field tag(number 1, 2, 3) to replace the field name.</p>
 <ul>
-<li>CompactProtocol<br>It packs the field type and field tag number into a single byte,</li>
+<li>CompactProtocol<br>It packs the field type and field tag number into a single byte.<br><img src="img/compact.jpeg" alt="example encoding in Thrift"></li>
 </ul>
-
+<p>The required and optional don’t interfere how the field is encoded, only use for a runtime check if the field is not set when it is required, catching the bug.</p>
+<h3 id="Field-tags-and-Schema-Evolution"><a href="#Field-tags-and-Schema-Evolution" class="headerlink" title="Field tags and Schema Evolution"></a>Field tags and Schema Evolution</h3><ol>
+<li>Adding new schema(fields)<br> For forward compatbility, simply ignore the new field.<br> For backward compatbility, as long as each field has a unique tag number, new code can always read old data. The only concern is that the new field cannot be a required field, instead it should be optional or has a default value.</li>
+<li>Removing schema(fields)<br> Reversed, not removing a required field, and you can never use the same tag number again.</li>
+</ol>
+<h3 id="Datatypes-and-schema-Evolution"><a href="#Datatypes-and-schema-Evolution" class="headerlink" title="Datatypes and schema Evolution"></a>Datatypes and schema Evolution</h3><p>It is possible for Protocol buffers when make the single field value as repeated (multi-value)field. New code reading old data sees a list with zero or one elements. old code reading new data sees only the last element of the list.<br>Thrift has a dedicated list datatype, but it has advantage of supporting nested lists.</p>
+<h3 id="Avro"><a href="#Avro" class="headerlink" title="Avro"></a>Avro</h3>
       
 
       
@@ -684,11 +690,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">
