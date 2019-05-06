@@ -15,7 +15,7 @@
 <meta property="og:url" content="http://yoursite.com/2019/05/01/system_application/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
 <meta property="og:description" content="1. Data-intensive ApplicationScalability Percentiles  tail latency amplification Dashboard: forward decay, t-digest, HdrHistogram SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s">
-<meta property="og:updated_time" content="2019-05-06T18:39:48.000Z">
+<meta property="og:updated_time" content="2019-05-06T18:50:30.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Notes of Designing Data-Intensive Application">
 <meta name="twitter:description" content="1. Data-intensive ApplicationScalability Percentiles  tail latency amplification Dashboard: forward decay, t-digest, HdrHistogram SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s">
@@ -348,65 +348,57 @@ function reduce(key, values){
 Use bitwise OR can be done efficiently
 
 
-2. ```WHERE product_sk=31 AND store_sk=3```
-Use bitwise AND. 
-</code></pre><h3 id="Memory-bandwidth-and-vectorized-processing"><a href="#Memory-bandwidth-and-vectorized-processing" class="headerlink" title="Memory bandwidth and vectorized processing"></a>Memory bandwidth and vectorized processing</h3><ol>
-<li>Reducing the volume of data that needs to be loaded from disk.</li>
-<li>Making efficient use of CPU cycle. Process a chunk of compressed column data that fit in the same amount of L1 cache directly one chunk by one chunk, CPU can execute a loop much faster. This is vectorized processing.</li>
-</ol>
-<h2 id="Sort-Order-in-Column-Storage"><a href="#Sort-Order-in-Column-Storage" class="headerlink" title="Sort Order in Column Storage"></a>Sort Order in Column Storage</h2><h3 id="Several-different-sort-orders"><a href="#Several-different-sort-orders" class="headerlink" title="Several different sort orders"></a>Several different sort orders</h3><ol>
-<li>C-Store, multiple sort orders, replicate to multiple machines anyway for backup.</li>
-</ol>
-<h2 id="Writing-to-Column-Oriented-Storage"><a href="#Writing-to-Column-Oriented-Storage" class="headerlink" title="Writing to Column-Oriented Storage"></a>Writing to Column-Oriented Storage</h2><p>With a B-Tree, write a row will be difficult. Rewrite all column files.<br>But with LMS-Tree, they are all written in a sorted structure and prepared for writing to disk.</p>
-<h2 id="Aggregation-Data-Cubes-and-Materialized-Views"><a href="#Aggregation-Data-Cubes-and-Materialized-Views" class="headerlink" title="Aggregation: Data Cubes and Materialized Views"></a>Aggregation: Data Cubes and Materialized Views</h2><ul>
-<li><p>Materialized aggregates, Cache some of the counts or sums that queries use most often.</p>
+2. <figure class="highlight plain"><figcaption><span>product_sk=31 AND store_sk=3```</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">	Use bitwise AND. </div><div class="line"></div><div class="line">### Memory bandwidth and vectorized processing</div><div class="line">1. Reducing the volume of data that needs to be loaded from disk.</div><div class="line">2. Making efficient use of CPU cycle. Process a chunk of compressed column data that fit in the same amount of L1 cache directly one chunk by one chunk, CPU can execute a loop much faster. This is vectorized processing.</div><div class="line"></div><div class="line">## Sort Order in Column Storage</div><div class="line">### Several different sort orders</div><div class="line">1. C-Store, multiple sort orders, replicate to multiple machines anyway for backup.</div><div class="line"></div><div class="line"></div><div class="line">## Writing to Column-Oriented Storage</div><div class="line">With a B-Tree, write a row will be difficult. Rewrite all column files.</div><div class="line">But with LMS-Tree, they are all written in a sorted structure and prepared for writing to disk.</div><div class="line"></div><div class="line">## Aggregation: Data Cubes and Materialized Views</div><div class="line">* Materialized aggregates, Cache some of the counts or sums that queries use most often.</div><div class="line"></div><div class="line">	1. Materialized view, automatically make a copy of the query results. More expensive for writing, only for improving read performance.</div><div class="line">	2. Data cube, OLAP cube, use a n-dimension table to get the sum, count attribute for each other dimension.</div><div class="line">		Certain queries are very fast with this fashion, but it doesn&apos;t have the same flexibility as querying the raw data.</div><div class="line">		</div><div class="line"># Encoding and Evolution</div><div class="line">Evolvability: Make it easy to change.</div><div class="line">1. Server-side applications, perform a rolling upgrade, deploying the new version to a few nodes at a time, gradually working your way through all nodes. Allow new versions to be deployed without service downtime. </div><div class="line">2. Client-side, at the mercy of the user, who may not install the update for some time.</div><div class="line"></div><div class="line">Old and new versions of the code, old and new data formats potentially coexist in the system.</div><div class="line"></div><div class="line">* Compatibility</div><div class="line">	1. Backward compatibility - newer code can read data that was written by older code.</div><div class="line">	2. Forward compatibility - Older code can read data that was written by newer code.</div><div class="line"></div><div class="line">	</div><div class="line">## Formats for Encoding Data</div><div class="line">Two representations of data:</div><div class="line"></div><div class="line">1. In memory, data is kept in objects, structs, lists, arrays, hash tables, trees and so on. Optimized for efficient access, and manipulation by the CPU.</div><div class="line">2. When write data to a file or send it over the network, you have to encode it as some kind of self-contained sequence of bytes(JSON). </div><div class="line"></div><div class="line">So we need to translate these two representation, from in-memory to a byte sequence is called encoding(serialization or marshalling), other way is called decoding(deserialization, unmarshalling, parsing).</div><div class="line"></div><div class="line">## Language-Specific Formats</div><div class="line">Many programming languages come with built-in support for encoding in-memory object into byte sequence.</div><div class="line">* Java - java.io.Serializable</div><div class="line">* Ruby - Marshal</div><div class="line">* Python - pickle</div><div class="line">* Kryo for Java(thrid-party libraries)</div><div class="line"></div><div class="line">Problems are: </div><div class="line">1. It is very difficult to read the data in another language.</div><div class="line">2. To restore data in the same object types, the decoding process needs to be able to instantiate arbitrary classes. Security problem, attacker can get your application to decode an arbitrary byte sequence, they can instantiate arbitrary classes, which in turn often allows them to do terrible things such as remotely executing arbitrary code.</div><div class="line">3. Versioning data is often an afterthought in these libraries.</div><div class="line">4. Efficiency, Java&apos;s built-in serialization is notorious for its bad performance and bloated encoding.</div><div class="line"></div><div class="line">## JSON, XML, and Binary Variants</div><div class="line">Problems:</div><div class="line">1. There is a lot of ambiguity around the encoding of numbers.</div><div class="line">	Dealing with large number, integers greater than %2^53% cannot be exactly represented in an IEEE 754 double-precision floating-point number. </div><div class="line">2. JSON and XML have good support for Unicode character strings, but they don&apos;t support binary strings.</div><div class="line">3. Applications that don&apos;t use XML/JSON schemas need to potentially hardcode the appropriate encoding/decoding logic instead.</div><div class="line">4. CSV doesn&apos;t have any schema, if an application change adds a new row or column, you have to handle the change manually. CSV is also a quite vague format(what happens if a value contains a comma or a newline character?) </div><div class="line"></div><div class="line">### Binary encoding</div><div class="line">JSON is less verbose than CML, but both use a lot of space compared to binary format.</div><div class="line">Example record:</div></pre></td></tr></table></figure>
+
+(
+    &quot;userName&quot;:&quot;Martin&quot;,
+    &quot;favoriteNumber&quot;:1337,
+    &quot;interest&quot;:[&quot;daydreaming&quot;,&quot;hacking&quot;]
+```
+</code></pre><p>Example of MessagePack, a binary encoding for JSON:</p>
+<table>
+<thead>
+<tr>
+<th>object(3 entries)</th>
+<th>string(length 8)</th>
+<th>u</th>
+<th>s</th>
+<th>e</th>
+<th>r</th>
+<th>N</th>
+<th>a</th>
+<th>m</th>
+<th>e</th>
+<th>string(length6)</th>
+<th>M</th>
+<th>a</th>
+<th>r</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>83</td>
+<td>a8</td>
+<td>75</td>
+<td>73</td>
+<td>65</td>
+<td>72</td>
+<td>4e</td>
+<td>61</td>
+<td>6d</td>
+<td>65</td>
+<td>a6</td>
+<td>4d</td>
+<td>61</td>
+<td>72</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <ol>
-<li>Materialized view, automatically make a copy of the query results. More expensive for writing, only for improving read performance.</li>
-<li>Data cube, OLAP cube, use a n-dimension table to get the sum, count attribute for each other dimension.<br> Certain queries are very fast with this fashion, but it doesn’t have the same flexibility as querying the raw data.</li>
+<li>The first byte, 0x83, indicates that what follows is an object(top four bits=0x80) with three fields(bottom four bits = 0x03).</li>
+<li></li>
 </ol>
-</li>
-</ul>
-<h1 id="Encoding-and-Evolution"><a href="#Encoding-and-Evolution" class="headerlink" title="Encoding and Evolution"></a>Encoding and Evolution</h1><p>Evolvability: Make it easy to change.</p>
-<ol>
-<li>Server-side applications, perform a rolling upgrade, deploying the new version to a few nodes at a time, gradually working your way through all nodes. Allow new versions to be deployed without service downtime. </li>
-<li>Client-side, at the mercy of the user, who may not install the update for some time.</li>
-</ol>
-<p>Old and new versions of the code, old and new data formats potentially coexist in the system.</p>
-<ul>
-<li>Compatibility<ol>
-<li>Backward compatibility - newer code can read data that was written by older code.</li>
-<li>Forward compatibility - Older code can read data that was written by newer code.</li>
-</ol>
-</li>
-</ul>
-<h2 id="Formats-for-Encoding-Data"><a href="#Formats-for-Encoding-Data" class="headerlink" title="Formats for Encoding Data"></a>Formats for Encoding Data</h2><p>Two representations of data:</p>
-<ol>
-<li>In memory, data is kept in objects, structs, lists, arrays, hash tables, trees and so on. Optimized for efficient access, and manipulation by the CPU.</li>
-<li>When write data to a file or send it over the network, you have to encode it as some kind of self-contained sequence of bytes(JSON). </li>
-</ol>
-<p>So we need to translate these two representation, from in-memory to a byte sequence is called encoding(serialization or marshalling), other way is called decoding(deserialization, unmarshalling, parsing).</p>
-<h2 id="Language-Specific-Formats"><a href="#Language-Specific-Formats" class="headerlink" title="Language-Specific Formats"></a>Language-Specific Formats</h2><p>Many programming languages come with built-in support for encoding in-memory object into byte sequence.</p>
-<ul>
-<li>Java - java.io.Serializable</li>
-<li>Ruby - Marshal</li>
-<li>Python - pickle</li>
-<li>Kryo for Java(thrid-party libraries)</li>
-</ul>
-<p>Problems are: </p>
-<ol>
-<li>It is very difficult to read the data in another language.</li>
-<li>To restore data in the same object types, the decoding process needs to be able to instantiate arbitrary classes. Security problem, attacker can get your application to decode an arbitrary byte sequence, they can instantiate arbitrary classes, which in turn often allows them to do terrible things such as remotely executing arbitrary code.</li>
-<li>Versioning data is often an afterthought in these libraries.</li>
-<li>Efficiency, Java’s built-in serialization is notorious for its bad performance and bloated encoding.</li>
-</ol>
-<h2 id="JSON-XML-and-Binary-Variants"><a href="#JSON-XML-and-Binary-Variants" class="headerlink" title="JSON, XML, and Binary Variants"></a>JSON, XML, and Binary Variants</h2><p>Problems:</p>
-<ol>
-<li>There is a lot of ambiguity around the encoding of numbers.<br> Dealing with large number, integers greater than %2^53% cannot be exactly represented in an IEEE 754 double-precision floating-point number. </li>
-<li>JSON and XML have good support for Unicode character strings, but they don’t support binary strings.</li>
-<li>Applications that don’t use XML/JSON schemas need to potentially hardcode the appropriate encoding/decoding logic instead.</li>
-<li>CSV doesn’t have any schema, if an application change adds a new row or column, you have to handle the change manually. CSV is also a quite vague format(what happens if a value contains a comma or a newline character?) </li>
-</ol>
-<h3 id="Binary-encoding"><a href="#Binary-encoding" class="headerlink" title="Binary encoding"></a>Binary encoding</h3><p>JSON is less verbose than CML, but both use a lot of space compared to binary format.</p>
 
       
 
@@ -559,7 +551,7 @@ Use bitwise AND.
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Data-intensive-Application"><span class="toc-number">1.</span> <span class="toc-text">1. Data-intensive Application</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scalability"><span class="toc-number">1.1.</span> <span class="toc-text">Scalability</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maintainability"><span class="toc-number">1.2.</span> <span class="toc-text">Maintainability</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Data-Models-and-Query-Languages"><span class="toc-number">2.</span> <span class="toc-text">2. Data Models and Query Languages</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Relational-Model-Versus-Document-Model"><span class="toc-number">2.1.</span> <span class="toc-text">Relational Model Versus Document Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-Relational-Mismatch"><span class="toc-number">2.2.</span> <span class="toc-text">Object-Relational Mismatch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Many-to-One-and-Many-to-Many-Relationships"><span class="toc-number">2.3.</span> <span class="toc-text">Many-to-One and Many-to-Many Relationships</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#many-to-one-relationship"><span class="toc-number">2.3.1.</span> <span class="toc-text">many-to-one relationship</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Many-to-Many-relationship"><span class="toc-number">2.3.2.</span> <span class="toc-text">Many-to-Many relationship</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compare"><span class="toc-number">2.4.</span> <span class="toc-text">Compare</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Query-Languages-for-Data"><span class="toc-number">2.5.</span> <span class="toc-text">Query Languages for Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Declarative-Queries-on-the-Web"><span class="toc-number">2.6.</span> <span class="toc-text">Declarative Queries on the Web</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Memory-bandwidth-and-vectorized-processing"><span class="toc-number">2.6.1.</span> <span class="toc-text">Memory bandwidth and vectorized processing</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Sort-Order-in-Column-Storage"><span class="toc-number">2.7.</span> <span class="toc-text">Sort Order in Column Storage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Several-different-sort-orders"><span class="toc-number">2.7.1.</span> <span class="toc-text">Several different sort orders</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Writing-to-Column-Oriented-Storage"><span class="toc-number">2.8.</span> <span class="toc-text">Writing to Column-Oriented Storage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Aggregation-Data-Cubes-and-Materialized-Views"><span class="toc-number">2.9.</span> <span class="toc-text">Aggregation: Data Cubes and Materialized Views</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Encoding-and-Evolution"><span class="toc-number">3.</span> <span class="toc-text">Encoding and Evolution</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Formats-for-Encoding-Data"><span class="toc-number">3.1.</span> <span class="toc-text">Formats for Encoding Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Language-Specific-Formats"><span class="toc-number">3.2.</span> <span class="toc-text">Language-Specific Formats</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSON-XML-and-Binary-Variants"><span class="toc-number">3.3.</span> <span class="toc-text">JSON, XML, and Binary Variants</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Binary-encoding"><span class="toc-number">3.3.1.</span> <span class="toc-text">Binary encoding</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Data-intensive-Application"><span class="toc-number">1.</span> <span class="toc-text">1. Data-intensive Application</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scalability"><span class="toc-number">1.1.</span> <span class="toc-text">Scalability</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maintainability"><span class="toc-number">1.2.</span> <span class="toc-text">Maintainability</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Data-Models-and-Query-Languages"><span class="toc-number">2.</span> <span class="toc-text">2. Data Models and Query Languages</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Relational-Model-Versus-Document-Model"><span class="toc-number">2.1.</span> <span class="toc-text">Relational Model Versus Document Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-Relational-Mismatch"><span class="toc-number">2.2.</span> <span class="toc-text">Object-Relational Mismatch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Many-to-One-and-Many-to-Many-Relationships"><span class="toc-number">2.3.</span> <span class="toc-text">Many-to-One and Many-to-Many Relationships</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#many-to-one-relationship"><span class="toc-number">2.3.1.</span> <span class="toc-text">many-to-one relationship</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Many-to-Many-relationship"><span class="toc-number">2.3.2.</span> <span class="toc-text">Many-to-Many relationship</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compare"><span class="toc-number">2.4.</span> <span class="toc-text">Compare</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Query-Languages-for-Data"><span class="toc-number">2.5.</span> <span class="toc-text">Query Languages for Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Declarative-Queries-on-the-Web"><span class="toc-number">2.6.</span> <span class="toc-text">Declarative Queries on the Web</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
