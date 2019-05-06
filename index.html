@@ -447,54 +447,269 @@
 <p>They are both declarative languages for specifying the styling of a document. If we use a imperative approach, like Java-script, using the core Document Object Model(DOM) API, the result might look like:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var liElements = document.getElementsByTagName(&quot;li&quot;);</div><div class="line">for(var i = 0; i&lt;liElements.length;i++)&#123;</div><div class="line">	if(liEelements[i].className==&quot;selected&quot;)&#123;</div><div class="line">		var children = liElements[i].childNodes;</div><div class="line">		for(var j=0; j&lt;children.length;j++)&#123;</div><div class="line">			var child = children[j];</div><div class="line">			if(child.nodeType == Node.ELEMENT_NODE &amp;&amp; child.tagName === &quot;p&quot;)&#123;</div><div class="line">				child.setAttribute(&quot;style&quot;, &quot;background-color:blue&quot;);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>Not only longer and harder to read, but also:</p>
 <ol>
-<li><p>If the selected class is removed(select other page), the background color won’t be removed, until the entire page is reloaded. With CSS, the browser automatically detects when the <figure class="highlight plain"><figcaption><span>> p``` rule no longer applies.</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">2. If you want to take advantage of a new API, say to use `document.getElementsByClassName(&quot;selected&quot;)` or `document.evaluate()`</div><div class="line">, you have to rewrite the code. But CSS can do it without breaking compatibility.</div><div class="line">## MapReduce Querying</div><div class="line">MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between. It is based on the map(collect) and reduce(fold, inject) functions that exist in many functional programming languages.</div><div class="line"></div><div class="line">An example to report how many sharks you have sighted per month:</div><div class="line">In PostgreSQL:</div></pre></td></tr></table></figure></p>
-<p> SELECT data_trunc(‘month’, observation_timestamp) AS observatin_month, sum(num_animals) AS total_animals<br> FROM observations<br> WHERE family = ‘Sharks’<br> GROUP BY observation_month;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">The same can be expressed with MongoDB&apos;s MapReduce features as follows:</div></pre></td></tr></table></figure>
-<p> db.observations.mapReduce(</p>
-<pre><code>function map(){
-    var yer = this.observationTimestamp.getFullYear();
-    var month = this.observationTimestamp.getMonth()+1;
-    emit(year + &quot;-&quot; +month, this.numAnimals;
-}
-function reduce(key, values){
-    return Array.sum(values);
-}
-{
-    query: { family: &quot;Sharks&quot;},
-    out: &quot;monthlySharkReport&quot;
-}
-</code></pre><p> };</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">Result:</div><div class="line">map: emit(&quot;1995-12&quot;, 3) and emit(&quot;1995-12&quot;,4)</div><div class="line">reduce: reduce(&quot;1995-12&quot;, [3,4]) -&gt; 7</div><div class="line"></div><div class="line">* Restricted in: They must be pure function, cannot perform additional databases queries, and they must not have any side effects.</div><div class="line"></div><div class="line">MapReduce is a fairly low-level programming model for distributed execution on a cluster of machines. Higher-level query languages like SQL can be implemented as a pipeline of MapReduce operations, but there are also many distributed implementations of SQL that don&apos;t use MapReduce.</div><div class="line"></div><div class="line">MongoDB 2.2 added support for a declarative query language called the aggregation pipeline:</div></pre></td></tr></table></figure>
-<p> db.observations.aggregate([</p>
-<pre><code>{ $match:{family:&quot;Sharks&quot;}},
-{ $group: {
-    _id: {
-        year:{$year: &quot;$observationTimestamp&quot;},
-        month:{$month:&quot;$ovservationTimestamp&quot;}
-    },
-    totalAnimals:{$sum:&quot;$numAnimals&quot;}
-}}
-</code></pre><p> ]};</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">## Graph-like data models</div><div class="line">Many-to-many relationships are an important distinguishing feature between different data models.</div><div class="line">A graph consists of two kinds of objects: vertices, edges</div><div class="line">Social graphs, The web graph, Road or rail networks.</div><div class="line"></div><div class="line">### Property Graphs</div><div class="line">Each vertex consists of:</div><div class="line">* A unique identifier</div><div class="line">* A set of outgoing edges</div><div class="line">* A set of incoming edges</div><div class="line">* A collection of properties(key-value pairs)</div><div class="line"></div><div class="line">Each edge consists of:</div><div class="line">* A unique identifier</div><div class="line">* The vertex at which the edge starts(the tail vertex)</div><div class="line">* The vertex at which the edge ends(the head vertex)</div><div class="line">* A label to describe the kind of relationship between the two vertices</div><div class="line">* A collection of properties(key-value pairs)</div><div class="line"></div><div class="line">### The Cypher Query Language</div><div class="line">Cypher is a declarative query language for property graphs, create for the Neo4j graph database.</div><div class="line"></div><div class="line">### Recursive common table expression</div><div class="line">find all nodes that are within &quot;us&quot;</div><div class="line">### Triple-Stores and SPARQL</div><div class="line">simple three-part statements: subject, predicate, object -&gt; Jim likes bananas.</div><div class="line"></div><div class="line">* Semantic web</div><div class="line">	Resource Description Framework(RDF) was intended as a mechanism for different websites to publish data in a consistent format, allowing data from different websites to be automatically combined into a web of data.</div><div class="line">	* RDF data model</div><div class="line">		The subject, predicate and object of a triple are often URIs, &lt;http://my-company.com/namespace#within&gt;</div><div class="line"></div><div class="line"></div><div class="line">* SPARQL query language</div><div class="line">query a person born in somewhere:</div><div class="line">	Cypher:</div><div class="line">	`(person) -[:BORN_IN]-&gt; () -[:WITHIN*0..]-&gt;(location)`</div><div class="line">	SPARQL:</div><div class="line">	`?person :bornIn / : within* ?location.`</div><div class="line"></div><div class="line">### Datalog</div><div class="line">is similar to triple-store model, writing as  `predicate(subject, object)` .</div><div class="line"></div><div class="line">## Summary</div><div class="line">Besides from relational databases.</div><div class="line">NoSQL datastores have diverged in two main directions:</div><div class="line">1. Document databases target use cases where data comes in self-contained documents and relationships between one document and another are rare.</div><div class="line">2. Graph databases go in the opposite direction, targeting use cases where anything is potentially to related to everything.</div><div class="line"></div><div class="line"># 3. Storage and Retrieval</div><div class="line">## Data Structures</div><div class="line">* Log - an append-only data file.</div><div class="line">* Index - efficiently find the value for a particular key in database</div><div class="line"></div><div class="line">## Hash Indexes</div><div class="line">* Bitcask(the default storage engine in Riak)</div><div class="line">Keep the hash map completely in memory, the key points to the byte offset where can find the value. High-performance reads and writes.</div><div class="line"></div><div class="line">This is feasible when you have a large number of writes per key, and there are not many distinct keys.</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">* What if &quot;Out of disk space&quot;</div><div class="line">Break log into segments of a certain size, then perform compaction on these segments</div><div class="line"></div><div class="line">### Issues in an implementation</div><div class="line">1. File format - CSV, it is faster simpler to use a binary format that first encodes the length of a string in bytes, followed by the raw string.</div><div class="line">2. Deleting records - append a deletion record to the data file(tombstone), will be discarded previous while merging.</div><div class="line">3. Crash recovery - speed up the restart by storing a snapshot of each segment&apos;s map on disk.</div><div class="line">4. Partially written records - checksums, allowing such corrupted parts of the log to be detected and ignored.</div><div class="line">5. Concurrency control - only one write thread.</div><div class="line"></div><div class="line">### Why append-only</div><div class="line">1. appending and segment merging are sequential write operations, generally much faster than random writes.</div><div class="line">2. CC and crash recovery are much simpler.</div><div class="line"></div><div class="line">### Hash table index limitations:</div><div class="line">1. The hash table must fit in memory.</div><div class="line">2. Range query are not efficient.</div><div class="line"></div><div class="line"></div><div class="line">## SSTables and LSM-Trees</div><div class="line">Require the sequence of key-value pairs is sorted by key.</div><div class="line">1. Merging segments is simple and efficient, use mergesort.</div><div class="line">2. Find particular key in the file you don&apos;t need an index of all keys in memory, but directly jump to the offset of some known key and scan according to the order. Only needs a sparse index to tell you the offsets for some of the keys.</div><div class="line">3. Possible to group those records in a block and compress it before writing it to disk.</div><div class="line"></div><div class="line"></div><div class="line">Long-Structured Merge-Tree (LMS-Tree) is based on the principle of merging and compacting files. It can be slow when looking up keys that do not exist.</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">## B-Trees</div><div class="line">1. Crash recovery  - WAL(write ahead log) or redo log, every B-tree modification must be written before it can be applied to the pages of the tree itself. The log is used to restore the B-tree back to a consistent state.</div><div class="line">2. Concurrency control with latches(lightweight locks).</div><div class="line"></div><div class="line">### Optimizations</div><div class="line">* use a copy-on-write scheme, instead of overwriting pages and maintaining a WAL for each recovery.</div><div class="line">* Abbreviating the sorted key names.</div><div class="line">* lay out the trees so that leaf pages appear in sequential order on disk. (LMS-trees is easier on this)</div><div class="line">* Additional pointers have been added to the tree, sibling pages to the left and right, for going back to parent pages.</div><div class="line">* Fractal trees with log-structured ideas to reduce disk seeks.</div><div class="line"></div><div class="line">## Compare B-Trees and LSM-Trees</div><div class="line">1. LSM-trees are faster for writes.</div><div class="line">2. B-trees are faster for reads.</div><div class="line"></div><div class="line">## Secondary index</div><div class="line">there might be many rows with the same key:</div><div class="line">1. make each value in the index a list of matching row identifiers.</div><div class="line">2. make each key unique by appending a row identifier to it.</div><div class="line"></div><div class="line">## Storing values within the index</div><div class="line">1. Clustered index - storing all row data within the index</div><div class="line">2. Non-clustered index - storing only references to the data within the index</div><div class="line"></div><div class="line">## Multi-column indexes</div><div class="line">Concatenated index, simply combines several fields into on key by appending one column to another.</div><div class="line">### Spatial Indexes</div><div class="line">* translate a two-dimensional location into a single number using space-filling curve, and then to use a regular B-tree index.</div><div class="line">* More commonly, R-trees are used.</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">## Full-text search and fuzzy indexes</div><div class="line">* fuzzy querying</div><div class="line"></div><div class="line">It requires different techniques. It uses a finite state automaton over the characters in the keys, similar to a trie. Search for words within a given edit distance.</div><div class="line"></div><div class="line">## In memory databases</div><div class="line">Keep the entire database in memory, potentially distributed across several machines.</div><div class="line"></div><div class="line">* Performance, faster because they can avoid the overheads of encoding in-memory data structures in a form that can be written to disk.</div><div class="line">* Providing data models that are difficult to implement with disk-based indexes.</div><div class="line"></div><div class="line">* Anti-caching approach - LRU</div><div class="line">* Non-volatile memory(NVM)</div><div class="line"></div><div class="line">## Transaction Processing or Analytics?</div><div class="line">1. Online transaction processing(OLTP)</div><div class="line">2. OLTA - different access pattern</div><div class="line"></div><div class="line">	needs to scan over a huge number of records, only reading a few columns per record, and calculates aggregate statistics(count, sum, average).</div><div class="line"></div><div class="line">### Data Warehousing - run analytics on this separate database</div><div class="line">They are usually reluctant to let business analysts run ad hoc analytic queries on an OLTP database.</div><div class="line">Expensive, scanning large parts of the dataset, harm the performance of concurrently executing transactions.</div><div class="line"></div><div class="line">* Extract-Transform-Load(ETL)</div><div class="line"></div><div class="line">	Data is extracted from OLTP databases(using either a periodic data dump or a continuous stream of updates), transformed into an analysis-friendly schema, cleaned up, and then loaded into the data warehouse.</div><div class="line"></div><div class="line">* The divergence between OLTP databases and data warehouses</div><div class="line">	On the surface, a data warehouse and a relational OLTP database look similar, because they both have a SQL query interface, but the internals of the systems can look quite different. Focus on either OLTP or OLTA, but not both.</div><div class="line"></div><div class="line">* A plethora of open source SQL-on-Hadoop projects</div><div class="line"></div><div class="line">	Apache Hive, Spark SQL, Cloudera Impala, Facebook Presto, Apache Tajo and Apache Drill.</div><div class="line"></div><div class="line">### Starts and Snowflakes: Schemas for Analytics</div><div class="line">There is a fact table in the middle, surrounded by its dimension tables. These dimension tables with the foreign key as the columns in the fact table.</div><div class="line"></div><div class="line">* Snowflakes</div><div class="line">	If the dimension tables are further broken into sub-dimensions.</div><div class="line"></div><div class="line">## Column-Oriented Storage</div><div class="line">In OLTP databases, storage is laid out in a row-oriented fashion, all the value from a row are stored one by one.</div><div class="line"></div><div class="line">Instead, store all the values from each column together, save a lot of work and space. They are in the same order of the row number, so it is easy to reassemble an entire row.</div><div class="line"></div><div class="line">### Column Compression</div><div class="line">* Bitmap encoding</div><div class="line">	74 = 000010000000000000 -&gt; 4,1(4 zeros, 1 one, rest zeros)</div><div class="line"></div><div class="line">	1. `WHERE product_sk IN(30,68,69)`</div><div class="line">	Use bitwise OR can be done efficiently</div><div class="line">	2.  `WHERE product_sk=31 AND store_sk=3`</div><div class="line">	Use bitwise AND.</div><div class="line"></div><div class="line">### Memory bandwidth and vectorized processing</div><div class="line">1. Reducing the volume of data that needs to be loaded from disk.</div><div class="line">2. Making efficient use of CPU cycle. Process a chunk of compressed column data that fit in the same amount of L1 cache directly one chunk by one chunk, CPU can execute a loop much faster. This is vectorized processing.</div><div class="line"></div><div class="line">## Sort Order in Column Storage</div><div class="line">### Several different sort orders</div><div class="line">1. C-Store, multiple sort orders, replicate to multiple machines anyway for backup.</div><div class="line"></div><div class="line"></div><div class="line">## Writing to Column-Oriented Storage</div><div class="line">With a B-Tree, write a row will be difficult. Rewrite all column files.</div><div class="line">But with LMS-Tree, they are all written in a sorted structure and prepared for writing to disk.</div><div class="line"></div><div class="line">## Aggregation: Data Cubes and Materialized Views</div><div class="line">* Materialized aggregates, Cache some of the counts or sums that queries use most often.</div><div class="line"></div><div class="line">	1. Materialized view, automatically make a copy of the query results. More expensive for writing, only for improving read performance.</div><div class="line">	2. Data cube, OLAP cube, use a n-dimension table to get the sum, count attribute for each other dimension.</div><div class="line">		Certain queries are very fast with this fashion, but it doesn&apos;t have the same flexibility as querying the raw data.</div><div class="line"></div><div class="line"># Encoding and Evolution</div><div class="line">Evolvability: Make it easy to change.</div><div class="line">1. Server-side applications, perform a rolling upgrade, deploying the new version to a few nodes at a time, gradually working your way through all nodes. Allow new versions to be deployed without service downtime.</div><div class="line">2. Client-side, at the mercy of the user, who may not install the update for some time.</div><div class="line"></div><div class="line">Old and new versions of the code, old and new data formats potentially coexist in the system.</div><div class="line"></div><div class="line">* Compatibility</div><div class="line">	1. Backward compatibility - newer code can read data that was written by older code.</div><div class="line">	2. Forward compatibility - Older code can read data that was written by newer code.</div><div class="line"></div><div class="line"></div><div class="line">## Formats for Encoding Data</div><div class="line">Two representations of data:</div><div class="line"></div><div class="line">1. In memory, data is kept in objects, structs, lists, arrays, hash tables, trees and so on. Optimized for efficient access, and manipulation by the CPU.</div><div class="line">2. When write data to a file or send it over the network, you have to encode it as some kind of self-contained sequence of bytes(JSON).</div><div class="line"></div><div class="line">So we need to translate these two representation, from in-memory to a byte sequence is called encoding(serialization or marshalling), other way is called decoding(deserialization, unmarshalling, parsing).</div><div class="line"></div><div class="line">## Language-Specific Formats</div><div class="line">Many programming languages come with built-in support for encoding in-memory object into byte sequence.</div><div class="line">* Java - java.io.Serializable</div><div class="line">* Ruby - Marshal</div><div class="line">* Python - pickle</div><div class="line">* Kryo for Java(thrid-party libraries)</div><div class="line"></div><div class="line">Problems are:</div><div class="line">1. It is very difficult to read the data in another language.</div><div class="line">2. To restore data in the same object types, the decoding process needs to be able to instantiate arbitrary classes. Security problem, attacker can get your application to decode an arbitrary byte sequence, they can instantiate arbitrary classes, which in turn often allows them to do terrible things such as remotely executing arbitrary code.</div><div class="line">3. Versioning data is often an afterthought in these libraries.</div><div class="line">4. Efficiency, Java&apos;s built-in serialization is notorious for its bad performance and bloated encoding.</div><div class="line"></div><div class="line">## JSON, XML, and Binary Variants</div><div class="line">Problems:</div><div class="line">1. There is a lot of ambiguity around the encoding of numbers.</div><div class="line">	Dealing with large number, integers greater than %2^53% cannot be exactly represented in an IEEE 754 double-precision floating-point number.</div><div class="line">2. JSON and XML have good support for Unicode character strings, but they don&apos;t support binary strings.</div><div class="line">3. Applications that don&apos;t use XML/JSON schemas need to potentially hardcode the appropriate encoding/decoding logic instead.</div><div class="line">4. CSV doesn&apos;t have any schema, if an application change adds a new row or column, you have to handle the change manually. CSV is also a quite vague format(what happens if a value contains a comma or a newline character?)</div><div class="line"></div><div class="line">### Binary encoding</div><div class="line">JSON is less verbose than CML, but both use a lot of space compared to binary format.</div><div class="line">Example record:</div></pre></td></tr></table></figure>
-<p> {</p>
-<pre><code>&quot;userName&quot;:&quot;Martin&quot;,
-&quot;favoriteNumber&quot;:1337,
-&quot;interest&quot;:[&quot;daydreaming&quot;,&quot;hacking&quot;]
-</code></pre><p> }</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">Example of MessagePack, a binary encoding for JSON:</div><div class="line"></div><div class="line">object(3 entries) | string(length 8) | u | s | e | r | N | a | m | e | string(length6) | M | a | r</div><div class="line">------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------</div><div class="line">83 | a8 | 75 | 73 | 65 | 72 | 4e | 61 | 6d | 65 | a6 | 4d | 61 | 72</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">1. The first byte, 0x83, indicates that what follows is an object(top four bits=0x80) with three fields(bottom four bits = 0x03).</div><div class="line">2. The second byte, 0xa8, indicates that what follows is a string, that is eight bytes long.</div><div class="line">3. The next eight bytes are the field name userName in ASCII.</div><div class="line">4. The next seven bytes encode the six-letter string value Martin with a prefix 0xa6.</div><div class="line"></div><div class="line">Not very much reduction in the size.</div><div class="line"></div><div class="line">### Thrift and Protocol Buffers</div><div class="line">Both Thrift(Facebook) and Protocol Buffers(Google) require a schema for any data that is encoded. In Thrift, you would describe the schema in the Thrift interface definition language(IDL) like this:</div></pre></td></tr></table></figure>
-<p> strcut Person{</p>
-<pre><code>1: required string userName,
-2: optional i64 favoriteNumber,
-3: optional list&lt;string&gt; interests
-</code></pre><p> }</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">In Protocol Buffers looks like similar:</div></pre></td></tr></table></figure>
-<p> message Person {</p>
-<pre><code>required string userName = 1;
-optional int64 favoriteNumber = 2;
-repeated string interests = 3;
-</code></pre><p> }<br>```</p>
+<li>If the selected class is removed(select other page), the background color won’t be removed, until the entire page is reloaded. With CSS, the browser automatically detects when the li.selected &gt; p rule no longer applies.</li>
+<li>If you want to take advantage of a new API, say to use document.getElementsByClassName(“selected”) or document.evaluate()<br>, you have to rewrite the code. But CSS can do it without breaking compatibility.<h2 id="MapReduce-Querying"><a href="#MapReduce-Querying" class="headerlink" title="MapReduce Querying"></a>MapReduce Querying</h2>MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between. It is based on the map(collect) and reduce(fold, inject) functions that exist in many functional programming languages.</li>
+</ol>
+<p>An example to report how many sharks you have sighted per month:<br>In PostgreSQL:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">SELECT data_trunc(&apos;month&apos;, observation_timestamp) AS observatin_month, sum(num_animals) AS total_animals</div><div class="line">FROM observations</div><div class="line">WHERE family = &apos;Sharks&apos;</div><div class="line">GROUP BY observation_month;</div></pre></td></tr></table></figure>
+<p>The same can be expressed with MongoDB’s MapReduce features as follows:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">db.observations.mapReduce(</div><div class="line">	function map()&#123;</div><div class="line">		var yer = this.observationTimestamp.getFullYear();</div><div class="line">		var month = this.observationTimestamp.getMonth()+1;</div><div class="line">		emit(year + &quot;-&quot; +month, this.numAnimals;</div><div class="line">	&#125;</div><div class="line">	function reduce(key, values)&#123;</div><div class="line">		return Array.sum(values);</div><div class="line">	&#125;</div><div class="line">	&#123;</div><div class="line">		query: &#123; family: &quot;Sharks&quot;&#125;,</div><div class="line">		out: &quot;monthlySharkReport&quot;</div><div class="line">	&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>Result:<br>map: emit(“1995-12”, 3) and emit(“1995-12”,4)<br>reduce: reduce(“1995-12”, [3,4]) -&gt; 7</p>
+<ul>
+<li>Restricted in: They must be pure function, cannot perform additional databases queries, and they must not have any side effects.</li>
+</ul>
+<p>MapReduce is a fairly low-level programming model for distributed execution on a cluster of machines. Higher-level query languages like SQL can be implemented as a pipeline of MapReduce operations, but there are also many distributed implementations of SQL that don’t use MapReduce.</p>
+<p>MongoDB 2.2 added support for a declarative query language called the aggregation pipeline:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">db.observations.aggregate([</div><div class="line">	&#123; $match:&#123;family:&quot;Sharks&quot;&#125;&#125;,</div><div class="line">	&#123; $group: &#123;</div><div class="line">		_id: &#123;</div><div class="line">			year:&#123;$year: &quot;$observationTimestamp&quot;&#125;,</div><div class="line">			month:&#123;$month:&quot;$ovservationTimestamp&quot;&#125;</div><div class="line">		&#125;,</div><div class="line">		totalAnimals:&#123;$sum:&quot;$numAnimals&quot;&#125;</div><div class="line">	&#125;&#125;</div><div class="line">]&#125;;</div></pre></td></tr></table></figure>
+<h2 id="Graph-like-data-models"><a href="#Graph-like-data-models" class="headerlink" title="Graph-like data models"></a>Graph-like data models</h2><p>Many-to-many relationships are an important distinguishing feature between different data models.<br>A graph consists of two kinds of objects: vertices, edges<br>Social graphs, The web graph, Road or rail networks.</p>
+<h3 id="Property-Graphs"><a href="#Property-Graphs" class="headerlink" title="Property Graphs"></a>Property Graphs</h3><p>Each vertex consists of:</p>
+<ul>
+<li>A unique identifier</li>
+<li>A set of outgoing edges</li>
+<li>A set of incoming edges</li>
+<li>A collection of properties(key-value pairs)</li>
+</ul>
+<p>Each edge consists of:</p>
+<ul>
+<li>A unique identifier</li>
+<li>The vertex at which the edge starts(the tail vertex)</li>
+<li>The vertex at which the edge ends(the head vertex)</li>
+<li>A label to describe the kind of relationship between the two vertices</li>
+<li>A collection of properties(key-value pairs)</li>
+</ul>
+<h3 id="The-Cypher-Query-Language"><a href="#The-Cypher-Query-Language" class="headerlink" title="The Cypher Query Language"></a>The Cypher Query Language</h3><p>Cypher is a declarative query language for property graphs, create for the Neo4j graph database.</p>
+<h3 id="Recursive-common-table-expression"><a href="#Recursive-common-table-expression" class="headerlink" title="Recursive common table expression"></a>Recursive common table expression</h3><p>find all nodes that are within “us”</p>
+<h3 id="Triple-Stores-and-SPARQL"><a href="#Triple-Stores-and-SPARQL" class="headerlink" title="Triple-Stores and SPARQL"></a>Triple-Stores and SPARQL</h3><p>simple three-part statements: subject, predicate, object -&gt; Jim likes bananas.</p>
+<ul>
+<li>Semantic web<br>  Resource Description Framework(RDF) was intended as a mechanism for different websites to publish data in a consistent format, allowing data from different websites to be automatically combined into a web of data.<ul>
+<li>RDF data model<br>  The subject, predicate and object of a triple are often URIs, <a href="http://my-company.com/namespace#within" target="_blank" rel="external">http://my-company.com/namespace#within</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>SPARQL query language<br>query a person born in somewhere:<br>  Cypher:</p>
+<pre><code>(person) -[:BORN_IN]-&gt; () -[:WITHIN*0..]-&gt;(location)
+</code></pre><p>  SPARQL:</p>
+<pre><code>?person :bornIn / : within* ?location.
+</code></pre></li>
+</ul>
+<h3 id="Datalog"><a href="#Datalog" class="headerlink" title="Datalog"></a>Datalog</h3><p>is similar to triple-store model, writing as  predicate(subject, object).</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Besides from relational databases.<br>NoSQL datastores have diverged in two main directions:</p>
+<ol>
+<li>Document databases target use cases where data comes in self-contained documents and relationships between one document and another are rare.</li>
+<li>Graph databases go in the opposite direction, targeting use cases where anything is potentially to related to everything.</li>
+</ol>
+<h1 id="3-Storage-and-Retrieval"><a href="#3-Storage-and-Retrieval" class="headerlink" title="3. Storage and Retrieval"></a>3. Storage and Retrieval</h1><h2 id="Data-Structures"><a href="#Data-Structures" class="headerlink" title="Data Structures"></a>Data Structures</h2><ul>
+<li>Log - an append-only data file.</li>
+<li>Index - efficiently find the value for a particular key in database</li>
+</ul>
+<h2 id="Hash-Indexes"><a href="#Hash-Indexes" class="headerlink" title="Hash Indexes"></a>Hash Indexes</h2><ul>
+<li>Bitcask(the default storage engine in Riak)<br>Keep the hash map completely in memory, the key points to the byte offset where can find the value. High-performance reads and writes.</li>
+</ul>
+<p>This is feasible when you have a large number of writes per key, and there are not many distinct keys.</p>
+<ul>
+<li>What if “Out of disk space”<br>Break log into segments of a certain size, then perform compaction on these segments</li>
+</ul>
+<h3 id="Issues-in-an-implementation"><a href="#Issues-in-an-implementation" class="headerlink" title="Issues in an implementation"></a>Issues in an implementation</h3><ol>
+<li>File format - CSV, it is faster simpler to use a binary format that first encodes the length of a string in bytes, followed by the raw string.</li>
+<li>Deleting records - append a deletion record to the data file(tombstone), will be discarded previous while merging.</li>
+<li>Crash recovery - speed up the restart by storing a snapshot of each segment’s map on disk.</li>
+<li>Partially written records - checksums, allowing such corrupted parts of the log to be detected and ignored.</li>
+<li>Concurrency control - only one write thread.</li>
+</ol>
+<h3 id="Why-append-only"><a href="#Why-append-only" class="headerlink" title="Why append-only"></a>Why append-only</h3><ol>
+<li>appending and segment merging are sequential write operations, generally much faster than random writes.</li>
+<li>CC and crash recovery are much simpler.</li>
+</ol>
+<h3 id="Hash-table-index-limitations"><a href="#Hash-table-index-limitations" class="headerlink" title="Hash table index limitations:"></a>Hash table index limitations:</h3><ol>
+<li>The hash table must fit in memory.</li>
+<li>Range query are not efficient.</li>
+</ol>
+<h2 id="SSTables-and-LSM-Trees"><a href="#SSTables-and-LSM-Trees" class="headerlink" title="SSTables and LSM-Trees"></a>SSTables and LSM-Trees</h2><p>Require the sequence of key-value pairs is sorted by key.</p>
+<ol>
+<li>Merging segments is simple and efficient, use mergesort.</li>
+<li>Find particular key in the file you don’t need an index of all keys in memory, but directly jump to the offset of some known key and scan according to the order. Only needs a sparse index to tell you the offsets for some of the keys.</li>
+<li>Possible to group those records in a block and compress it before writing it to disk.</li>
+</ol>
+<p>Long-Structured Merge-Tree (LMS-Tree) is based on the principle of merging and compacting files. It can be slow when looking up keys that do not exist.</p>
+<h2 id="B-Trees"><a href="#B-Trees" class="headerlink" title="B-Trees"></a>B-Trees</h2><ol>
+<li>Crash recovery  - WAL(write ahead log) or redo log, every B-tree modification must be written before it can be applied to the pages of the tree itself. The log is used to restore the B-tree back to a consistent state.</li>
+<li>Concurrency control with latches(lightweight locks).</li>
+</ol>
+<h3 id="Optimizations"><a href="#Optimizations" class="headerlink" title="Optimizations"></a>Optimizations</h3><ul>
+<li>use a copy-on-write scheme, instead of overwriting pages and maintaining a WAL for each recovery.</li>
+<li>Abbreviating the sorted key names.</li>
+<li>lay out the trees so that leaf pages appear in sequential order on disk. (LMS-trees is easier on this)</li>
+<li>Additional pointers have been added to the tree, sibling pages to the left and right, for going back to parent pages.</li>
+<li>Fractal trees with log-structured ideas to reduce disk seeks.</li>
+</ul>
+<h2 id="Compare-B-Trees-and-LSM-Trees"><a href="#Compare-B-Trees-and-LSM-Trees" class="headerlink" title="Compare B-Trees and LSM-Trees"></a>Compare B-Trees and LSM-Trees</h2><ol>
+<li>LSM-trees are faster for writes.</li>
+<li>B-trees are faster for reads.</li>
+</ol>
+<h2 id="Secondary-index"><a href="#Secondary-index" class="headerlink" title="Secondary index"></a>Secondary index</h2><p>there might be many rows with the same key:</p>
+<ol>
+<li>make each value in the index a list of matching row identifiers.</li>
+<li>make each key unique by appending a row identifier to it.</li>
+</ol>
+<h2 id="Storing-values-within-the-index"><a href="#Storing-values-within-the-index" class="headerlink" title="Storing values within the index"></a>Storing values within the index</h2><ol>
+<li>Clustered index - storing all row data within the index</li>
+<li>Non-clustered index - storing only references to the data within the index</li>
+</ol>
+<h2 id="Multi-column-indexes"><a href="#Multi-column-indexes" class="headerlink" title="Multi-column indexes"></a>Multi-column indexes</h2><p>Concatenated index, simply combines several fields into on key by appending one column to another.</p>
+<h3 id="Spatial-Indexes"><a href="#Spatial-Indexes" class="headerlink" title="Spatial Indexes"></a>Spatial Indexes</h3><ul>
+<li>translate a two-dimensional location into a single number using space-filling curve, and then to use a regular B-tree index.</li>
+<li>More commonly, R-trees are used.</li>
+</ul>
+<h2 id="Full-text-search-and-fuzzy-indexes"><a href="#Full-text-search-and-fuzzy-indexes" class="headerlink" title="Full-text search and fuzzy indexes"></a>Full-text search and fuzzy indexes</h2><ul>
+<li>fuzzy querying</li>
+</ul>
+<p>It requires different techniques. It uses a finite state automaton over the characters in the keys, similar to a trie. Search for words within a given edit distance.</p>
+<h2 id="In-memory-databases"><a href="#In-memory-databases" class="headerlink" title="In memory databases"></a>In memory databases</h2><p>Keep the entire database in memory, potentially distributed across several machines.</p>
+<ul>
+<li>Performance, faster because they can avoid the overheads of encoding in-memory data structures in a form that can be written to disk.</li>
+<li><p>Providing data models that are difficult to implement with disk-based indexes.</p>
+</li>
+<li><p>Anti-caching approach - LRU</p>
+</li>
+<li>Non-volatile memory(NVM)</li>
+</ul>
+<h2 id="Transaction-Processing-or-Analytics"><a href="#Transaction-Processing-or-Analytics" class="headerlink" title="Transaction Processing or Analytics?"></a>Transaction Processing or Analytics?</h2><ol>
+<li>Online transaction processing(OLTP)</li>
+<li><p>OLTA - different access pattern</p>
+<p> needs to scan over a huge number of records, only reading a few columns per record, and calculates aggregate statistics(count, sum, average).</p>
 </li>
 </ol>
+<h3 id="Data-Warehousing-run-analytics-on-this-separate-database"><a href="#Data-Warehousing-run-analytics-on-this-separate-database" class="headerlink" title="Data Warehousing - run analytics on this separate database"></a>Data Warehousing - run analytics on this separate database</h3><p>They are usually reluctant to let business analysts run ad hoc analytic queries on an OLTP database.<br>Expensive, scanning large parts of the dataset, harm the performance of concurrently executing transactions.</p>
+<ul>
+<li><p>Extract-Transform-Load(ETL)</p>
+<p>  Data is extracted from OLTP databases(using either a periodic data dump or a continuous stream of updates), transformed into an analysis-friendly schema, cleaned up, and then loaded into the data warehouse.</p>
+</li>
+<li><p>The divergence between OLTP databases and data warehouses<br>  On the surface, a data warehouse and a relational OLTP database look similar, because they both have a SQL query interface, but the internals of the systems can look quite different. Focus on either OLTP or OLTA, but not both.</p>
+</li>
+<li><p>A plethora of open source SQL-on-Hadoop projects</p>
+<p>  Apache Hive, Spark SQL, Cloudera Impala, Facebook Presto, Apache Tajo and Apache Drill.</p>
+</li>
+</ul>
+<h3 id="Starts-and-Snowflakes-Schemas-for-Analytics"><a href="#Starts-and-Snowflakes-Schemas-for-Analytics" class="headerlink" title="Starts and Snowflakes: Schemas for Analytics"></a>Starts and Snowflakes: Schemas for Analytics</h3><p>There is a fact table in the middle, surrounded by its dimension tables. These dimension tables with the foreign key as the columns in the fact table.</p>
+<ul>
+<li>Snowflakes<br>  If the dimension tables are further broken into sub-dimensions.</li>
+</ul>
+<h2 id="Column-Oriented-Storage"><a href="#Column-Oriented-Storage" class="headerlink" title="Column-Oriented Storage"></a>Column-Oriented Storage</h2><p>In OLTP databases, storage is laid out in a row-oriented fashion, all the value from a row are stored one by one.</p>
+<p>Instead, store all the values from each column together, save a lot of work and space. They are in the same order of the row number, so it is easy to reassemble an entire row.</p>
+<h3 id="Column-Compression"><a href="#Column-Compression" class="headerlink" title="Column Compression"></a>Column Compression</h3><ul>
+<li><p>Bitmap encoding<br>  74 = 000010000000000000 -&gt; 4,1(4 zeros, 1 one, rest zeros)</p>
+<ol>
+<li><code>WHERE product_sk IN(30,68,69)</code><br>Use bitwise OR can be done efficiently</li>
+<li><code>WHERE product_sk=31 AND store_sk=3</code><br>Use bitwise AND.</li>
+</ol>
+</li>
+</ul>
+<h3 id="Memory-bandwidth-and-vectorized-processing"><a href="#Memory-bandwidth-and-vectorized-processing" class="headerlink" title="Memory bandwidth and vectorized processing"></a>Memory bandwidth and vectorized processing</h3><ol>
+<li>Reducing the volume of data that needs to be loaded from disk.</li>
+<li>Making efficient use of CPU cycle. Process a chunk of compressed column data that fit in the same amount of L1 cache directly one chunk by one chunk, CPU can execute a loop much faster. This is vectorized processing.</li>
+</ol>
+<h2 id="Sort-Order-in-Column-Storage"><a href="#Sort-Order-in-Column-Storage" class="headerlink" title="Sort Order in Column Storage"></a>Sort Order in Column Storage</h2><h3 id="Several-different-sort-orders"><a href="#Several-different-sort-orders" class="headerlink" title="Several different sort orders"></a>Several different sort orders</h3><ol>
+<li>C-Store, multiple sort orders, replicate to multiple machines anyway for backup.</li>
+</ol>
+<h2 id="Writing-to-Column-Oriented-Storage"><a href="#Writing-to-Column-Oriented-Storage" class="headerlink" title="Writing to Column-Oriented Storage"></a>Writing to Column-Oriented Storage</h2><p>With a B-Tree, write a row will be difficult. Rewrite all column files.<br>But with LMS-Tree, they are all written in a sorted structure and prepared for writing to disk.</p>
+<h2 id="Aggregation-Data-Cubes-and-Materialized-Views"><a href="#Aggregation-Data-Cubes-and-Materialized-Views" class="headerlink" title="Aggregation: Data Cubes and Materialized Views"></a>Aggregation: Data Cubes and Materialized Views</h2><ul>
+<li><p>Materialized aggregates, Cache some of the counts or sums that queries use most often.</p>
+<ol>
+<li>Materialized view, automatically make a copy of the query results. More expensive for writing, only for improving read performance.</li>
+<li>Data cube, OLAP cube, use a n-dimension table to get the sum, count attribute for each other dimension.<br> Certain queries are very fast with this fashion, but it doesn’t have the same flexibility as querying the raw data.</li>
+</ol>
+</li>
+</ul>
+<h1 id="Encoding-and-Evolution"><a href="#Encoding-and-Evolution" class="headerlink" title="Encoding and Evolution"></a>Encoding and Evolution</h1><p>Evolvability: Make it easy to change.</p>
+<ol>
+<li>Server-side applications, perform a rolling upgrade, deploying the new version to a few nodes at a time, gradually working your way through all nodes. Allow new versions to be deployed without service downtime.</li>
+<li>Client-side, at the mercy of the user, who may not install the update for some time.</li>
+</ol>
+<p>Old and new versions of the code, old and new data formats potentially coexist in the system.</p>
+<ul>
+<li>Compatibility<ol>
+<li>Backward compatibility - newer code can read data that was written by older code.</li>
+<li>Forward compatibility - Older code can read data that was written by newer code.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Formats-for-Encoding-Data"><a href="#Formats-for-Encoding-Data" class="headerlink" title="Formats for Encoding Data"></a>Formats for Encoding Data</h2><p>Two representations of data:</p>
+<ol>
+<li>In memory, data is kept in objects, structs, lists, arrays, hash tables, trees and so on. Optimized for efficient access, and manipulation by the CPU.</li>
+<li>When write data to a file or send it over the network, you have to encode it as some kind of self-contained sequence of bytes(JSON).</li>
+</ol>
+<p>So we need to translate these two representation, from in-memory to a byte sequence is called encoding(serialization or marshalling), other way is called decoding(deserialization, unmarshalling, parsing).</p>
+<h2 id="Language-Specific-Formats"><a href="#Language-Specific-Formats" class="headerlink" title="Language-Specific Formats"></a>Language-Specific Formats</h2><p>Many programming languages come with built-in support for encoding in-memory object into byte sequence.</p>
+<ul>
+<li>Java - java.io.Serializable</li>
+<li>Ruby - Marshal</li>
+<li>Python - pickle</li>
+<li>Kryo for Java(thrid-party libraries)</li>
+</ul>
+<p>Problems are:</p>
+<ol>
+<li>It is very difficult to read the data in another language.</li>
+<li>To restore data in the same object types, the decoding process needs to be able to instantiate arbitrary classes. Security problem, attacker can get your application to decode an arbitrary byte sequence, they can instantiate arbitrary classes, which in turn often allows them to do terrible things such as remotely executing arbitrary code.</li>
+<li>Versioning data is often an afterthought in these libraries.</li>
+<li>Efficiency, Java’s built-in serialization is notorious for its bad performance and bloated encoding.</li>
+</ol>
+<h2 id="JSON-XML-and-Binary-Variants"><a href="#JSON-XML-and-Binary-Variants" class="headerlink" title="JSON, XML, and Binary Variants"></a>JSON, XML, and Binary Variants</h2><p>Problems:</p>
+<ol>
+<li>There is a lot of ambiguity around the encoding of numbers.<br> Dealing with large number, integers greater than %2^53% cannot be exactly represented in an IEEE 754 double-precision floating-point number.</li>
+<li>JSON and XML have good support for Unicode character strings, but they don’t support binary strings.</li>
+<li>Applications that don’t use XML/JSON schemas need to potentially hardcode the appropriate encoding/decoding logic instead.</li>
+<li>CSV doesn’t have any schema, if an application change adds a new row or column, you have to handle the change manually. CSV is also a quite vague format(what happens if a value contains a comma or a newline character?)</li>
+</ol>
+<h3 id="Binary-encoding"><a href="#Binary-encoding" class="headerlink" title="Binary encoding"></a>Binary encoding</h3><p>JSON is less verbose than CML, but both use a lot of space compared to binary format.<br>Example record:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	&quot;userName&quot;:&quot;Martin&quot;,</div><div class="line">	&quot;favoriteNumber&quot;:1337,</div><div class="line">	&quot;interest&quot;:[&quot;daydreaming&quot;,&quot;hacking&quot;]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Example of MessagePack, a binary encoding for JSON:</p>
+<table>
+<thead>
+<tr>
+<th>object(3 entries)</th>
+<th>string(length 8)</th>
+<th>u</th>
+<th>s</th>
+<th>e</th>
+<th>r</th>
+<th>N</th>
+<th>a</th>
+<th>m</th>
+<th>e</th>
+<th>string(length6)</th>
+<th>M</th>
+<th>a</th>
+<th>r</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>83</td>
+<td>a8</td>
+<td>75</td>
+<td>73</td>
+<td>65</td>
+<td>72</td>
+<td>4e</td>
+<td>61</td>
+<td>6d</td>
+<td>65</td>
+<td>a6</td>
+<td>4d</td>
+<td>61</td>
+<td>72</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>The first byte, 0x83, indicates that what follows is an object(top four bits=0x80) with three fields(bottom four bits = 0x03).</li>
+<li>The second byte, 0xa8, indicates that what follows is a string, that is eight bytes long.</li>
+<li>The next eight bytes are the field name userName in ASCII.</li>
+<li>The next seven bytes encode the six-letter string value Martin with a prefix 0xa6.</li>
+</ol>
+<p>Not very much reduction in the size.</p>
+<h3 id="Thrift-and-Protocol-Buffers"><a href="#Thrift-and-Protocol-Buffers" class="headerlink" title="Thrift and Protocol Buffers"></a>Thrift and Protocol Buffers</h3><p>Both Thrift(Facebook) and Protocol Buffers(Google) require a schema for any data that is encoded. In Thrift, you would describe the schema in the Thrift interface definition language(IDL) like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">strcut Person&#123;</div><div class="line">	1: required string userName,</div><div class="line">	2: optional i64 favoriteNumber,</div><div class="line">	3: optional list&lt;string&gt; interests</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>In Protocol Buffers looks like similar:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">message Person &#123;</div><div class="line">	required string userName = 1;</div><div class="line">	optional int64 favoriteNumber = 2;</div><div class="line">	repeated string interests = 3;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <ul>
 <li>BinaryProtocal<br><img src="img/thrift.jpg" alt="example encoding in Thrift"></li>
 </ul>
@@ -691,11 +906,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">informal</a>
+                <a href="javascript:void(0)" class="js-tag color2">resume</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">resume</a>
+                <a href="javascript:void(0)" class="js-tag color4">informal</a>
               </li>
              
               <li class="article-tag-list-item">
