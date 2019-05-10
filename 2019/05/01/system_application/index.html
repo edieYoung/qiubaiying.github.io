@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Notes of Designing Data-Intensive Application | Edie&#39;s Blog</title>
+  <title>Notes of Designing Data-Intensive Application(1) | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="1. Data-intensive ApplicationScalability Percentiles  tail latency amplification Dashboard: forward decay, t-digest, HdrHistogram SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s">
 <meta name="keywords" content="backend">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Notes of Designing Data-Intensive Application">
+<meta property="og:title" content="Notes of Designing Data-Intensive Application(1)">
 <meta property="og:url" content="http://yoursite.com/2019/05/01/system_application/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
 <meta property="og:description" content="1. Data-intensive ApplicationScalability Percentiles  tail latency amplification Dashboard: forward decay, t-digest, HdrHistogram SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s">
 <meta property="og:image" content="http://yoursite.com/2019/05/01/system_application/img/thrift.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/05/01/system_application/img/compact.jpeg">
-<meta property="og:updated_time" content="2019-05-06T19:43:52.000Z">
+<meta property="og:updated_time" content="2019-05-10T07:17:15.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Notes of Designing Data-Intensive Application">
+<meta name="twitter:title" content="Notes of Designing Data-Intensive Application(1)">
 <meta name="twitter:description" content="1. Data-intensive ApplicationScalability Percentiles  tail latency amplification Dashboard: forward decay, t-digest, HdrHistogram SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s">
 <meta name="twitter:image" content="http://yoursite.com/2019/05/01/system_application/img/thrift.jpg">
   
@@ -198,7 +198,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Notes of Designing Data-Intensive Application
+      Notes of Designing Data-Intensive Application(1)
     </h1>
   
 
@@ -597,7 +597,166 @@
 <li>Removing schema(fields)<br> Reversed, not removing a required field, and you can never use the same tag number again.</li>
 </ol>
 <h3 id="Datatypes-and-schema-Evolution"><a href="#Datatypes-and-schema-Evolution" class="headerlink" title="Datatypes and schema Evolution"></a>Datatypes and schema Evolution</h3><p>It is possible for Protocol buffers when make the single field value as repeated (multi-value)field. New code reading old data sees a list with zero or one elements. old code reading new data sees only the last element of the list.<br>Thrift has a dedicated list datatype, but it has advantage of supporting nested lists.</p>
-<h3 id="Avro"><a href="#Avro" class="headerlink" title="Avro"></a>Avro</h3>
+<h3 id="Avro"><a href="#Avro" class="headerlink" title="Avro"></a>Avro</h3><p>For Hadoop<br>Use a schema to specify the structure of the data being encoded. Two schema languages:</p>
+<ol>
+<li>Avro IDL, for human editing</li>
+<li>based on JSON, for machines-readable<br>There is noting to identify fields or their datatypes. Simply consists of values Concatenated together.<br>To parse the binary data, you go through the fields in the order that they appear in the schema and use the schema to tell you the datatype of each field.</li>
+</ol>
+<ul>
+<li>Writer’s schema - the schema to be compiled into the application</li>
+<li>Reader’s schema - decode some data, read it from a file or database, recieve it from the network, etc.<br>Writer’s schema and reader’s don’t need to be same, just need to be compatible.</li>
+</ul>
+<p>Schema resolution matches up the fields by field name.</p>
+<ol>
+<li>If the code reading the data encounters a field that appears in the writer’s schema, but not in the reader’s schema, ignore.</li>
+<li>If the code reading expects some fields, but the writer’s schema does not contain a field of that name, it is filled with a default value declared in the reader’s schema.</li>
+</ol>
+<ul>
+<li><p>compatibility<br>forward compatibility: ignore the field added, or fill with defualt value with the removed one.<br>backward compatibility: only add or remove a field that has a default value.</p>
+</li>
+<li><p>null : to make it nullable, must use a union type. union {null, long, string} field.</p>
+</li>
+<li>Changing datatype is possible.</li>
+<li>Changing the name of a field, can use an alias to refer the old name, so it is backward compatible not forward.</li>
+<li>Adding a branch to a union type is also backward compatbible but not forward.<h3 id="Dynamic-generated-Schemas"><a href="#Dynamic-generated-Schemas" class="headerlink" title="Dynamic generated Schemas"></a>Dynamic generated Schemas</h3>Avro is friendly to dynamically generated schemas, because it doesn’t contain any tag numbers. Generate new Avro schema from the database schema and export data in the new Avro schema.<h3 id="Code-generation-and-dynamically-typed-Languages"><a href="#Code-generation-and-dynamically-typed-Languages" class="headerlink" title="Code generation and dynamically typed Languages"></a>Code generation and dynamically typed Languages</h3>Thrift and Protocol Buffers rely on code generation, after a schema has been defined, you an generate code that implements this schema in programming languages you chose. Statically typed languages Java, C++ or C# allows efficient in-memory structures to be used for decoded data, allows type checking and autocomplition in IDEs.<br>For dynamically typed programming languages such as JavaScript, Ruby, or Python, there is not much point in generating code, since there is no compile-time type checker to satisfy.</li>
+</ul>
+<p>Avro provides optional code generation for statically typed programming languages, but it can be used just as well without any code generation. The file is self-describing since it includes all the neccessary metadata when open Arvo’s objsct container file(which embeds the writer’s schema).</p>
+<h2 id="The-Merits-of-schemas"><a href="#The-Merits-of-schemas" class="headerlink" title="The Merits of schemas"></a>The Merits of schemas</h2><p>Schema languages:</p>
+<ol>
+<li>ASN, a schema definition language in 1984. To define various network protocols, its binary encoding (DER) is still used to encode SSL certificates.<br>It supports schema evolution using tag numbers. Still complex, not a good choice for now.</li>
+<li>Some protocols are generally specific to a particular database, and the database vendor provides a driver(ODBC or JDBC APIs).</li>
+</ol>
+<h2 id="Modes-of-Dataflow"><a href="#Modes-of-Dataflow" class="headerlink" title="Modes of Dataflow"></a>Modes of Dataflow</h2><p>Who encodes the data, decodes it?</p>
+<ol>
+<li>Via databases</li>
+<li>Via service calculates</li>
+<li>Via asynchronous message passing<h3 id="Dataflow-through-databases"><a href="#Dataflow-through-databases" class="headerlink" title="Dataflow through databases"></a>Dataflow through databases</h3>In database the process that writes to the database encodes the data, the process reads from the database decodes it.<br>There could be severall different applications or sevices, and some processes acessing database run newer code, some will be running older code.</li>
+</ol>
+<ul>
+<li>History data can stay in the database, and update with null value in the newly added fields, thus whole database can be updated withouth rewriting.</li>
+<li>To backup the database, you can take a snapshot from time to time, or load into a data warehouse.</li>
+</ul>
+<h2 id="Datafolw-Through-Services-REST-and-RPC"><a href="#Datafolw-Through-Services-REST-and-RPC" class="headerlink" title="Datafolw Through Services: REST and RPC"></a>Datafolw Through Services: REST and RPC</h2><p>Servers expose an API over the network, the clients can connect to the servers to make requests to that API. The API exposed by the server is known as a service.<br>Web browsers make requests to web servers, making GET requests to download HTML, CSS, JavaScript, imgas, etc. And making POST requests to submit data to the server. The API consists of a standardized set of protocols and data formats(HTTP, URLs, SSL/TLS, HTML, etc)<br>A client-side JavaScript application running inside a web browser can use XMLHttpRequest to become a HTTP client(Ajax).</p>
+<ul>
+<li>SOA, Microservices<br>  A server can itself be a client to another service. This approach is often used to decompose a large application into smaller services by area of funcationality. This way of building applications is called service oriented architecture(SOA) or refined as microservices architecture.</li>
+<li>Service can impose fine-grained restrictions on what clients can and cannot do.</li>
+<li>Goal of microservices<br>  Make the application easier to change and maintain by making services independently deployable and evolvable.<br>  So the data encoding used by servers and clients must be compatible across versions of the service API.</li>
+</ul>
+<h3 id="Web-Services"><a href="#Web-Services" class="headerlink" title="Web Services"></a>Web Services</h3><ol>
+<li>A client application running on a user’s device. (e.g., a native app on a mobile device, or JavaScript web app using Ajax) making requests to a service over HTTP. There requests typically go over the public internet.</li>
+<li>One service making requests to another service owned by the same organization, often located within the same datacenter, as part of a service-oriented/microservices architecture. (Software that supports this kind of use case is sometimes called middleware.)</li>
+<li>One service making requests to a service owned by a different organization, usually via the internet. This category includes public APIs provided by online services, such as credit card processing systems, or OAuth for shared access to user data.</li>
+</ol>
+<p>Two popular appraches to web service: REST, SOAP</p>
+<ol>
+<li>REST is not a protocol, but rather a design philosiphy that build upon the principles of HTTP. It emphasized simple data formats, using URLs for identifying resources and using HTTP features for cache control, authentication, and content type negotiation. An API designed according to the principles of REST is called RESTfull.</li>
+<li>SOAP is an XML-based protocol by contrast, for making network API requests. Web Services Description Language(WSDL). Useful in statically typed programming Languages.</li>
+</ol>
+<p>RESTful APIs tend to favor simpler approaches, typically involving less code generation and automated tooling. A definition format such as OpenAPI, also known as Swagger, can be used to describe RESTful APIs and produce documentation.</p>
+<h3 id="The-problems-with-remote-procedure-calls-RPCS"><a href="#The-problems-with-remote-procedure-calls-RPCS" class="headerlink" title="The problems with remote procedure calls(RPCS)"></a>The problems with remote procedure calls(RPCS)</h3><p>Make a request to a remote network service look the same as calling a function or method in your programming language, whin the same process.(This abstraction is called location tranparancy). But the approach is fundamentally flawed.</p>
+<ol>
+<li>A local function is predictable, however, a network request is not, it could be lost, the remote machine may be slow or unavailable.</li>
+<li>A local function call either returns a result or throw an exception, or never returns. A network request might return but without results, due to timeout, you don’t know what happended.</li>
+<li>If you retried a failed network request, it could happen that the requests are actually getting through, and only the rewponses are getting lost.</li>
+<li>Local function takes same time to execute, but a network request takes longger, and its latency is widely variable. When the network is congested or the remote service is overloaded it took long time to complete.</li>
+<li>When you call a local function, you can efficiently pass its references(pointers) to objects in local memory, but a network request, all those parameters need to be encoded into a sequence of bytes that can be sent over the network.</li>
+<li>The client and service may be implemented in different programming languages, so the RPCs framework must translate datatypes from one language into another.</li>
+</ol>
+<p>REST appeals because it doesn’t hide the fact that it’s a network protocol, although this doesn’t seem to stop people from building RPC libraries on top of REST.</p>
+<h3 id="Current-directions-for-RPC"><a href="#Current-directions-for-RPC" class="headerlink" title="Current directions for RPC"></a>Current directions for RPC</h3><p>Various RPC frameworks have been built on top of all encodings(Thrift, Avro). gRPC is an RPC implementation using Protocol Buffers, Finagle also uses Thrift and Rest.li uses JSON over HTTP.</p>
+<p>Finagle and Rest.li use futures(promises) to encapsulate asynchronous actions that may fail. Futures also simplify situations where you need to make requests to mutiple services in paralell, and combine their results.</p>
+<ul>
+<li>Streams - gRPC supports streams, where a call consists of not just one request and one response, but a series of reqeusts and response over time.</li>
+</ul>
+<p>Custom RPC protocols with a binary encoding format can achieve better performance than something generic like JSON over REST.<br>But a RESTful API has other advantages:</p>
+<ol>
+<li>good for experimentation and debugging(simply make requests to it using a web browser or $curl)</li>
+<li>it is supported by all main-stream programming languages and platforms.</li>
+<li>there is a vast ecosystem of tools available(servers, caches, load balancers, proxies, firewalls, monitoering, debugging tools, testing tools, ect.)<br>For these reasons, REST seems to be the predominant style for public APIs, the main focus of RPC frameworks is on requests between servies owned by the same organization, typically within the same datacenter.</li>
+</ol>
+<h3 id="Data-encoding-and-evolution-for-RPC"><a href="#Data-encoding-and-evolution-for-RPC" class="headerlink" title="Data encoding and evolution for RPC"></a>Data encoding and evolution for RPC</h3><p>It is important that RPC clinets and servers can be changed and deployed independently.<br>Update servers firstly, and client secondly. Handle backward compatibility for requests, and forward for response.<br>The backward and forward compatibility properties of an RPC scheme are inherited from whatever encoding it uses.</p>
+<ul>
+<li>Service compatibility is made harder by the fact that RPC is often used for communication across organizational boundaries, so the provider of a service often has no control across organizational boundaries.</li>
+<li>There is no aggrement on how API versioning should work. (how a client can indicate which version of the API it want to use.)<ol>
+<li>For RESTful APIs, common approaches are to use a version number in the URL or in the HTTP Accepct header.</li>
+<li>For services that use API keys to identify a particular client, another option is to store a client’s requested API version on the server, version selection can be updated through a separate administrative interface.</li>
+</ol>
+</li>
+</ul>
+<h3 id="Message-Passing-Dataflow"><a href="#Message-Passing-Dataflow" class="headerlink" title="Message-Passing Dataflow"></a>Message-Passing Dataflow</h3><p>asynchronous message-passing systems: somewhere between RPC and databases</p>
+<ol>
+<li>As for RPC, a message is delivered to another process with low latency.</li>
+<li>As for databases, the message is not sent via a direct net-work connection, but goes via an intermediary called a message broker.(message queue, message-oriented middleware), which stores the message temporarily.</li>
+</ol>
+<p>Using a message broker has several advantages compared to direct RPC:</p>
+<ol>
+<li>It can act as a buffer if the recipient is unavailable or overloaded, and thus improve system reliability.</li>
+<li>It can automatically redeliver messages to a process that has crashed, and thus prevent messages from being lost.</li>
+<li>Sender don’t need to know the IP address and port number of the recipient.</li>
+<li>It allows one message to be sent to several recipients.</li>
+<li>It logically decouples the sender from the recipient(the sender just published messages and doesn’t care who consumes them).</li>
+</ol>
+<ul>
+<li><p>Message broker: one process sends a message to a named queue or topic, and the broker ensures that the message is delivered to one or more consumers of or subcribers to that queue or topic. There can be many producers and many consumuers on the same topic.</p>
+</li>
+<li><p>Message brokers examples: IBM WebSphere, RabbitMQ, ActiveMQ, HornetQ, NATS and Apache Kafka.</p>
+</li>
+<li><p>A topic provides only on-way dataflow. However, a consumer may itself publish messages to another topic,  or to a reply queue that is consumed by the sender of the original message.</p>
+</li>
+<li><p>Message brokers typically don’t enforce any particular data model. A message is just a sequence of bytes with some metadata, any encoding format is okay.</p>
+</li>
+<li><p>If the encoding is forward and backward compatible, flexible to change publishers and consumers independently and deploy them in any order.</p>
+</li>
+</ul>
+<h3 id="Distributed-actor-frameworks"><a href="#Distributed-actor-frameworks" class="headerlink" title="Distributed actor frameworks"></a>Distributed actor frameworks</h3><ul>
+<li>actor model: is a programming model for concurrency in a single process.</li>
+<li><p>actor: encapsulate logic in actors not threads, representing a client or entity</p>
+<ol>
+<li>may have some local state, not shared with owther actor.</li>
+<li>communicates with other actors by sending and receiving asynchronous message.</li>
+<li>Message delivery is not guarantted.</li>
+<li>Each actor processes only one message at a time, it doesn’t need to worry about thread.</li>
+<li>each actor can be scheduled independently by the framework.</li>
+</ol>
+</li>
+<li><p>Distributed actor framework, the programming model is used to scale an application across multiple nodes.</p>
+<ol>
+<li>Use the same message-passing mechanism.</li>
+<li>Message between different nodes is transparently encoded into a byte sequence, sent over the network, and decoded on the other side.</li>
+</ol>
+</li>
+<li><p>Location transparency works better in the actor model than in RPC, because the actor model already assumes that the message may be lost.</p>
+</li>
+<li><p>Less of a fundamental mismatch between local and remote communication when using actor model(latency still higher than within the same process.)</p>
+</li>
+<li><p>A distributed actor framework is a single framework = a message broker + actor programming model</p>
+<ul>
+<li>Backward and forward compability is still need to be worried about, a message may be sent from a node running the new version to a code running the old version, and vice versa.</li>
+</ul>
+</li>
+</ul>
+<p>Some popular distributed actor frameworks handle message encoding as follow:</p>
+<ol>
+<li>Akka, Java’s built-in serialization by default, Can replace it with something like Protocaol Buffers, thus gain the ablity to do rolling upgrades.</li>
+<li>Orleans, by default uses a custom data encoding format that does not support rolling upgrade deployments. To deploy a new version of your application, you need to set up a new cluster, move traffic from the cluster to the new one, and shut down the old one. Custom serialization plug-ins can be used.</li>
+<li>Erlang OTP, hard to make changes to record shcemas, the system haves many features designed for high availability. Rolling upgrades are possible, but need to plan carefully. map - a JSON-like structure may make this easier in the future.</li>
+</ol>
+<h1 id="Summary-1"><a href="#Summary-1" class="headerlink" title="Summary"></a>Summary</h1><h2 id="Rolling-upgrades"><a href="#Rolling-upgrades" class="headerlink" title="Rolling upgrades"></a>Rolling upgrades</h2><ol>
+<li>Allow new versions of a service to be released without downtime. More frequent small releases over rare big release.</li>
+<li>make deployments less risky. Allow to be rolled back before they affect a large number of users.</li>
+<li>Beneficial for evolvability.</li>
+</ol>
+<h2 id="Data-encoding-formats"><a href="#Data-encoding-formats" class="headerlink" title="Data encoding formats:"></a>Data encoding formats:</h2><ol>
+<li>Programming languages specific - restircted to single programming langues, fail to provide compatibility.</li>
+<li>Textual formats like JSON, XML, CSV, widespread, compatibility depends on how to use.</li>
+<li>Binary schema-driven formats like Thrift, Protocol Buffers, and Avro, allow compat, efficient encoding with caerfully defined sematics. (need to decode for human-readble)</li>
+</ol>
+<h2 id="Model-of-Dataflow"><a href="#Model-of-Dataflow" class="headerlink" title="Model of Dataflow"></a>Model of Dataflow</h2><ol>
+<li>Databases, the process writing to the database encode, and the process reading to do encode.</li>
+<li>RPC and REST APIs, the client encodes a request, and the server decodes the request and encode the response, and the client finally decodes the response.</li>
+<li>Asynchronous message passing(using message brokers or actors).</li>
+</ol>
+
       
 
       
@@ -749,7 +908,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Data-intensive-Application"><span class="toc-number">1.</span> <span class="toc-text">1. Data-intensive Application</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scalability"><span class="toc-number">1.1.</span> <span class="toc-text">Scalability</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maintainability"><span class="toc-number">1.2.</span> <span class="toc-text">Maintainability</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Data-Models-and-Query-Languages"><span class="toc-number">2.</span> <span class="toc-text">2. Data Models and Query Languages</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Relational-Model-Versus-Document-Model"><span class="toc-number">2.1.</span> <span class="toc-text">Relational Model Versus Document Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-Relational-Mismatch"><span class="toc-number">2.2.</span> <span class="toc-text">Object-Relational Mismatch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Many-to-One-and-Many-to-Many-Relationships"><span class="toc-number">2.3.</span> <span class="toc-text">Many-to-One and Many-to-Many Relationships</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#many-to-one-relationship"><span class="toc-number">2.3.1.</span> <span class="toc-text">many-to-one relationship</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Many-to-Many-relationship"><span class="toc-number">2.3.2.</span> <span class="toc-text">Many-to-Many relationship</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compare"><span class="toc-number">2.4.</span> <span class="toc-text">Compare</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Query-Languages-for-Data"><span class="toc-number">2.5.</span> <span class="toc-text">Query Languages for Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Declarative-Queries-on-the-Web"><span class="toc-number">2.6.</span> <span class="toc-text">Declarative Queries on the Web</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MapReduce-Querying"><span class="toc-number">2.7.</span> <span class="toc-text">MapReduce Querying</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Graph-like-data-models"><span class="toc-number">2.8.</span> <span class="toc-text">Graph-like data models</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Property-Graphs"><span class="toc-number">2.8.1.</span> <span class="toc-text">Property Graphs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Cypher-Query-Language"><span class="toc-number">2.8.2.</span> <span class="toc-text">The Cypher Query Language</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Recursive-common-table-expression"><span class="toc-number">2.8.3.</span> <span class="toc-text">Recursive common table expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Triple-Stores-and-SPARQL"><span class="toc-number">2.8.4.</span> <span class="toc-text">Triple-Stores and SPARQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Datalog"><span class="toc-number">2.8.5.</span> <span class="toc-text">Datalog</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-number">2.9.</span> <span class="toc-text">Summary</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-Storage-and-Retrieval"><span class="toc-number">3.</span> <span class="toc-text">3. Storage and Retrieval</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Data-Structures"><span class="toc-number">3.1.</span> <span class="toc-text">Data Structures</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hash-Indexes"><span class="toc-number">3.2.</span> <span class="toc-text">Hash Indexes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Issues-in-an-implementation"><span class="toc-number">3.2.1.</span> <span class="toc-text">Issues in an implementation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Why-append-only"><span class="toc-number">3.2.2.</span> <span class="toc-text">Why append-only</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hash-table-index-limitations"><span class="toc-number">3.2.3.</span> <span class="toc-text">Hash table index limitations:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSTables-and-LSM-Trees"><span class="toc-number">3.3.</span> <span class="toc-text">SSTables and LSM-Trees</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#B-Trees"><span class="toc-number">3.4.</span> <span class="toc-text">B-Trees</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Optimizations"><span class="toc-number">3.4.1.</span> <span class="toc-text">Optimizations</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compare-B-Trees-and-LSM-Trees"><span class="toc-number">3.5.</span> <span class="toc-text">Compare B-Trees and LSM-Trees</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Secondary-index"><span class="toc-number">3.6.</span> <span class="toc-text">Secondary index</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Storing-values-within-the-index"><span class="toc-number">3.7.</span> <span class="toc-text">Storing values within the index</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Multi-column-indexes"><span class="toc-number">3.8.</span> <span class="toc-text">Multi-column indexes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spatial-Indexes"><span class="toc-number">3.8.1.</span> <span class="toc-text">Spatial Indexes</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Full-text-search-and-fuzzy-indexes"><span class="toc-number">3.9.</span> <span class="toc-text">Full-text search and fuzzy indexes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#In-memory-databases"><span class="toc-number">3.10.</span> <span class="toc-text">In memory databases</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Transaction-Processing-or-Analytics"><span class="toc-number">3.11.</span> <span class="toc-text">Transaction Processing or Analytics?</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-Warehousing-run-analytics-on-this-separate-database"><span class="toc-number">3.11.1.</span> <span class="toc-text">Data Warehousing - run analytics on this separate database</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Starts-and-Snowflakes-Schemas-for-Analytics"><span class="toc-number">3.11.2.</span> <span class="toc-text">Starts and Snowflakes: Schemas for Analytics</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Column-Oriented-Storage"><span class="toc-number">3.12.</span> <span class="toc-text">Column-Oriented Storage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Column-Compression"><span class="toc-number">3.12.1.</span> <span class="toc-text">Column Compression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Memory-bandwidth-and-vectorized-processing"><span class="toc-number">3.12.2.</span> <span class="toc-text">Memory bandwidth and vectorized processing</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Sort-Order-in-Column-Storage"><span class="toc-number">3.13.</span> <span class="toc-text">Sort Order in Column Storage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Several-different-sort-orders"><span class="toc-number">3.13.1.</span> <span class="toc-text">Several different sort orders</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Writing-to-Column-Oriented-Storage"><span class="toc-number">3.14.</span> <span class="toc-text">Writing to Column-Oriented Storage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Aggregation-Data-Cubes-and-Materialized-Views"><span class="toc-number">3.15.</span> <span class="toc-text">Aggregation: Data Cubes and Materialized Views</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Encoding-and-Evolution"><span class="toc-number">4.</span> <span class="toc-text">Encoding and Evolution</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Formats-for-Encoding-Data"><span class="toc-number">4.1.</span> <span class="toc-text">Formats for Encoding Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Language-Specific-Formats"><span class="toc-number">4.2.</span> <span class="toc-text">Language-Specific Formats</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSON-XML-and-Binary-Variants"><span class="toc-number">4.3.</span> <span class="toc-text">JSON, XML, and Binary Variants</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Binary-encoding"><span class="toc-number">4.3.1.</span> <span class="toc-text">Binary encoding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Thrift-and-Protocol-Buffers"><span class="toc-number">4.3.2.</span> <span class="toc-text">Thrift and Protocol Buffers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Field-tags-and-Schema-Evolution"><span class="toc-number">4.3.3.</span> <span class="toc-text">Field tags and Schema Evolution</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Datatypes-and-schema-Evolution"><span class="toc-number">4.3.4.</span> <span class="toc-text">Datatypes and schema Evolution</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Avro"><span class="toc-number">4.3.5.</span> <span class="toc-text">Avro</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Data-intensive-Application"><span class="toc-number">1.</span> <span class="toc-text">1. Data-intensive Application</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scalability"><span class="toc-number">1.1.</span> <span class="toc-text">Scalability</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maintainability"><span class="toc-number">1.2.</span> <span class="toc-text">Maintainability</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Data-Models-and-Query-Languages"><span class="toc-number">2.</span> <span class="toc-text">2. Data Models and Query Languages</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Relational-Model-Versus-Document-Model"><span class="toc-number">2.1.</span> <span class="toc-text">Relational Model Versus Document Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-Relational-Mismatch"><span class="toc-number">2.2.</span> <span class="toc-text">Object-Relational Mismatch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Many-to-One-and-Many-to-Many-Relationships"><span class="toc-number">2.3.</span> <span class="toc-text">Many-to-One and Many-to-Many Relationships</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#many-to-one-relationship"><span class="toc-number">2.3.1.</span> <span class="toc-text">many-to-one relationship</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Many-to-Many-relationship"><span class="toc-number">2.3.2.</span> <span class="toc-text">Many-to-Many relationship</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compare"><span class="toc-number">2.4.</span> <span class="toc-text">Compare</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Query-Languages-for-Data"><span class="toc-number">2.5.</span> <span class="toc-text">Query Languages for Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Declarative-Queries-on-the-Web"><span class="toc-number">2.6.</span> <span class="toc-text">Declarative Queries on the Web</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MapReduce-Querying"><span class="toc-number">2.7.</span> <span class="toc-text">MapReduce Querying</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Graph-like-data-models"><span class="toc-number">2.8.</span> <span class="toc-text">Graph-like data models</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Property-Graphs"><span class="toc-number">2.8.1.</span> <span class="toc-text">Property Graphs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Cypher-Query-Language"><span class="toc-number">2.8.2.</span> <span class="toc-text">The Cypher Query Language</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Recursive-common-table-expression"><span class="toc-number">2.8.3.</span> <span class="toc-text">Recursive common table expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Triple-Stores-and-SPARQL"><span class="toc-number">2.8.4.</span> <span class="toc-text">Triple-Stores and SPARQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Datalog"><span class="toc-number">2.8.5.</span> <span class="toc-text">Datalog</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-number">2.9.</span> <span class="toc-text">Summary</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-Storage-and-Retrieval"><span class="toc-number">3.</span> <span class="toc-text">3. Storage and Retrieval</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Data-Structures"><span class="toc-number">3.1.</span> <span class="toc-text">Data Structures</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hash-Indexes"><span class="toc-number">3.2.</span> <span class="toc-text">Hash Indexes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Issues-in-an-implementation"><span class="toc-number">3.2.1.</span> <span class="toc-text">Issues in an implementation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Why-append-only"><span class="toc-number">3.2.2.</span> <span class="toc-text">Why append-only</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hash-table-index-limitations"><span class="toc-number">3.2.3.</span> <span class="toc-text">Hash table index limitations:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSTables-and-LSM-Trees"><span class="toc-number">3.3.</span> <span class="toc-text">SSTables and LSM-Trees</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#B-Trees"><span class="toc-number">3.4.</span> <span class="toc-text">B-Trees</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Optimizations"><span class="toc-number">3.4.1.</span> <span class="toc-text">Optimizations</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compare-B-Trees-and-LSM-Trees"><span class="toc-number">3.5.</span> <span class="toc-text">Compare B-Trees and LSM-Trees</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Secondary-index"><span class="toc-number">3.6.</span> <span class="toc-text">Secondary index</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Storing-values-within-the-index"><span class="toc-number">3.7.</span> <span class="toc-text">Storing values within the index</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Multi-column-indexes"><span class="toc-number">3.8.</span> <span class="toc-text">Multi-column indexes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spatial-Indexes"><span class="toc-number">3.8.1.</span> <span class="toc-text">Spatial Indexes</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Full-text-search-and-fuzzy-indexes"><span class="toc-number">3.9.</span> <span class="toc-text">Full-text search and fuzzy indexes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#In-memory-databases"><span class="toc-number">3.10.</span> <span class="toc-text">In memory databases</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Transaction-Processing-or-Analytics"><span class="toc-number">3.11.</span> <span class="toc-text">Transaction Processing or Analytics?</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-Warehousing-run-analytics-on-this-separate-database"><span class="toc-number">3.11.1.</span> <span class="toc-text">Data Warehousing - run analytics on this separate database</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Starts-and-Snowflakes-Schemas-for-Analytics"><span class="toc-number">3.11.2.</span> <span class="toc-text">Starts and Snowflakes: Schemas for Analytics</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Column-Oriented-Storage"><span class="toc-number">3.12.</span> <span class="toc-text">Column-Oriented Storage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Column-Compression"><span class="toc-number">3.12.1.</span> <span class="toc-text">Column Compression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Memory-bandwidth-and-vectorized-processing"><span class="toc-number">3.12.2.</span> <span class="toc-text">Memory bandwidth and vectorized processing</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Sort-Order-in-Column-Storage"><span class="toc-number">3.13.</span> <span class="toc-text">Sort Order in Column Storage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Several-different-sort-orders"><span class="toc-number">3.13.1.</span> <span class="toc-text">Several different sort orders</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Writing-to-Column-Oriented-Storage"><span class="toc-number">3.14.</span> <span class="toc-text">Writing to Column-Oriented Storage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Aggregation-Data-Cubes-and-Materialized-Views"><span class="toc-number">3.15.</span> <span class="toc-text">Aggregation: Data Cubes and Materialized Views</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Encoding-and-Evolution"><span class="toc-number">4.</span> <span class="toc-text">Encoding and Evolution</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Formats-for-Encoding-Data"><span class="toc-number">4.1.</span> <span class="toc-text">Formats for Encoding Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Language-Specific-Formats"><span class="toc-number">4.2.</span> <span class="toc-text">Language-Specific Formats</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSON-XML-and-Binary-Variants"><span class="toc-number">4.3.</span> <span class="toc-text">JSON, XML, and Binary Variants</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Binary-encoding"><span class="toc-number">4.3.1.</span> <span class="toc-text">Binary encoding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Thrift-and-Protocol-Buffers"><span class="toc-number">4.3.2.</span> <span class="toc-text">Thrift and Protocol Buffers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Field-tags-and-Schema-Evolution"><span class="toc-number">4.3.3.</span> <span class="toc-text">Field tags and Schema Evolution</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Datatypes-and-schema-Evolution"><span class="toc-number">4.3.4.</span> <span class="toc-text">Datatypes and schema Evolution</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Avro"><span class="toc-number">4.3.5.</span> <span class="toc-text">Avro</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dynamic-generated-Schemas"><span class="toc-number">4.3.6.</span> <span class="toc-text">Dynamic generated Schemas</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Code-generation-and-dynamically-typed-Languages"><span class="toc-number">4.3.7.</span> <span class="toc-text">Code generation and dynamically typed Languages</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#The-Merits-of-schemas"><span class="toc-number">4.4.</span> <span class="toc-text">The Merits of schemas</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Modes-of-Dataflow"><span class="toc-number">4.5.</span> <span class="toc-text">Modes of Dataflow</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Dataflow-through-databases"><span class="toc-number">4.5.1.</span> <span class="toc-text">Dataflow through databases</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Datafolw-Through-Services-REST-and-RPC"><span class="toc-number">4.6.</span> <span class="toc-text">Datafolw Through Services: REST and RPC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Web-Services"><span class="toc-number">4.6.1.</span> <span class="toc-text">Web Services</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-problems-with-remote-procedure-calls-RPCS"><span class="toc-number">4.6.2.</span> <span class="toc-text">The problems with remote procedure calls(RPCS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Current-directions-for-RPC"><span class="toc-number">4.6.3.</span> <span class="toc-text">Current directions for RPC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-encoding-and-evolution-for-RPC"><span class="toc-number">4.6.4.</span> <span class="toc-text">Data encoding and evolution for RPC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Message-Passing-Dataflow"><span class="toc-number">4.6.5.</span> <span class="toc-text">Message-Passing Dataflow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Distributed-actor-frameworks"><span class="toc-number">4.6.6.</span> <span class="toc-text">Distributed actor frameworks</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Summary-1"><span class="toc-number">5.</span> <span class="toc-text">Summary</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Rolling-upgrades"><span class="toc-number">5.1.</span> <span class="toc-text">Rolling upgrades</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data-encoding-formats"><span class="toc-number">5.2.</span> <span class="toc-text">Data encoding formats:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Model-of-Dataflow"><span class="toc-number">5.3.</span> <span class="toc-text">Model of Dataflow</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -763,7 +922,7 @@
   
   <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="system_application" data-title="Notes of Designing Data-Intensive Application" data-url="http://yoursite.com/2019/05/01/system_application/"></div>
+	<div class="ds-thread" data-thread-key="system_application" data-title="Notes of Designing Data-Intensive Application(1)" data-url="http://yoursite.com/2019/05/01/system_application/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
@@ -911,11 +1070,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -923,11 +1082,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">resume</a>
+                <a href="javascript:void(0)" class="js-tag color4">informal</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">informal</a>
+                <a href="javascript:void(0)" class="js-tag color2">resume</a>
               </li>
              
               <li class="article-tag-list-item">
