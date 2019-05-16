@@ -6,14 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019/5 | Edie&#39;s Blog</title>
+  <title>Notes of Designing Data-Intensive Application(2) Replication | Edie&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Edie&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/05/index.html">
+  <meta name="description" content="Distributed DataWhy distributed a database acorss multiple machines:  Scalability Fault tolerance/high availability, redundency. Latency, geographically chooce the servers.  Scaling to Higher Load sha">
+<meta name="keywords" content="backend">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Notes of Designing Data-Intensive Application(2) Replication">
+<meta property="og:url" content="http://yoursite.com/2019/05/10/distributed-system/index.html">
 <meta property="og:site_name" content="Edie&#39;s Blog">
+<meta property="og:description" content="Distributed DataWhy distributed a database acorss multiple machines:  Scalability Fault tolerance/high availability, redundency. Latency, geographically chooce the servers.  Scaling to Higher Load sha">
+<meta property="og:updated_time" content="2019-05-16T05:15:31.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Edie&#39;s Blog">
+<meta name="twitter:title" content="Notes of Designing Data-Intensive Application(2) Replication">
+<meta name="twitter:description" content="Distributed DataWhy distributed a database acorss multiple machines:  Scalability Fault tolerance/high availability, redundency. Latency, geographically chooce the servers.  Scaling to Higher Load sha">
   
     <link rel="alternative" href="/atom.xml" title="Edie&#39;s Blog" type="application/atom+xml">
   
@@ -183,36 +188,409 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-distributed-system" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Notes of Designing Data-Intensive Application(2) Replication
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/05/10/distributed-system/" class="archive-article-date">
+
+        
+        <a href="/2019/05/10/distributed-system/" class="archive-article-date">
   	<time datetime="2019-05-10T19:50:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-10</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/05/10/distributed-system/">Notes of Designing Data-Intensive Application(2) Replication</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Distributed-Data"><a href="#Distributed-Data" class="headerlink" title="Distributed Data"></a>Distributed Data</h1><p>Why distributed a database acorss multiple machines:</p>
+<ol>
+<li>Scalability</li>
+<li>Fault tolerance/high availability, redundency.</li>
+<li>Latency, geographically chooce the servers.</li>
+</ol>
+<h2 id="Scaling-to-Higher-Load"><a href="#Scaling-to-Higher-Load" class="headerlink" title="Scaling to Higher Load"></a>Scaling to Higher Load</h2><ol>
+<li>shared-memory architecture, all the components can be treated as a single machine. Costy.<ul>
+<li>hign-end machines have hot-swappable components(replace disks, memory modules, and even CPUs without shutting down the machines).</li>
+</ul>
+</li>
+<li>shared-disk architecture, used for some data warehousing workloads, connection and the overhead of locking limit the scalability.</li>
+<li>shared-nothing architecture, scale out.<ul>
+<li>Each machine or virtual machine running in the database software is called a node.</li>
+</ul>
+</li>
+</ol>
+<h2 id="Replication-Versus-Partitioning"><a href="#Replication-Versus-Partitioning" class="headerlink" title="Replication Versus Partitioning"></a>Replication Versus Partitioning</h2><ol>
+<li>Replication - provides redundancy</li>
+<li>Partitioning - different partitions can be assigned to different nodes.(as known as sharding)<br>They often go hand in hand. Partitioning with Replication.</li>
+</ol>
+<h1 id="Replication"><a href="#Replication" class="headerlink" title="Replication"></a>Replication</h1><p>Replication means keeping a copy of the same data on multiple machines that are connected via a network.<br>Why replication?</p>
+<ol>
+<li>Keep data geographically close to your users, thus reduce latency</li>
+<li>Allow system running without downtime even some of its parts have failed.</li>
+<li>To scale out the number of machines, increase the read thoughput.</li>
+</ol>
+<p>This need your dataset is so small that each machine can hold a copy of the entire dataset.</p>
+<ul>
+<li>Replicating changes between nodes</li>
+</ul>
+<ol>
+<li>single-leader</li>
+<li>multi-leader</li>
+<li>leaderless</li>
+</ol>
+<h2 id="Leaders-and-Followers"><a href="#Leaders-and-Followers" class="headerlink" title="Leaders and Followers"></a>Leaders and Followers</h2><p>Every write to the database needs to be processed by every replica.</p>
+<ul>
+<li>Leader-based replication(active/passive or master/slave replication)<ol>
+<li>One of the replicas is desinated the leader, first writes the new data to its local storage.</li>
+<li>The other replicas are known as followers(read replicas, slaves, secondaries, or hot standbys). Leader will sends the data change to all of its followers as part of a replication log or change stream.</li>
+<li>Clients can either require the leader or any of the followers to read from the database.</li>
+</ol>
+</li>
+</ul>
+<p>This is a built-in feature of many reloational databases, PostgreSQL, MySQL, Oracle Data Guard, and SQL Server’s.<br>Also used in some nonrelational databases, including MongoDB, RethinkDB, and Espresso.<br>Not only databases, distributed message brokers such as Kafka and RabbitMQ highly available queues also use it.</p>
+<h2 id="Synchronous-Versus-Asynchronous-replication"><a href="#Synchronous-Versus-Asynchronous-replication" class="headerlink" title="Synchronous Versus Asynchronous replication"></a>Synchronous Versus Asynchronous replication</h2><ul>
+<li>Synchronous replication, the leader will wait until follower 1 has confiermed that it received the write before reporting sucess to the user.<ol>
+<li>The followers are garanteed to have an up-to-date copy of the data.</li>
+<li>But if the followers don’t respond, the write connot be processed, the leader must block all writes and wait.</li>
+<li>Any one node outage would cause the whole system to grined to a halt.</li>
+</ol>
+</li>
+<li>Asynchronous replication, the leader sends the message, but doesn’t wait for a response from the follower.</li>
+</ul>
+<h2 id="Semi-synchronous"><a href="#Semi-synchronous" class="headerlink" title="Semi-synchronous"></a>Semi-synchronous</h2><p>In practice, one of the followers is sychronous and the others are asynchronous, if the synchronous follower becomes unavailable or slow, one of the asynchronous followers is made synchronous. This garantees that you have an up-to-date copy of the data on at least two nodes: the leader and the synchronous follower.</p>
+<h2 id="Asynchronous-Replication"><a href="#Asynchronous-Replication" class="headerlink" title="Asynchronous Replication"></a>Asynchronous Replication</h2><p>Often, a leader-based replication is configured to be completely asynchronous. Because the leader can continue processing writes, but a write is not guaranteed to be durable, even if it has been confiermed to the client.<br>It is nevertheless widely used.</p>
+<ul>
+<li>Chain replication - successfully implemented in Microsoft Azure Storage.</li>
+<li>Consistency of Replication</li>
+<li>Consensus(getting several nodes to agree on a value).</li>
+</ul>
+<h2 id="Setting-Up-New-followers"><a href="#Setting-Up-New-followers" class="headerlink" title="Setting Up New followers"></a>Setting Up New followers</h2><ul>
+<li>Lock the database(make it unavailable for writes), but this go against our goal of high availability.</li>
+<li>Done without downtime:<ol>
+<li>Take a consisten snapshot of the leader’s database at some point in time. Third-party tools are needed in some cases, such as innobackupex for MySQL.</li>
+<li>Copy the snapshots to the new folloer node.</li>
+<li>The follower connects to the leader and requests all the data changes that have happened since the snapthot was taken. The snapshot needs to be associated with an exact position in the leader’s replication log. That position is named(log sequence number in PostgreSQL, or binlog coordinates in MySQL.).</li>
+<li>When the follower has processed the backlog of data changes since the snapshot, we say it has caught up. It can now continue to process data changes from the leader as they happen.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Handling-Node-Outages"><a href="#Handling-Node-Outages" class="headerlink" title="Handling Node Outages"></a>Handling Node Outages</h2><p>Any node might go down for unexpected reason(a fault) or a planned maintenance(rebooting for kernel security patch installation)</p>
+<ul>
+<li>Goal: keep the system as a whole running despite individual node failures.<h3 id="Follower-failure-Catch-up-recovery"><a href="#Follower-failure-Catch-up-recovery" class="headerlink" title="Follower failure: Catch-up recovery"></a>Follower failure: Catch-up recovery</h3></li>
+</ul>
+<ol>
+<li>On its local dist, each follower keeps a log of data changes it has received from the leader.</li>
+<li>Recover from the log.<h3 id="Leader-failure-Failover"><a href="#Leader-failure-Failover" class="headerlink" title="Leader failure: Failover"></a>Leader failure: Failover</h3></li>
+</ol>
+<ul>
+<li>failover - one of the followers needs to be promoted to be the new leader, clients need to reconfigured to send their writes to the new leader, and the other folloers need to start consuming data changes from te new leader.</li>
+<li><p>Failover can happen manually or automatically. An automatic failover process:</p>
+<ol>
+<li>Determining that the leader has failed. (crashes, prower outages, network issues), use a foolproof way of detecting: timeout. Nodes frequently bounce message back and forth between each other, if a node doesn’t respond for some period of time-say,30 seconds-it is assumed to be dead.</li>
+<li>Chooseing a new leader. election process, the leader is chosen by a majority of the remaining replicas. Or a new leader could be appointed by a previously elected controller node.<ul>
+<li>The best candidate is usually the replica with the most up-to-date data changes from the ode leader(to minimize any data loss).</li>
+</ul>
+</li>
+<li>Reconfiguring the system to use the new leader. When the old leader comes back, it is a follower and recognizes the new leader.</li>
+</ol>
+</li>
+<li><p>Failover if fraught with things that can go wrong:</p>
+</li>
+</ul>
+<ol>
+<li>Asynchronous repliation is used, the new leader might missed some writes from the old leader. When old leader comes back, what to do with the unreplicated writes? simply discard?</li>
+<li>Discarding writes is especially dangerous if other storage systems outside of the database need to coordinated with the database contents.</li>
+<li>If two nodes believe they are the leader, this is called “spilit brain”. Dangerous. Some systems have a mechanism to shut down one node.</li>
+<li>What is the right timeout? Unnecessary failover by temporary load spike? network glitch could cause delayed packets.</li>
+</ol>
+<h2 id="Implementation-of-Replication-Logs"><a href="#Implementation-of-Replication-Logs" class="headerlink" title="Implementation of Replication Logs"></a>Implementation of Replication Logs</h2><ol>
+<li><p>Statement-based Replication</p>
+<ul>
+<li>every INSERT, UPDATE, DELETE statement is forwarded to followers.</li>
+<li>Problems:<ol>
+<li>Some statements call a nondeterministic function such as NOW(), RAND() actually generate a different value on each replica.</li>
+<li>The order must be the same if the statments use an autoincrementing column.</li>
+<li>Side effects might happen.</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>Write-ahead log(WAL) shipping</p>
+<ul>
+<li><p>Storage engine represent data on disk:</p>
+<ul>
+<li>log-structured storage engine(SSLTables and LSM-Trees), Log segments are compacted and garbage-collected in the backgourn.</li>
+<li><p>B-tree, overwrites individual disk blocks, every modification is first written to a write-ahead log to restore the indexes.</p>
+</li>
+<li><p>The log is the append-only sequence of bytes containing all writes to the database.</p>
+</li>
+<li>The follower processes this log, it builds a copy of the exact same data structure.</li>
+<li>Coupled too close with storage engine: The log describes the data on a very low level: a WAL contains details of which bytes were changed in which disk blocks.</li>
+<li>If the replication protocol allows the follower to use a newer software version than the leader, you can perform a zero-downtime upgrade by first upgrading the followers and them performing a failover to make one the upgraded nodes te new leader.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Logic(row-based) log Replication<br>Use different log formats for replication and for the storage engine, decoupled from each other.</p>
+<ul>
+<li><p>logical log: a sequence of records describing writes to database tables at the granularity of a row</p>
+<ul>
+<li>inserted row: new values of all columns.</li>
+<li>deleted row: uniquely identify the deleted row (primary key or all columns o/w)</li>
+<li>updated row, at least the new values of all columns that changed.</li>
+</ul>
+</li>
+<li><p>easily to keep backward compatible.</p>
+</li>
+<li>A logical log format is also easier for external applications to parse.<ul>
+<li>Send the contents of a database to an external system</li>
+<li>e.g. data warehouse for offline analysis, or for building custom indexes and caches</li>
+<li>“change data capture”</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Trigger-based Replication</p>
+<ul>
+<li>move replication up to the application layer(not implemented by the database system)</li>
+<li>trigger<ul>
+<li>let you register custom application code that is automatically executed when a data change(write transaction) occurs in the database system.</li>
+<li>log the change into a separate table, from which it can be read by an external process.</li>
+<li>flexfible, however, has greater overheads and is more prone to bugs and limitations.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Problems-with-Replication-Lag"><a href="#Problems-with-Replication-Lag" class="headerlink" title="Problems with Replication Lag"></a>Problems with Replication Lag</h2><ul>
+<li>read-scaling architecture, increase the capacity for serving read-only reqeusts simply by adding more followers.<ul>
+<li>Not praticle with a fully synchronous configuration(one node dies, all die).</li>
+<li>Asynchronous followers may see outdated information if the follower has fallen behind. - inconsistency</li>
+<li>But inconsistency is temporary - eventual consistency</li>
+<li>The delay between a write happening on the leader and beging reflected on a follower is called the replication lag.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Reading-Your-Own-Writes"><a href="#Reading-Your-Own-Writes" class="headerlink" title="Reading Your Own Writes"></a>Reading Your Own Writes</h3><ul>
+<li>user wants to read it shortly after making a wirte, but the leader hasn’t send it to the replica.<ul>
+<li>read-after-write consistency is needed. Or read-your-writes-consistency.</li>
+<li>Possible techniques:<ol>
+<li>Read from the leader that the user modified, otherwise, read it from a follower. Knowing whethere something might have been modified without actually querying it.</li>
+<li>If most things in the application are potentially editable by the user, use other criteria to decide whether to read from the leader. e.g. read from the leader if it is only one minute after the last update. Or monitor the replication lag to prevent querys on any follower that is more than one minute behind the leader.</li>
+<li>Clients can remember the timestamp of its most recent write to decide whether any follower is outdated. Logical timestamp or the actual system clock(clock sychronization).</li>
+<li>If your replicas are distributed across multiple datacenters, any request that needs to be served by the leader must be routed to the datacenter that contains the leader.</li>
+</ol>
+</li>
+<li>cross-device read-after-write consistency<br>Problems:<ol>
+<li>How to remembering the timestamp(centralize the metadata on all devices)</li>
+<li>There is no guarantee that connections from different devices will be routed to the same datacenter.</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Monotonic-Reads"><a href="#Monotonic-Reads" class="headerlink" title="Monotonic Reads"></a>Monotonic Reads</h3><ul>
+<li>moving backward in time - The latter read is routed to a more lag replica.</li>
+<li>Monotonic reads: you will not see time go backward.<ul>
+<li>make sure each user always makes their read from the same replica. The replica can be chosen based on a hash of the user ID, rather than randomly.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Consisten-Prefix-Reads"><a href="#Consisten-Prefix-Reads" class="headerlink" title="Consisten Prefix Reads"></a>Consisten Prefix Reads</h3><p>Reading the replicas with different lags which disroders the conversation between other writes. (answering becomes the qeustions)</p>
+<ul>
+<li>Require that if a sequence of writes happens in a certain order, then anyone reading those writes will see them appear in the same order.</li>
+<li>Problematic in partitioned databases, make sure that any writes that are causually realted to each other are written to the same partition.</li>
+</ul>
+<h3 id="Solution-for-Replication-Lag"><a href="#Solution-for-Replication-Lag" class="headerlink" title="Solution for Replication Lag"></a>Solution for Replication Lag</h3><ul>
+<li>Pretending that replication is synchronous when in fact it is asyncronous is a recipe for problems down the time.</li>
+<li>transactions: for a database to provide stronger guarantees so that the application can be simpler.</li>
+</ul>
+<h2 id="Multi-Leader-Replication"><a href="#Multi-Leader-Replication" class="headerlink" title="Multi-Leader Replication"></a>Multi-Leader Replication</h2><p>Multi-layer configuration(master/master or active/active replication)</p>
+<ul>
+<li><p>You have a leader in each datacenter, leader communicates with leader, and replicates to its own followers.</p>
+</li>
+<li><p>Performance</p>
+<ul>
+<li>every write can be processed in the local datacenter, and is replicated asynchrously to the other datacenters. perceived performance may be better.</li>
+</ul>
+</li>
+<li>Tolerance of datacenter outages<ul>
+<li>Each datacenter is independently operating.</li>
+</ul>
+</li>
+<li>Tolerance of network Problems<ul>
+<li>Traffic between datacenters usually goes over the public internet, less reliable than the local network within a datacenter. A temporary network interruption does not prevent writes being processed with multi-leader.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Clients-with-offline-operation"><a href="#Clients-with-offline-operation" class="headerlink" title="Clients with offline operation"></a>Clients with offline operation</h3><p>When disconnected with internet, make every devices have their own (writes)changes offline, and get synced with a server and other services when the device is next online.</p>
+<h3 id="Collaborative-editing"><a href="#Collaborative-editing" class="headerlink" title="Collaborative editing"></a>Collaborative editing</h3><p>make the unit of change very small and avoid locking.</p>
+<h2 id="Handling-Write-Conflicts"><a href="#Handling-Write-Conflicts" class="headerlink" title="Handling Write Conflicts"></a>Handling Write Conflicts</h2><h3 id="Synchronous-versus-asynchronous-conflict-detection"><a href="#Synchronous-versus-asynchronous-conflict-detection" class="headerlink" title="Synchronous versus asynchronous conflict detection"></a>Synchronous versus asynchronous conflict detection</h3><p>Asynchronously detect will lead the confliction detection too late. Synchronous detection will be just like the single-leader database(not allowing each replica to accept writes independently).</p>
+<h3 id="Conflict-avoidance"><a href="#Conflict-avoidance" class="headerlink" title="Conflict avoidance"></a>Conflict avoidance</h3><p>ensure that all writes for a particular record go through the same leader.<br>But this requires the datacenter that the user can write will never down or changed(when user move to somewhere closer to other datacenter), otherwise, conflict avoidance breaks.</p>
+<h3 id="Converging-toward-a-consistent-state"><a href="#Converging-toward-a-consistent-state" class="headerlink" title="Converging toward a consistent state"></a>Converging toward a consistent state</h3><p>The order of a sequence of writes in a multi-leader configuration is hard to keep consistent(each one takes the last one wins to be the final value).</p>
+<ul>
+<li>Every replication schema must ensure that the data is eventually the same in all replicas. Thus the database must resolve the conflict in a convergent way.<ol>
+<li>Give each write a unique ID(timestamp, long random number, UUID, or a hash key value) - last write wins(LWW).</li>
+<li>Give each replica a unique ID, and let writes that originated at a higher-numbered replica always take precedence over writes that originated at a lower numbered replication.</li>
+<li>Somehow merge the values together.(B and C -&gt; B/C)</li>
+<li>Record the conflict in an explicit data structure that preserves all information and write aplication code that resolves the conflict at some later time.</li>
+</ol>
+</li>
+</ul>
+<h3 id="Custom-conflict-resolution-logic"><a href="#Custom-conflict-resolution-logic" class="headerlink" title="Custom conflict resolution logic"></a>Custom conflict resolution logic</h3><p>The application code for conflict resolution logic:</p>
+<ol>
+<li>On write, as soon as the database system detects a conflict in the log of replicated changes, it calls the conflict handler. - Bucardo</li>
+<li>On read, all conflicting writes are stored, the next time the data is read, these multiple versions of the data are returned to the application.(prompt the user or automatically reslove the conflict, and write back) - CouchDB.</li>
+</ol>
+<h3 id="Automatic-Conflict-resolution"><a href="#Automatic-Conflict-resolution" class="headerlink" title="Automatic Conflict resolution"></a>Automatic Conflict resolution</h3><ul>
+<li>Conflict-free replicated datatypes(CRDTs) are a family of data structures for sets, maps, ordered lists, counters, etc. Automatically resolve conflicts.</li>
+<li>Mergeable persistent data structures, track history explicitly, similar to Git version control system use a three-way merge function.</li>
+<li>Operational transformation - Etherpad, Google Docs use this conflict resolution algorithm, particularly designed for concurrent editing of an ordered list of items.</li>
+</ul>
+<h3 id="Multi-Leader-Replication-Topologies"><a href="#Multi-Leader-Replication-Topologies" class="headerlink" title="Multi-Leader Replication Topologies"></a>Multi-Leader Replication Topologies</h3><ol>
+<li>Circular topology</li>
+<li>Star topology</li>
+<li>All-to-all topology</li>
+</ol>
+<p>Circular and Star topology need to pass through several nodes before it reaches all replicas. To prevent infinite replication loops, each node has a unique identifier and in the replication log, and each write is tagged with the identifiers of all the nodes it has passed through. So when a node receives a write with the tag of own, it will ignore it.</p>
+<ul>
+<li>Problem of Circular and Star is one node fails will cause influence to all other nodes related.<br>More dense the network, the fault tolerance will be better.</li>
+</ul>
+<ul>
+<li><p>All to all also has problem. Some network links may be faster than others, with the result that some replication message may overtake others.</p>
+</li>
+<li><p>make sure all nodes process the insert first, and then the update. (simply timestamp still has problem of synchronization)</p>
+<ul>
+<li>version vectors can be used</li>
+</ul>
+</li>
+</ul>
+<h2 id="Leaderless-replication"><a href="#Leaderless-replication" class="headerlink" title="Leaderless replication"></a>Leaderless replication</h2><p>Almost been forgotten. Amazon used it for its in-house Dynamo system Riak, Cassandra. Dynamo-style.<br>the client directly sends its writes to several replicas, while in others, a coordinator node does this on behalf of the client.</p>
+<ul>
+<li><p>Writing to the Database When a Node Is Down</p>
+<ul>
+<li>leader-based configuration, perform a failover(recover from log)</li>
+<li>leaderless configuration, ignores the fact that one of the replicas missed the write. When the missed node comes back, you may get stale(outdated) values as responses. So, the read request will be sent to all replicas nodes in parallel. Version numbers are used to determine different values responded by stale and up-to-date nodes.</li>
+</ul>
+</li>
+<li><p>Read repair and anti-entropy<br>For the unavailable node catch up on the writes when it comes back:</p>
+<ul>
+<li>Read repair: When a client makes a read from several nodes in parallel, it can detect any state responses. See which one has the newer value, write the newer value to all other falling back replicas. This way is good for frequently read.</li>
+<li>Anti-entropy process: a background process that constatnly looks for differences in the data between replicas and copies any missing data from one replica to another. (Guarantee the data that is rarely read can be updated)</li>
+</ul>
+</li>
+<li><p>Quorums for reading and writing</p>
+<ul>
+<li>there are n replicas, at least w nodes to be considered successful, and we must query at least r nodes for each read: r&gt;n-w or r+w &gt; n.</li>
+<li>If obey these value ineuqlity, are called quorum reads and writes.</li>
+</ul>
+<p>Configurable value:</p>
+<ol>
+<li>If w&lt;n, it can still process writes if a node is unavailable</li>
+<li>If r&lt;n, we can still process reads if a node is unavailable</li>
+<li>Normally, reads and writes are always sent to all n replicas in parallel, r and w parameters are used to determine how many nodes to wait for(can consider as successful).</li>
+</ol>
+</li>
+</ul>
+<h3 id="Limitations-of-Quorum-Consistency"><a href="#Limitations-of-Quorum-Consistency" class="headerlink" title="Limitations of Quorum Consistency"></a>Limitations of Quorum Consistency</h3><ul>
+<li>Usually w and r are chosen to be a majority (more than n/2) of nodes. But quorums only matters that the sets of nodes used by the read and write operations overlap in at least one node.</li>
+<li><p>You may also set w and r to smaller numbers, so that w+r&lt;n. more likely to read stale values. This allows lower latency and higher availability.</p>
+</li>
+<li><p>It is wise to not take the parameters w and r as absolute guarantee, there are some edge cases.</p>
+</li>
+</ul>
+<h3 id="Monitoring-staleness"><a href="#Monitoring-staleness" class="headerlink" title="Monitoring staleness"></a>Monitoring staleness</h3><p>You need to be aware of the health of your replication.</p>
+<ul>
+<li>In leader-based replication, there are metrics for the replication lag.  </li>
+<li>In leaderless replications, there is no fixed order in which writes are applied. Not yet common pratice, but it would be good to include staleness measurements in the standard set of metrics for databases.</li>
+</ul>
+<h2 id="Sloppy-Quorums-and-Hinted-Handoff"><a href="#Sloppy-Quorums-and-Hinted-Handoff" class="headerlink" title="Sloppy Quorums and Hinted Handoff"></a>Sloppy Quorums and Hinted Handoff</h2><p>Databases with appropriately configured quorums can tolerate the failure of individual nodes without the need for failover.<br>When in a large cluster, the client can connect to some database nodes during the network interuption, but not to the quorum needs, there is a trade-off:</p>
+<ol>
+<li>Return errors to all requests for which we cannot reach a quorum of w or r nodes?</li>
+<li>Accept writes anyway, and write them to some nodes that are reachable. - Sloppy quorum<br>Sloppy quorum means writes and reads still require w and r successful responses, but those may include nodes that are not among the desinated n “home” nodes for a value.</li>
+</ol>
+<ul>
+<li>Hinted handoff: one the network interuption is fixed, any writes that on node temporarily accepted on behalf of another node are sent to the approporiate “home” node.</li>
+<li>Increasing write availability, but still not gurantee when w+r&gt;n, because there may be some latest value temporarily written to some nodes outsides of n. Until the hinted handoff has completed.</li>
+</ul>
+<h3 id="Multi-datacenter-operation"><a href="#Multi-datacenter-operation" class="headerlink" title="Multi-datacenter operation"></a>Multi-datacenter operation</h3><p>Leaderless replication is also suitable for multi-datacenter operation, since it is designed to tolerate conflicting councurrent writes, network interruptions and latency spikes.</p>
+<h2 id="Detecting-Concurrent-Writes"><a href="#Detecting-Concurrent-Writes" class="headerlink" title="Detecting Concurrent Writes"></a>Detecting Concurrent Writes</h2><p>Dynamo-style databases allow several clients to concurrently write to the same key, conflicts will occur, during read repair or hinted handoff.</p>
+<ul>
+<li>Events may arrive in different order at different nodes.</li>
+<li>For eventually consistent, the replicas should converge toward the same value.</li>
+</ul>
+<h3 id="Last-write-wins-discarding-concurrent-writes"><a href="#Last-write-wins-discarding-concurrent-writes" class="headerlink" title="Last write wins (discarding concurrent writes)"></a>Last write wins (discarding concurrent writes)</h3><ul>
+<li>declare that each replica need only store the most “recent” value and allow “older” values to be overwritten and discarded. But in leaderless, no order to define “recent”.</li>
+<li>So we can force an arbitrary oder on them, attach timestamp, and pick the highest, discard the others.</li>
+<li>achieves the goal of eventual convergence, but at the cost of durability.</li>
+<li>Key need to be only written once and therefore treated as immutable. Thus, use UUID, unique ID.</li>
+</ul>
+<h3 id="The-“happen-before”-relationship-and-concurrency"><a href="#The-“happen-before”-relationship-and-concurrency" class="headerlink" title="The “happen-before” relationship and concurrency"></a>The “happen-before” relationship and concurrency</h3><p>How to decide whether two operations are concurrent or not?</p>
+<ul>
+<li>An increment by B is based on an insertion by A -&gt; B is causal dependent on A.</li>
+<li>Two writes are performaning on the same key while doesn’t know each other -&gt; no causal dependency between the operations.</li>
+<li>Say that two operations are concurrent if neithwer happens before the other.</li>
+</ul>
+<p>To define concurrency, exact time doesn’t matter, we simply call two operation concurrent if they are both unaware of each other.</p>
+<h3 id="Capturing-the-happens-before-relationship"><a href="#Capturing-the-happens-before-relationship" class="headerlink" title="Capturing the happens-before relationship"></a>Capturing the happens-before relationship</h3><ul>
+<li><p>tag the write with version number. same number writes are concurrent.</p>
+</li>
+<li><p>Merging concurrently written values</p>
+<ul>
+<li>called siblings in Riak.</li>
+<li>Take union to avoid losing data, but will reappear the deleted item. So we needs to mark the deletion with tombstone.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Version-vectors"><a href="#Version-vectors" class="headerlink" title="Version vectors"></a>Version vectors</h3><p>use a version number per replica as well as per key. - Each replica increments its own version number when processing a write, and also keeps track of the version numbers it has seen from each of the other replicas.</p>
+<ul>
+<li>dotted version vector</li>
+</ul>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你给我鼓励<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/Alipay.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/Wechat.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -224,95 +602,148 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2019/05/10/distributed-system/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/05/03/micro-service/" class="archive-article-date">
-  	<time datetime="2019-05-03T18:26:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-03</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/05/03/micro-service/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Micro-Service Tutorial</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/05/03/micro-service/">Micro-Service Tutorial</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">backend</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Distributed-Data"><span class="toc-number">1.</span> <span class="toc-text">Distributed Data</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scaling-to-Higher-Load"><span class="toc-number">1.1.</span> <span class="toc-text">Scaling to Higher Load</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Replication-Versus-Partitioning"><span class="toc-number">1.2.</span> <span class="toc-text">Replication Versus Partitioning</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Replication"><span class="toc-number">2.</span> <span class="toc-text">Replication</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leaders-and-Followers"><span class="toc-number">2.1.</span> <span class="toc-text">Leaders and Followers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Synchronous-Versus-Asynchronous-replication"><span class="toc-number">2.2.</span> <span class="toc-text">Synchronous Versus Asynchronous replication</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Semi-synchronous"><span class="toc-number">2.3.</span> <span class="toc-text">Semi-synchronous</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Asynchronous-Replication"><span class="toc-number">2.4.</span> <span class="toc-text">Asynchronous Replication</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Setting-Up-New-followers"><span class="toc-number">2.5.</span> <span class="toc-text">Setting Up New followers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Handling-Node-Outages"><span class="toc-number">2.6.</span> <span class="toc-text">Handling Node Outages</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Follower-failure-Catch-up-recovery"><span class="toc-number">2.6.1.</span> <span class="toc-text">Follower failure: Catch-up recovery</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Leader-failure-Failover"><span class="toc-number">2.6.2.</span> <span class="toc-text">Leader failure: Failover</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Implementation-of-Replication-Logs"><span class="toc-number">2.7.</span> <span class="toc-text">Implementation of Replication Logs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Problems-with-Replication-Lag"><span class="toc-number">2.8.</span> <span class="toc-text">Problems with Replication Lag</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Reading-Your-Own-Writes"><span class="toc-number">2.8.1.</span> <span class="toc-text">Reading Your Own Writes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Monotonic-Reads"><span class="toc-number">2.8.2.</span> <span class="toc-text">Monotonic Reads</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Consisten-Prefix-Reads"><span class="toc-number">2.8.3.</span> <span class="toc-text">Consisten Prefix Reads</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Solution-for-Replication-Lag"><span class="toc-number">2.8.4.</span> <span class="toc-text">Solution for Replication Lag</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Multi-Leader-Replication"><span class="toc-number">2.9.</span> <span class="toc-text">Multi-Leader Replication</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Clients-with-offline-operation"><span class="toc-number">2.9.1.</span> <span class="toc-text">Clients with offline operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Collaborative-editing"><span class="toc-number">2.9.2.</span> <span class="toc-text">Collaborative editing</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Handling-Write-Conflicts"><span class="toc-number">2.10.</span> <span class="toc-text">Handling Write Conflicts</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Synchronous-versus-asynchronous-conflict-detection"><span class="toc-number">2.10.1.</span> <span class="toc-text">Synchronous versus asynchronous conflict detection</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Conflict-avoidance"><span class="toc-number">2.10.2.</span> <span class="toc-text">Conflict avoidance</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Converging-toward-a-consistent-state"><span class="toc-number">2.10.3.</span> <span class="toc-text">Converging toward a consistent state</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Custom-conflict-resolution-logic"><span class="toc-number">2.10.4.</span> <span class="toc-text">Custom conflict resolution logic</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Automatic-Conflict-resolution"><span class="toc-number">2.10.5.</span> <span class="toc-text">Automatic Conflict resolution</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Multi-Leader-Replication-Topologies"><span class="toc-number">2.10.6.</span> <span class="toc-text">Multi-Leader Replication Topologies</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leaderless-replication"><span class="toc-number">2.11.</span> <span class="toc-text">Leaderless replication</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Limitations-of-Quorum-Consistency"><span class="toc-number">2.11.1.</span> <span class="toc-text">Limitations of Quorum Consistency</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Monitoring-staleness"><span class="toc-number">2.11.2.</span> <span class="toc-text">Monitoring staleness</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Sloppy-Quorums-and-Hinted-Handoff"><span class="toc-number">2.12.</span> <span class="toc-text">Sloppy Quorums and Hinted Handoff</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Multi-datacenter-operation"><span class="toc-number">2.12.1.</span> <span class="toc-text">Multi-datacenter operation</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Detecting-Concurrent-Writes"><span class="toc-number">2.13.</span> <span class="toc-text">Detecting Concurrent Writes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Last-write-wins-discarding-concurrent-writes"><span class="toc-number">2.13.1.</span> <span class="toc-text">Last write wins (discarding concurrent writes)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-“happen-before”-relationship-and-concurrency"><span class="toc-number">2.13.2.</span> <span class="toc-text">The “happen-before” relationship and concurrency</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Capturing-the-happens-before-relationship"><span class="toc-number">2.13.3.</span> <span class="toc-text">Capturing the happens-before relationship</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Version-vectors"><span class="toc-number">2.13.4.</span> <span class="toc-text">Version vectors</span></a></li></ol></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/05/01/system_application/" class="archive-article-date">
-  	<time datetime="2019-05-01T20:56:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-01</time>
-</a>
-        </div>
-    	 
+  <div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="distributed-system" data-title="Notes of Designing Data-Intensive Application(2) Replication" data-url="http://yoursite.com/2019/05/10/distributed-system/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/05/01/system_application/">Notes of Designing Data-Intensive Application(1)</a>
-    </h1>
+  
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://yoursite.com/2019/05/10/distributed-system/", 
+    sourceId: "distributed-system",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">backend</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
 
 
           </div>
@@ -335,8 +766,8 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

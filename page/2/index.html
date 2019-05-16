@@ -185,6 +185,624 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-system_application" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/01/system_application/">Notes of Designing Data-Intensive Application(1)</a>
+    </h1>
+  
+
+        
+        <a href="/2019/05/01/system_application/" class="archive-article-date">
+  	<time datetime="2019-05-01T20:56:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-Data-intensive-Application"><a href="#1-Data-intensive-Application" class="headerlink" title="1. Data-intensive Application"></a>1. Data-intensive Application</h1><h2 id="Scalability"><a href="#Scalability" class="headerlink" title="Scalability"></a>Scalability</h2><ul>
+<li><p>Percentiles</p>
+<ol>
+<li>tail latency amplification</li>
+<li>Dashboard: forward decay, t-digest, HdrHistogram</li>
+<li>SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s, and the service may be required to be up at least 99.9% of the time.</li>
+<li>Queueing delay, head-of-line blocking.</li>
+</ol>
+</li>
+<li><p>Coping with Load</p>
+<ol>
+<li>scaling up, vertical moving to a more powerful machine</li>
+<li>scaling out, horizontal distributing the load across multiple smaller machines</li>
+<li>elastic, automatically add computing resources.</li>
+<li>easy for stateless services to be distributed but complex for stateful one.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Maintainability"><a href="#Maintainability" class="headerlink" title="Maintainability"></a>Maintainability</h2><ul>
+<li>fixing bugs</li>
+<li>keeping its systems operational investigating failures</li>
+<li>adapting it to new platform</li>
+<li>modifying it for new use cases</li>
+<li>repaying technical debt</li>
+<li>adding new features</li>
+</ul>
+<ol>
+<li>Operability - easy to keep the system running smoothly</li>
+<li><p>Simplicity - easy to understand the system<br> Avoid:</p>
+<ul>
+<li>explosion of the state space</li>
+<li>tight coupling of modules</li>
+<li>tangled dependencies</li>
+<li>inconsistent naming and terminology</li>
+</ul>
+</li>
+<li><p>Evolvability - easy to change the system, adapt it for new use cases.</p>
+</li>
+</ol>
+<h1 id="2-Data-Models-and-Query-Languages"><a href="#2-Data-Models-and-Query-Languages" class="headerlink" title="2. Data Models and Query Languages"></a>2. Data Models and Query Languages</h1><p>Examples</p>
+<ul>
+<li>Model the real world in terms of objects or data     structures, and APIs that manipulate those data     structures.</li>
+<li>Express them in terms of a general-purpose data model, such as JSON, XML documents, tables in relational databases, or a graph model.</li>
+<li>Decide a way of representing that JSON/XML/relational/graph data in terms of bytes in memory, on disk, or on a network. Allow the data to be queried, searched, manipulated and processed in various ways.</li>
+<li>Lower layer, hardware engineers represent bytes in terms of electrical currents, pulses of light, magnetic fields, and more.</li>
+</ul>
+<h2 id="Relational-Model-Versus-Document-Model"><a href="#Relational-Model-Versus-Document-Model" class="headerlink" title="Relational Model Versus Document Model"></a>Relational Model Versus Document Model</h2><ul>
+<li>SQL - transaction processing, batch processing</li>
+<li>Relational model dominates other competitors - network model, hierarchical model, Object data bases, XML databases.</li>
+<li><p>NoSQL: driving forces behind the adoption of NoSQL are:</p>
+<ol>
+<li>greater scalability can be achieved, very large datasets or very high write throughput.</li>
+<li>preference for free and open source software over commercial database products.</li>
+<li>Specialized query operations</li>
+<li>Frustration with restrictiveness of relational schemas, and a desire for a more dynamic and expressive data model.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Object-Relational-Mismatch"><a href="#Object-Relational-Mismatch" class="headerlink" title="Object-Relational Mismatch"></a>Object-Relational Mismatch</h2><p>Needs a translation layer between the objects in the application code and the databases model of tables, rows and  columns.</p>
+<ul>
+<li>ORM(Object-relational mapping) framework like ActiveRecord and Hibernate</li>
+<li><p>one-to-many relationship from the user to these items, which can be represented in various ways:</p>
+<ol>
+<li>put them in separate tables with a foreign key reference to the users table.</li>
+<li>support for structured datatypes and XML data;</li>
+<li>encode them as a JSON or XML document, store it on a text column in the database, and let the application interpret its structure and content.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Many-to-One-and-Many-to-Many-Relationships"><a href="#Many-to-One-and-Many-to-Many-Relationships" class="headerlink" title="Many-to-One and Many-to-Many Relationships"></a>Many-to-One and Many-to-Many Relationships</h2><p>There are advantages to having standardized lists of geographic regions and industries, and letting users choose from a drop-down list or auto-completer:</p>
+<ol>
+<li>Consistent style and spelling across profiles</li>
+<li>Avoid ambiguity</li>
+<li>Ease of updating</li>
+<li>Localization support</li>
+<li>Better search</li>
+</ol>
+<h3 id="many-to-one-relationship"><a href="#many-to-one-relationship" class="headerlink" title="many-to-one relationship"></a>many-to-one relationship</h3><ul>
+<li><p>Store an ID instead of a text string is a question of duplication</p>
+<p>  Because an ID has no meaning to humans, it never needs to change. If the information is duplicated, all the redundant copies need to be updated, that incurs write overheads, and risks inconsistencies.<br>  Removing such duplication is the key idea behind normalization in databases.</p>
+</li>
+</ul>
+<h3 id="Many-to-Many-relationship"><a href="#Many-to-Many-relationship" class="headerlink" title="Many-to-Many relationship"></a>Many-to-Many relationship</h3><ul>
+<li><p>Organizations and schools as entities</p>
+<p>  each organization, school and university could have its own web page, each resume could link to it, includes their logos and other information.</p>
+</li>
+<li>Recommendations</li>
+</ul>
+<h2 id="Compare"><a href="#Compare" class="headerlink" title="Compare"></a>Compare</h2><ul>
+<li><p>Document data model:</p>
+<p>  schema flexibility, better performance due to locality,     closer to the data structures used by the application</p>
+</li>
+<li><p>Relational model:</p>
+<p>  providing better support for joins, and many-to-one and many-to-many relationships.</p>
+</li>
+<li><p>polyglot</p>
+</li>
+</ul>
+<h2 id="Query-Languages-for-Data"><a href="#Query-Languages-for-Data" class="headerlink" title="Query Languages for Data"></a>Query Languages for Data</h2><p>SQL: declarative - just specify the pattern of the data you want. And databases system’s query optimizer to decide how to achieve the goal.</p>
+<p>IMS, CODASYL and others programming languages: imperative - step through the code line by line, evaluating conditions, updating variables, and deciding whether to go around the loop one more time.</p>
+<p>Declarative query language is attractive because:</p>
+<ul>
+<li>Possible for the database system to introduce performance improvements without requiring any changes to queries.</li>
+<li>Have a better chance of getting faster in parallel execution they specify only the pattern of the results, not the algorithm that is used to determine the results.</li>
+</ul>
+<h2 id="Declarative-Queries-on-the-Web"><a href="#Declarative-Queries-on-the-Web" class="headerlink" title="Declarative Queries on the Web"></a>Declarative Queries on the Web</h2><p>Specify the selected item “Sharks” as blue background:<br>CSS example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">li.selected &gt; p&#123;</div><div class="line">	background-color: blue;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>XSL example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;xsl:template match=&quot;li[@class=&apos;selected&apos;]/p&quot;&gt;</div><div class="line">	&lt;fo:block background-color=&quot;bule&quot;&gt;</div><div class="line">		&lt;xsl:apply-templates/&gt;</div><div class="line">	&lt;/fo:block&gt;</div><div class="line">&lt;/xsl:template&gt;</div></pre></td></tr></table></figure></p>
+<p>They are both declarative languages for specifying the styling of a document. If we use a imperative approach, like Java-script, using the core Document Object Model(DOM) API, the result might look like:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var liElements = document.getElementsByTagName(&quot;li&quot;);</div><div class="line">for(var i = 0; i&lt;liElements.length;i++)&#123;</div><div class="line">	if(liEelements[i].className==&quot;selected&quot;)&#123;</div><div class="line">		var children = liElements[i].childNodes;</div><div class="line">		for(var j=0; j&lt;children.length;j++)&#123;</div><div class="line">			var child = children[j];</div><div class="line">			if(child.nodeType == Node.ELEMENT_NODE &amp;&amp; child.tagName === &quot;p&quot;)&#123;</div><div class="line">				child.setAttribute(&quot;style&quot;, &quot;background-color:blue&quot;);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Not only longer and harder to read, but also:</p>
+<ol>
+<li>If the selected class is removed(select other page), the background color won’t be removed, until the entire page is reloaded. With CSS, the browser automatically detects when the li.selected &gt; p rule no longer applies.</li>
+<li>If you want to take advantage of a new API, say to use document.getElementsByClassName(“selected”) or document.evaluate()<br>, you have to rewrite the code. But CSS can do it without breaking compatibility.<h2 id="MapReduce-Querying"><a href="#MapReduce-Querying" class="headerlink" title="MapReduce Querying"></a>MapReduce Querying</h2>MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between. It is based on the map(collect) and reduce(fold, inject) functions that exist in many functional programming languages.</li>
+</ol>
+<p>An example to report how many sharks you have sighted per month:<br>In PostgreSQL:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">SELECT data_trunc(&apos;month&apos;, observation_timestamp) AS observatin_month, sum(num_animals) AS total_animals</div><div class="line">FROM observations</div><div class="line">WHERE family = &apos;Sharks&apos;</div><div class="line">GROUP BY observation_month;</div></pre></td></tr></table></figure>
+<p>The same can be expressed with MongoDB’s MapReduce features as follows:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">db.observations.mapReduce(</div><div class="line">	function map()&#123;</div><div class="line">		var yer = this.observationTimestamp.getFullYear();</div><div class="line">		var month = this.observationTimestamp.getMonth()+1;</div><div class="line">		emit(year + &quot;-&quot; +month, this.numAnimals;</div><div class="line">	&#125;</div><div class="line">	function reduce(key, values)&#123;</div><div class="line">		return Array.sum(values);</div><div class="line">	&#125;</div><div class="line">	&#123;</div><div class="line">		query: &#123; family: &quot;Sharks&quot;&#125;,</div><div class="line">		out: &quot;monthlySharkReport&quot;</div><div class="line">	&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>Result:<br>map: emit(“1995-12”, 3) and emit(“1995-12”,4)<br>reduce: reduce(“1995-12”, [3,4]) -&gt; 7</p>
+<ul>
+<li>Restricted in: They must be pure function, cannot perform additional databases queries, and they must not have any side effects.</li>
+</ul>
+<p>MapReduce is a fairly low-level programming model for distributed execution on a cluster of machines. Higher-level query languages like SQL can be implemented as a pipeline of MapReduce operations, but there are also many distributed implementations of SQL that don’t use MapReduce.</p>
+<p>MongoDB 2.2 added support for a declarative query language called the aggregation pipeline:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">db.observations.aggregate([</div><div class="line">	&#123; $match:&#123;family:&quot;Sharks&quot;&#125;&#125;,</div><div class="line">	&#123; $group: &#123;</div><div class="line">		_id: &#123;</div><div class="line">			year:&#123;$year: &quot;$observationTimestamp&quot;&#125;,</div><div class="line">			month:&#123;$month:&quot;$ovservationTimestamp&quot;&#125;</div><div class="line">		&#125;,</div><div class="line">		totalAnimals:&#123;$sum:&quot;$numAnimals&quot;&#125;</div><div class="line">	&#125;&#125;</div><div class="line">]&#125;;</div></pre></td></tr></table></figure>
+<h2 id="Graph-like-data-models"><a href="#Graph-like-data-models" class="headerlink" title="Graph-like data models"></a>Graph-like data models</h2><p>Many-to-many relationships are an important distinguishing feature between different data models.<br>A graph consists of two kinds of objects: vertices, edges<br>Social graphs, The web graph, Road or rail networks.</p>
+<h3 id="Property-Graphs"><a href="#Property-Graphs" class="headerlink" title="Property Graphs"></a>Property Graphs</h3><p>Each vertex consists of:</p>
+<ul>
+<li>A unique identifier</li>
+<li>A set of outgoing edges</li>
+<li>A set of incoming edges</li>
+<li>A collection of properties(key-value pairs)</li>
+</ul>
+<p>Each edge consists of:</p>
+<ul>
+<li>A unique identifier</li>
+<li>The vertex at which the edge starts(the tail vertex)</li>
+<li>The vertex at which the edge ends(the head vertex)</li>
+<li>A label to describe the kind of relationship between the two vertices</li>
+<li>A collection of properties(key-value pairs)</li>
+</ul>
+<h3 id="The-Cypher-Query-Language"><a href="#The-Cypher-Query-Language" class="headerlink" title="The Cypher Query Language"></a>The Cypher Query Language</h3><p>Cypher is a declarative query language for property graphs, create for the Neo4j graph database.</p>
+<h3 id="Recursive-common-table-expression"><a href="#Recursive-common-table-expression" class="headerlink" title="Recursive common table expression"></a>Recursive common table expression</h3><p>find all nodes that are within “us”</p>
+<h3 id="Triple-Stores-and-SPARQL"><a href="#Triple-Stores-and-SPARQL" class="headerlink" title="Triple-Stores and SPARQL"></a>Triple-Stores and SPARQL</h3><p>simple three-part statements: subject, predicate, object -&gt; Jim likes bananas.</p>
+<ul>
+<li>Semantic web<br>  Resource Description Framework(RDF) was intended as a mechanism for different websites to publish data in a consistent format, allowing data from different websites to be automatically combined into a web of data.<ul>
+<li>RDF data model<br>  The subject, predicate and object of a triple are often URIs, <a href="http://my-company.com/namespace#within" target="_blank" rel="external">http://my-company.com/namespace#within</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>SPARQL query language<br>query a person born in somewhere:<br>  Cypher:</p>
+<pre><code>(person) -[:BORN_IN]-&gt; () -[:WITHIN*0..]-&gt;(location)
+</code></pre><p>  SPARQL:</p>
+<pre><code>?person :bornIn / : within* ?location.
+</code></pre></li>
+</ul>
+<h3 id="Datalog"><a href="#Datalog" class="headerlink" title="Datalog"></a>Datalog</h3><p>is similar to triple-store model, writing as  predicate(subject, object).</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Besides from relational databases.<br>NoSQL datastores have diverged in two main directions:</p>
+<ol>
+<li>Document databases target use cases where data comes in self-contained documents and relationships between one document and another are rare.</li>
+<li>Graph databases go in the opposite direction, targeting use cases where anything is potentially to related to everything.</li>
+</ol>
+<h1 id="3-Storage-and-Retrieval"><a href="#3-Storage-and-Retrieval" class="headerlink" title="3. Storage and Retrieval"></a>3. Storage and Retrieval</h1><h2 id="Data-Structures"><a href="#Data-Structures" class="headerlink" title="Data Structures"></a>Data Structures</h2><ul>
+<li>Log - an append-only data file.</li>
+<li>Index - efficiently find the value for a particular key in database</li>
+</ul>
+<h2 id="Hash-Indexes"><a href="#Hash-Indexes" class="headerlink" title="Hash Indexes"></a>Hash Indexes</h2><ul>
+<li>Bitcask(the default storage engine in Riak)<br>Keep the hash map completely in memory, the key points to the byte offset where can find the value. High-performance reads and writes.</li>
+</ul>
+<p>This is feasible when you have a large number of writes per key, and there are not many distinct keys.</p>
+<ul>
+<li>What if “Out of disk space”<br>Break log into segments of a certain size, then perform compaction on these segments</li>
+</ul>
+<h3 id="Issues-in-an-implementation"><a href="#Issues-in-an-implementation" class="headerlink" title="Issues in an implementation"></a>Issues in an implementation</h3><ol>
+<li>File format - CSV, it is faster simpler to use a binary format that first encodes the length of a string in bytes, followed by the raw string.</li>
+<li>Deleting records - append a deletion record to the data file(tombstone), will be discarded previous while merging.</li>
+<li>Crash recovery - speed up the restart by storing a snapshot of each segment’s map on disk.</li>
+<li>Partially written records - checksums, allowing such corrupted parts of the log to be detected and ignored.</li>
+<li>Concurrency control - only one write thread.</li>
+</ol>
+<h3 id="Why-append-only"><a href="#Why-append-only" class="headerlink" title="Why append-only"></a>Why append-only</h3><ol>
+<li>appending and segment merging are sequential write operations, generally much faster than random writes.</li>
+<li>CC and crash recovery are much simpler.</li>
+</ol>
+<h3 id="Hash-table-index-limitations"><a href="#Hash-table-index-limitations" class="headerlink" title="Hash table index limitations:"></a>Hash table index limitations:</h3><ol>
+<li>The hash table must fit in memory.</li>
+<li>Range query are not efficient.</li>
+</ol>
+<h2 id="SSTables-and-LSM-Trees"><a href="#SSTables-and-LSM-Trees" class="headerlink" title="SSTables and LSM-Trees"></a>SSTables and LSM-Trees</h2><p>Require the sequence of key-value pairs is sorted by key.</p>
+<ol>
+<li>Merging segments is simple and efficient, use mergesort.</li>
+<li>Find particular key in the file you don’t need an index of all keys in memory, but directly jump to the offset of some known key and scan according to the order. Only needs a sparse index to tell you the offsets for some of the keys.</li>
+<li>Possible to group those records in a block and compress it before writing it to disk.</li>
+</ol>
+<p>Long-Structured Merge-Tree (LMS-Tree) is based on the principle of merging and compacting files. It can be slow when looking up keys that do not exist.</p>
+<h2 id="B-Trees"><a href="#B-Trees" class="headerlink" title="B-Trees"></a>B-Trees</h2><ol>
+<li>Crash recovery  - WAL(write ahead log) or redo log, every B-tree modification must be written before it can be applied to the pages of the tree itself. The log is used to restore the B-tree back to a consistent state.</li>
+<li>Concurrency control with latches(lightweight locks).</li>
+</ol>
+<h3 id="Optimizations"><a href="#Optimizations" class="headerlink" title="Optimizations"></a>Optimizations</h3><ul>
+<li>use a copy-on-write scheme, instead of overwriting pages and maintaining a WAL for each recovery.</li>
+<li>Abbreviating the sorted key names.</li>
+<li>lay out the trees so that leaf pages appear in sequential order on disk. (LMS-trees is easier on this)</li>
+<li>Additional pointers have been added to the tree, sibling pages to the left and right, for going back to parent pages.</li>
+<li>Fractal trees with log-structured ideas to reduce disk seeks.</li>
+</ul>
+<h2 id="Compare-B-Trees-and-LSM-Trees"><a href="#Compare-B-Trees-and-LSM-Trees" class="headerlink" title="Compare B-Trees and LSM-Trees"></a>Compare B-Trees and LSM-Trees</h2><ol>
+<li>LSM-trees are faster for writes.</li>
+<li>B-trees are faster for reads.</li>
+</ol>
+<h2 id="Secondary-index"><a href="#Secondary-index" class="headerlink" title="Secondary index"></a>Secondary index</h2><p>there might be many rows with the same key:</p>
+<ol>
+<li>make each value in the index a list of matching row identifiers.</li>
+<li>make each key unique by appending a row identifier to it.</li>
+</ol>
+<h2 id="Storing-values-within-the-index"><a href="#Storing-values-within-the-index" class="headerlink" title="Storing values within the index"></a>Storing values within the index</h2><ol>
+<li>Clustered index - storing all row data within the index</li>
+<li>Non-clustered index - storing only references to the data within the index</li>
+</ol>
+<h2 id="Multi-column-indexes"><a href="#Multi-column-indexes" class="headerlink" title="Multi-column indexes"></a>Multi-column indexes</h2><p>Concatenated index, simply combines several fields into on key by appending one column to another.</p>
+<h3 id="Spatial-Indexes"><a href="#Spatial-Indexes" class="headerlink" title="Spatial Indexes"></a>Spatial Indexes</h3><ul>
+<li>translate a two-dimensional location into a single number using space-filling curve, and then to use a regular B-tree index.</li>
+<li>More commonly, R-trees are used.</li>
+</ul>
+<h2 id="Full-text-search-and-fuzzy-indexes"><a href="#Full-text-search-and-fuzzy-indexes" class="headerlink" title="Full-text search and fuzzy indexes"></a>Full-text search and fuzzy indexes</h2><ul>
+<li>fuzzy querying</li>
+</ul>
+<p>It requires different techniques. It uses a finite state automaton over the characters in the keys, similar to a trie. Search for words within a given edit distance.</p>
+<h2 id="In-memory-databases"><a href="#In-memory-databases" class="headerlink" title="In memory databases"></a>In memory databases</h2><p>Keep the entire database in memory, potentially distributed across several machines.</p>
+<ul>
+<li>Performance, faster because they can avoid the overheads of encoding in-memory data structures in a form that can be written to disk.</li>
+<li><p>Providing data models that are difficult to implement with disk-based indexes.</p>
+</li>
+<li><p>Anti-caching approach - LRU</p>
+</li>
+<li>Non-volatile memory(NVM)</li>
+</ul>
+<h2 id="Transaction-Processing-or-Analytics"><a href="#Transaction-Processing-or-Analytics" class="headerlink" title="Transaction Processing or Analytics?"></a>Transaction Processing or Analytics?</h2><ol>
+<li>Online transaction processing(OLTP)</li>
+<li><p>OLTA - different access pattern</p>
+<p> needs to scan over a huge number of records, only reading a few columns per record, and calculates aggregate statistics(count, sum, average).</p>
+</li>
+</ol>
+<h3 id="Data-Warehousing-run-analytics-on-this-separate-database"><a href="#Data-Warehousing-run-analytics-on-this-separate-database" class="headerlink" title="Data Warehousing - run analytics on this separate database"></a>Data Warehousing - run analytics on this separate database</h3><p>They are usually reluctant to let business analysts run ad hoc analytic queries on an OLTP database.<br>Expensive, scanning large parts of the dataset, harm the performance of concurrently executing transactions.</p>
+<ul>
+<li><p>Extract-Transform-Load(ETL)</p>
+<p>  Data is extracted from OLTP databases(using either a periodic data dump or a continuous stream of updates), transformed into an analysis-friendly schema, cleaned up, and then loaded into the data warehouse.</p>
+</li>
+<li><p>The divergence between OLTP databases and data warehouses<br>  On the surface, a data warehouse and a relational OLTP database look similar, because they both have a SQL query interface, but the internals of the systems can look quite different. Focus on either OLTP or OLTA, but not both.</p>
+</li>
+<li><p>A plethora of open source SQL-on-Hadoop projects</p>
+<p>  Apache Hive, Spark SQL, Cloudera Impala, Facebook Presto, Apache Tajo and Apache Drill.</p>
+</li>
+</ul>
+<h3 id="Starts-and-Snowflakes-Schemas-for-Analytics"><a href="#Starts-and-Snowflakes-Schemas-for-Analytics" class="headerlink" title="Starts and Snowflakes: Schemas for Analytics"></a>Starts and Snowflakes: Schemas for Analytics</h3><p>There is a fact table in the middle, surrounded by its dimension tables. These dimension tables with the foreign key as the columns in the fact table.</p>
+<ul>
+<li>Snowflakes<br>  If the dimension tables are further broken into sub-dimensions.</li>
+</ul>
+<h2 id="Column-Oriented-Storage"><a href="#Column-Oriented-Storage" class="headerlink" title="Column-Oriented Storage"></a>Column-Oriented Storage</h2><p>In OLTP databases, storage is laid out in a row-oriented fashion, all the value from a row are stored one by one.</p>
+<p>Instead, store all the values from each column together, save a lot of work and space. They are in the same order of the row number, so it is easy to reassemble an entire row.</p>
+<h3 id="Column-Compression"><a href="#Column-Compression" class="headerlink" title="Column Compression"></a>Column Compression</h3><ul>
+<li><p>Bitmap encoding<br>  74 = 000010000000000000 -&gt; 4,1(4 zeros, 1 one, rest zeros)</p>
+<ol>
+<li><code>WHERE product_sk IN(30,68,69)</code><br>Use bitwise OR can be done efficiently</li>
+<li><code>WHERE product_sk=31 AND store_sk=3</code><br>Use bitwise AND.</li>
+</ol>
+</li>
+</ul>
+<h3 id="Memory-bandwidth-and-vectorized-processing"><a href="#Memory-bandwidth-and-vectorized-processing" class="headerlink" title="Memory bandwidth and vectorized processing"></a>Memory bandwidth and vectorized processing</h3><ol>
+<li>Reducing the volume of data that needs to be loaded from disk.</li>
+<li>Making efficient use of CPU cycle. Process a chunk of compressed column data that fit in the same amount of L1 cache directly one chunk by one chunk, CPU can execute a loop much faster. This is vectorized processing.</li>
+</ol>
+<h2 id="Sort-Order-in-Column-Storage"><a href="#Sort-Order-in-Column-Storage" class="headerlink" title="Sort Order in Column Storage"></a>Sort Order in Column Storage</h2><h3 id="Several-different-sort-orders"><a href="#Several-different-sort-orders" class="headerlink" title="Several different sort orders"></a>Several different sort orders</h3><ol>
+<li>C-Store, multiple sort orders, replicate to multiple machines anyway for backup.</li>
+</ol>
+<h2 id="Writing-to-Column-Oriented-Storage"><a href="#Writing-to-Column-Oriented-Storage" class="headerlink" title="Writing to Column-Oriented Storage"></a>Writing to Column-Oriented Storage</h2><p>With a B-Tree, write a row will be difficult. Rewrite all column files.<br>But with LMS-Tree, they are all written in a sorted structure and prepared for writing to disk.</p>
+<h2 id="Aggregation-Data-Cubes-and-Materialized-Views"><a href="#Aggregation-Data-Cubes-and-Materialized-Views" class="headerlink" title="Aggregation: Data Cubes and Materialized Views"></a>Aggregation: Data Cubes and Materialized Views</h2><ul>
+<li><p>Materialized aggregates, Cache some of the counts or sums that queries use most often.</p>
+<ol>
+<li>Materialized view, automatically make a copy of the query results. More expensive for writing, only for improving read performance.</li>
+<li>Data cube, OLAP cube, use a n-dimension table to get the sum, count attribute for each other dimension.<br> Certain queries are very fast with this fashion, but it doesn’t have the same flexibility as querying the raw data.</li>
+</ol>
+</li>
+</ul>
+<h1 id="Encoding-and-Evolution"><a href="#Encoding-and-Evolution" class="headerlink" title="Encoding and Evolution"></a>Encoding and Evolution</h1><p>Evolvability: Make it easy to change.</p>
+<ol>
+<li>Server-side applications, perform a rolling upgrade, deploying the new version to a few nodes at a time, gradually working your way through all nodes. Allow new versions to be deployed without service downtime.</li>
+<li>Client-side, at the mercy of the user, who may not install the update for some time.</li>
+</ol>
+<p>Old and new versions of the code, old and new data formats potentially coexist in the system.</p>
+<ul>
+<li>Compatibility<ol>
+<li>Backward compatibility - newer code can read data that was written by older code.</li>
+<li>Forward compatibility - Older code can read data that was written by newer code.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Formats-for-Encoding-Data"><a href="#Formats-for-Encoding-Data" class="headerlink" title="Formats for Encoding Data"></a>Formats for Encoding Data</h2><p>Two representations of data:</p>
+<ol>
+<li>In memory, data is kept in objects, structs, lists, arrays, hash tables, trees and so on. Optimized for efficient access, and manipulation by the CPU.</li>
+<li>When write data to a file or send it over the network, you have to encode it as some kind of self-contained sequence of bytes(JSON).</li>
+</ol>
+<p>So we need to translate these two representation, from in-memory to a byte sequence is called encoding(serialization or marshalling), other way is called decoding(deserialization, unmarshalling, parsing).</p>
+<h2 id="Language-Specific-Formats"><a href="#Language-Specific-Formats" class="headerlink" title="Language-Specific Formats"></a>Language-Specific Formats</h2><p>Many programming languages come with built-in support for encoding in-memory object into byte sequence.</p>
+<ul>
+<li>Java - java.io.Serializable</li>
+<li>Ruby - Marshal</li>
+<li>Python - pickle</li>
+<li>Kryo for Java(thrid-party libraries)</li>
+</ul>
+<p>Problems are:</p>
+<ol>
+<li>It is very difficult to read the data in another language.</li>
+<li>To restore data in the same object types, the decoding process needs to be able to instantiate arbitrary classes. Security problem, attacker can get your application to decode an arbitrary byte sequence, they can instantiate arbitrary classes, which in turn often allows them to do terrible things such as remotely executing arbitrary code.</li>
+<li>Versioning data is often an afterthought in these libraries.</li>
+<li>Efficiency, Java’s built-in serialization is notorious for its bad performance and bloated encoding.</li>
+</ol>
+<h2 id="JSON-XML-and-Binary-Variants"><a href="#JSON-XML-and-Binary-Variants" class="headerlink" title="JSON, XML, and Binary Variants"></a>JSON, XML, and Binary Variants</h2><p>Problems:</p>
+<ol>
+<li>There is a lot of ambiguity around the encoding of numbers.<br> Dealing with large number, integers greater than %2^53% cannot be exactly represented in an IEEE 754 double-precision floating-point number.</li>
+<li>JSON and XML have good support for Unicode character strings, but they don’t support binary strings.</li>
+<li>Applications that don’t use XML/JSON schemas need to potentially hardcode the appropriate encoding/decoding logic instead.</li>
+<li>CSV doesn’t have any schema, if an application change adds a new row or column, you have to handle the change manually. CSV is also a quite vague format(what happens if a value contains a comma or a newline character?)</li>
+</ol>
+<h3 id="Binary-encoding"><a href="#Binary-encoding" class="headerlink" title="Binary encoding"></a>Binary encoding</h3><p>JSON is less verbose than CML, but both use a lot of space compared to binary format.<br>Example record:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	&quot;userName&quot;:&quot;Martin&quot;,</div><div class="line">	&quot;favoriteNumber&quot;:1337,</div><div class="line">	&quot;interest&quot;:[&quot;daydreaming&quot;,&quot;hacking&quot;]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Example of MessagePack, a binary encoding for JSON:</p>
+<table>
+<thead>
+<tr>
+<th>object(3 entries)</th>
+<th>string(length 8)</th>
+<th>u</th>
+<th>s</th>
+<th>e</th>
+<th>r</th>
+<th>N</th>
+<th>a</th>
+<th>m</th>
+<th>e</th>
+<th>string(length6)</th>
+<th>M</th>
+<th>a</th>
+<th>r</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>83</td>
+<td>a8</td>
+<td>75</td>
+<td>73</td>
+<td>65</td>
+<td>72</td>
+<td>4e</td>
+<td>61</td>
+<td>6d</td>
+<td>65</td>
+<td>a6</td>
+<td>4d</td>
+<td>61</td>
+<td>72</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>The first byte, 0x83, indicates that what follows is an object(top four bits=0x80) with three fields(bottom four bits = 0x03).</li>
+<li>The second byte, 0xa8, indicates that what follows is a string, that is eight bytes long.</li>
+<li>The next eight bytes are the field name userName in ASCII.</li>
+<li>The next seven bytes encode the six-letter string value Martin with a prefix 0xa6.</li>
+</ol>
+<p>Not very much reduction in the size.</p>
+<h3 id="Thrift-and-Protocol-Buffers"><a href="#Thrift-and-Protocol-Buffers" class="headerlink" title="Thrift and Protocol Buffers"></a>Thrift and Protocol Buffers</h3><p>Both Thrift(Facebook) and Protocol Buffers(Google) require a schema for any data that is encoded. In Thrift, you would describe the schema in the Thrift interface definition language(IDL) like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">strcut Person&#123;</div><div class="line">	1: required string userName,</div><div class="line">	2: optional i64 favoriteNumber,</div><div class="line">	3: optional list&lt;string&gt; interests</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>In Protocol Buffers looks like similar:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">message Person &#123;</div><div class="line">	required string userName = 1;</div><div class="line">	optional int64 favoriteNumber = 2;</div><div class="line">	repeated string interests = 3;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ul>
+<li>BinaryProtocal<br><img src="img/thrift.jpg" alt="example encoding in Thrift"></li>
+</ul>
+<p>Using field tag(number 1, 2, 3) to replace the field name.</p>
+<ul>
+<li>CompactProtocol<br>It packs the field type and field tag number into a single byte.<br><img src="img/compact.jpeg" alt="example encoding in Thrift"></li>
+</ul>
+<p>The required and optional don’t interfere how the field is encoded, only use for a runtime check if the field is not set when it is required, catching the bug.</p>
+<h3 id="Field-tags-and-Schema-Evolution"><a href="#Field-tags-and-Schema-Evolution" class="headerlink" title="Field tags and Schema Evolution"></a>Field tags and Schema Evolution</h3><ol>
+<li>Adding new schema(fields)<br> For forward compatbility, simply ignore the new field.<br> For backward compatbility, as long as each field has a unique tag number, new code can always read old data. The only concern is that the new field cannot be a required field, instead it should be optional or has a default value.</li>
+<li>Removing schema(fields)<br> Reversed, not removing a required field, and you can never use the same tag number again.</li>
+</ol>
+<h3 id="Datatypes-and-schema-Evolution"><a href="#Datatypes-and-schema-Evolution" class="headerlink" title="Datatypes and schema Evolution"></a>Datatypes and schema Evolution</h3><p>It is possible for Protocol buffers when make the single field value as repeated (multi-value)field. New code reading old data sees a list with zero or one elements. old code reading new data sees only the last element of the list.<br>Thrift has a dedicated list datatype, but it has advantage of supporting nested lists.</p>
+<h3 id="Avro"><a href="#Avro" class="headerlink" title="Avro"></a>Avro</h3><p>For Hadoop<br>Use a schema to specify the structure of the data being encoded. Two schema languages:</p>
+<ol>
+<li>Avro IDL, for human editing</li>
+<li>based on JSON, for machines-readable<br>There is noting to identify fields or their datatypes. Simply consists of values Concatenated together.<br>To parse the binary data, you go through the fields in the order that they appear in the schema and use the schema to tell you the datatype of each field.</li>
+</ol>
+<ul>
+<li>Writer’s schema - the schema to be compiled into the application</li>
+<li>Reader’s schema - decode some data, read it from a file or database, recieve it from the network, etc.<br>Writer’s schema and reader’s don’t need to be same, just need to be compatible.</li>
+</ul>
+<p>Schema resolution matches up the fields by field name.</p>
+<ol>
+<li>If the code reading the data encounters a field that appears in the writer’s schema, but not in the reader’s schema, ignore.</li>
+<li>If the code reading expects some fields, but the writer’s schema does not contain a field of that name, it is filled with a default value declared in the reader’s schema.</li>
+</ol>
+<ul>
+<li><p>compatibility<br>forward compatibility: ignore the field added, or fill with defualt value with the removed one.<br>backward compatibility: only add or remove a field that has a default value.</p>
+</li>
+<li><p>null : to make it nullable, must use a union type. union {null, long, string} field.</p>
+</li>
+<li>Changing datatype is possible.</li>
+<li>Changing the name of a field, can use an alias to refer the old name, so it is backward compatible not forward.</li>
+<li>Adding a branch to a union type is also backward compatbible but not forward.<h3 id="Dynamic-generated-Schemas"><a href="#Dynamic-generated-Schemas" class="headerlink" title="Dynamic generated Schemas"></a>Dynamic generated Schemas</h3>Avro is friendly to dynamically generated schemas, because it doesn’t contain any tag numbers. Generate new Avro schema from the database schema and export data in the new Avro schema.<h3 id="Code-generation-and-dynamically-typed-Languages"><a href="#Code-generation-and-dynamically-typed-Languages" class="headerlink" title="Code generation and dynamically typed Languages"></a>Code generation and dynamically typed Languages</h3>Thrift and Protocol Buffers rely on code generation, after a schema has been defined, you an generate code that implements this schema in programming languages you chose. Statically typed languages Java, C++ or C# allows efficient in-memory structures to be used for decoded data, allows type checking and autocomplition in IDEs.<br>For dynamically typed programming languages such as JavaScript, Ruby, or Python, there is not much point in generating code, since there is no compile-time type checker to satisfy.</li>
+</ul>
+<p>Avro provides optional code generation for statically typed programming languages, but it can be used just as well without any code generation. The file is self-describing since it includes all the neccessary metadata when open Arvo’s objsct container file(which embeds the writer’s schema).</p>
+<h2 id="The-Merits-of-schemas"><a href="#The-Merits-of-schemas" class="headerlink" title="The Merits of schemas"></a>The Merits of schemas</h2><p>Schema languages:</p>
+<ol>
+<li>ASN, a schema definition language in 1984. To define various network protocols, its binary encoding (DER) is still used to encode SSL certificates.<br>It supports schema evolution using tag numbers. Still complex, not a good choice for now.</li>
+<li>Some protocols are generally specific to a particular database, and the database vendor provides a driver(ODBC or JDBC APIs).</li>
+</ol>
+<h2 id="Modes-of-Dataflow"><a href="#Modes-of-Dataflow" class="headerlink" title="Modes of Dataflow"></a>Modes of Dataflow</h2><p>Who encodes the data, decodes it?</p>
+<ol>
+<li>Via databases</li>
+<li>Via service calculates</li>
+<li>Via asynchronous message passing<h3 id="Dataflow-through-databases"><a href="#Dataflow-through-databases" class="headerlink" title="Dataflow through databases"></a>Dataflow through databases</h3>In database the process that writes to the database encodes the data, the process reads from the database decodes it.<br>There could be severall different applications or sevices, and some processes acessing database run newer code, some will be running older code.</li>
+</ol>
+<ul>
+<li>History data can stay in the database, and update with null value in the newly added fields, thus whole database can be updated withouth rewriting.</li>
+<li>To backup the database, you can take a snapshot from time to time, or load into a data warehouse.</li>
+</ul>
+<h2 id="Datafolw-Through-Services-REST-and-RPC"><a href="#Datafolw-Through-Services-REST-and-RPC" class="headerlink" title="Datafolw Through Services: REST and RPC"></a>Datafolw Through Services: REST and RPC</h2><p>Servers expose an API over the network, the clients can connect to the servers to make requests to that API. The API exposed by the server is known as a service.<br>Web browsers make requests to web servers, making GET requests to download HTML, CSS, JavaScript, imgas, etc. And making POST requests to submit data to the server. The API consists of a standardized set of protocols and data formats(HTTP, URLs, SSL/TLS, HTML, etc)<br>A client-side JavaScript application running inside a web browser can use XMLHttpRequest to become a HTTP client(Ajax).</p>
+<ul>
+<li>SOA, Microservices<br>  A server can itself be a client to another service. This approach is often used to decompose a large application into smaller services by area of funcationality. This way of building applications is called service oriented architecture(SOA) or refined as microservices architecture.</li>
+<li>Service can impose fine-grained restrictions on what clients can and cannot do.</li>
+<li>Goal of microservices<br>  Make the application easier to change and maintain by making services independently deployable and evolvable.<br>  So the data encoding used by servers and clients must be compatible across versions of the service API.</li>
+</ul>
+<h3 id="Web-Services"><a href="#Web-Services" class="headerlink" title="Web Services"></a>Web Services</h3><ol>
+<li>A client application running on a user’s device. (e.g., a native app on a mobile device, or JavaScript web app using Ajax) making requests to a service over HTTP. There requests typically go over the public internet.</li>
+<li>One service making requests to another service owned by the same organization, often located within the same datacenter, as part of a service-oriented/microservices architecture. (Software that supports this kind of use case is sometimes called middleware.)</li>
+<li>One service making requests to a service owned by a different organization, usually via the internet. This category includes public APIs provided by online services, such as credit card processing systems, or OAuth for shared access to user data.</li>
+</ol>
+<p>Two popular appraches to web service: REST, SOAP</p>
+<ol>
+<li>REST is not a protocol, but rather a design philosiphy that build upon the principles of HTTP. It emphasized simple data formats, using URLs for identifying resources and using HTTP features for cache control, authentication, and content type negotiation. An API designed according to the principles of REST is called RESTfull.</li>
+<li>SOAP is an XML-based protocol by contrast, for making network API requests. Web Services Description Language(WSDL). Useful in statically typed programming Languages.</li>
+</ol>
+<p>RESTful APIs tend to favor simpler approaches, typically involving less code generation and automated tooling. A definition format such as OpenAPI, also known as Swagger, can be used to describe RESTful APIs and produce documentation.</p>
+<h3 id="The-problems-with-remote-procedure-calls-RPCS"><a href="#The-problems-with-remote-procedure-calls-RPCS" class="headerlink" title="The problems with remote procedure calls(RPCS)"></a>The problems with remote procedure calls(RPCS)</h3><p>Make a request to a remote network service look the same as calling a function or method in your programming language, whin the same process.(This abstraction is called location tranparancy). But the approach is fundamentally flawed.</p>
+<ol>
+<li>A local function is predictable, however, a network request is not, it could be lost, the remote machine may be slow or unavailable.</li>
+<li>A local function call either returns a result or throw an exception, or never returns. A network request might return but without results, due to timeout, you don’t know what happended.</li>
+<li>If you retried a failed network request, it could happen that the requests are actually getting through, and only the rewponses are getting lost.</li>
+<li>Local function takes same time to execute, but a network request takes longger, and its latency is widely variable. When the network is congested or the remote service is overloaded it took long time to complete.</li>
+<li>When you call a local function, you can efficiently pass its references(pointers) to objects in local memory, but a network request, all those parameters need to be encoded into a sequence of bytes that can be sent over the network.</li>
+<li>The client and service may be implemented in different programming languages, so the RPCs framework must translate datatypes from one language into another.</li>
+</ol>
+<p>REST appeals because it doesn’t hide the fact that it’s a network protocol, although this doesn’t seem to stop people from building RPC libraries on top of REST.</p>
+<h3 id="Current-directions-for-RPC"><a href="#Current-directions-for-RPC" class="headerlink" title="Current directions for RPC"></a>Current directions for RPC</h3><p>Various RPC frameworks have been built on top of all encodings(Thrift, Avro). gRPC is an RPC implementation using Protocol Buffers, Finagle also uses Thrift and Rest.li uses JSON over HTTP.</p>
+<p>Finagle and Rest.li use futures(promises) to encapsulate asynchronous actions that may fail. Futures also simplify situations where you need to make requests to mutiple services in paralell, and combine their results.</p>
+<ul>
+<li>Streams - gRPC supports streams, where a call consists of not just one request and one response, but a series of reqeusts and response over time.</li>
+</ul>
+<p>Custom RPC protocols with a binary encoding format can achieve better performance than something generic like JSON over REST.<br>But a RESTful API has other advantages:</p>
+<ol>
+<li>good for experimentation and debugging(simply make requests to it using a web browser or $curl)</li>
+<li>it is supported by all main-stream programming languages and platforms.</li>
+<li>there is a vast ecosystem of tools available(servers, caches, load balancers, proxies, firewalls, monitoering, debugging tools, testing tools, ect.)<br>For these reasons, REST seems to be the predominant style for public APIs, the main focus of RPC frameworks is on requests between servies owned by the same organization, typically within the same datacenter.</li>
+</ol>
+<h3 id="Data-encoding-and-evolution-for-RPC"><a href="#Data-encoding-and-evolution-for-RPC" class="headerlink" title="Data encoding and evolution for RPC"></a>Data encoding and evolution for RPC</h3><p>It is important that RPC clinets and servers can be changed and deployed independently.<br>Update servers firstly, and client secondly. Handle backward compatibility for requests, and forward for response.<br>The backward and forward compatibility properties of an RPC scheme are inherited from whatever encoding it uses.</p>
+<ul>
+<li>Service compatibility is made harder by the fact that RPC is often used for communication across organizational boundaries, so the provider of a service often has no control across organizational boundaries.</li>
+<li>There is no aggrement on how API versioning should work. (how a client can indicate which version of the API it want to use.)<ol>
+<li>For RESTful APIs, common approaches are to use a version number in the URL or in the HTTP Accepct header.</li>
+<li>For services that use API keys to identify a particular client, another option is to store a client’s requested API version on the server, version selection can be updated through a separate administrative interface.</li>
+</ol>
+</li>
+</ul>
+<h3 id="Message-Passing-Dataflow"><a href="#Message-Passing-Dataflow" class="headerlink" title="Message-Passing Dataflow"></a>Message-Passing Dataflow</h3><p>asynchronous message-passing systems: somewhere between RPC and databases</p>
+<ol>
+<li>As for RPC, a message is delivered to another process with low latency.</li>
+<li>As for databases, the message is not sent via a direct net-work connection, but goes via an intermediary called a message broker.(message queue, message-oriented middleware), which stores the message temporarily.</li>
+</ol>
+<p>Using a message broker has several advantages compared to direct RPC:</p>
+<ol>
+<li>It can act as a buffer if the recipient is unavailable or overloaded, and thus improve system reliability.</li>
+<li>It can automatically redeliver messages to a process that has crashed, and thus prevent messages from being lost.</li>
+<li>Sender don’t need to know the IP address and port number of the recipient.</li>
+<li>It allows one message to be sent to several recipients.</li>
+<li>It logically decouples the sender from the recipient(the sender just published messages and doesn’t care who consumes them).</li>
+</ol>
+<ul>
+<li><p>Message broker: one process sends a message to a named queue or topic, and the broker ensures that the message is delivered to one or more consumers of or subcribers to that queue or topic. There can be many producers and many consumuers on the same topic.</p>
+</li>
+<li><p>Message brokers examples: IBM WebSphere, RabbitMQ, ActiveMQ, HornetQ, NATS and Apache Kafka.</p>
+</li>
+<li><p>A topic provides only on-way dataflow. However, a consumer may itself publish messages to another topic,  or to a reply queue that is consumed by the sender of the original message.</p>
+</li>
+<li><p>Message brokers typically don’t enforce any particular data model. A message is just a sequence of bytes with some metadata, any encoding format is okay.</p>
+</li>
+<li><p>If the encoding is forward and backward compatible, flexible to change publishers and consumers independently and deploy them in any order.</p>
+</li>
+</ul>
+<h3 id="Distributed-actor-frameworks"><a href="#Distributed-actor-frameworks" class="headerlink" title="Distributed actor frameworks"></a>Distributed actor frameworks</h3><ul>
+<li>actor model: is a programming model for concurrency in a single process.</li>
+<li><p>actor: encapsulate logic in actors not threads, representing a client or entity</p>
+<ol>
+<li>may have some local state, not shared with owther actor.</li>
+<li>communicates with other actors by sending and receiving asynchronous message.</li>
+<li>Message delivery is not guarantted.</li>
+<li>Each actor processes only one message at a time, it doesn’t need to worry about thread.</li>
+<li>each actor can be scheduled independently by the framework.</li>
+</ol>
+</li>
+<li><p>Distributed actor framework, the programming model is used to scale an application across multiple nodes.</p>
+<ol>
+<li>Use the same message-passing mechanism.</li>
+<li>Message between different nodes is transparently encoded into a byte sequence, sent over the network, and decoded on the other side.</li>
+</ol>
+</li>
+<li><p>Location transparency works better in the actor model than in RPC, because the actor model already assumes that the message may be lost.</p>
+</li>
+<li><p>Less of a fundamental mismatch between local and remote communication when using actor model(latency still higher than within the same process.)</p>
+</li>
+<li><p>A distributed actor framework is a single framework = a message broker + actor programming model</p>
+<ul>
+<li>Backward and forward compability is still need to be worried about, a message may be sent from a node running the new version to a code running the old version, and vice versa.</li>
+</ul>
+</li>
+</ul>
+<p>Some popular distributed actor frameworks handle message encoding as follow:</p>
+<ol>
+<li>Akka, Java’s built-in serialization by default, Can replace it with something like Protocaol Buffers, thus gain the ablity to do rolling upgrades.</li>
+<li>Orleans, by default uses a custom data encoding format that does not support rolling upgrade deployments. To deploy a new version of your application, you need to set up a new cluster, move traffic from the cluster to the new one, and shut down the old one. Custom serialization plug-ins can be used.</li>
+<li>Erlang OTP, hard to make changes to record shcemas, the system haves many features designed for high availability. Rolling upgrades are possible, but need to plan carefully. map - a JSON-like structure may make this easier in the future.</li>
+</ol>
+<h1 id="Summary-1"><a href="#Summary-1" class="headerlink" title="Summary"></a>Summary</h1><h2 id="Rolling-upgrades"><a href="#Rolling-upgrades" class="headerlink" title="Rolling upgrades"></a>Rolling upgrades</h2><ol>
+<li>Allow new versions of a service to be released without downtime. More frequent small releases over rare big release.</li>
+<li>make deployments less risky. Allow to be rolled back before they affect a large number of users.</li>
+<li>Beneficial for evolvability.</li>
+</ol>
+<h2 id="Data-encoding-formats"><a href="#Data-encoding-formats" class="headerlink" title="Data encoding formats:"></a>Data encoding formats:</h2><ol>
+<li>Programming languages specific - restircted to single programming langues, fail to provide compatibility.</li>
+<li>Textual formats like JSON, XML, CSV, widespread, compatibility depends on how to use.</li>
+<li>Binary schema-driven formats like Thrift, Protocol Buffers, and Avro, allow compat, efficient encoding with caerfully defined sematics. (need to decode for human-readble)</li>
+</ol>
+<h2 id="Model-of-Dataflow"><a href="#Model-of-Dataflow" class="headerlink" title="Model of Dataflow"></a>Model of Dataflow</h2><ol>
+<li>Databases, the process writing to the database encode, and the process reading to do encode.</li>
+<li>RPC and REST APIs, the client encodes a request, and the server decodes the request and encode the response, and the client finally decodes the response.</li>
+<li>Asynchronous message passing(using message brokers or actors).</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">backend</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/05/01/system_application/">see more >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-languages" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -371,245 +989,6 @@
 
 
   
-    <article id="post-auto" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/01/10/auto/">Finite Automata and Lexical Analyzer</a>
-    </h1>
-  
-
-        
-        <a href="/2018/01/10/auto/" class="archive-article-date">
-  	<time datetime="2018-01-11T01:12:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-10</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>Among all of the computational models, Finite Automata is the simplest one, however, it plays an important role in the development of computers. Nowadays, though computers are much more complicated and powerful, Finite Automata still lies the heart of many electromechanical devices. This article is a review of my learning process and my ideas during the implementation practice of a simple Lexical Analyzer applying the Finite Automata.</p>
-</blockquote>
-<p>Reference: </p>
-<ol>
-<li>Introduction to the theory of computation —Michael. Sipser</li>
-<li>Teaching Materials in the course of System Programming — Zili Shao.</li>
-</ol>
-<h2 id="Finite-Automata"><a href="#Finite-Automata" class="headerlink" title="Finite Automata"></a>Finite Automata</h2><p>Finite Automata is math model to make decision according to the terminal states which can be approached by reading the input strings and consequently making transitions of the states according to both the current state and input.<br>Here is a simple Finite Automata M1 which recognizes all strings on 0,1 ending up with a 1. The figure is called the state diagram of it.<br><img src="/img/fa.png" alt="Finite Automata M1"><br>To understand this figure, we need some definitions on these notations. There are mainly two components, the circles and the arrows with alphabets on them. The first circle represents a start state because there is an empty arrow pointing it, and the second one with double circles represents the accept state. Then, obviously, these arrows with alphabets on them represent the transitions from one state to the next, and it will transit only when the currently inputting part hits on these alphabets. To fully understand it, we need to try a specific strings and put them in, let’s say 1101. See what will happen step by step. Imagine that you are standing in front of this Finite Automata, and now you are in the start state p. According to the input strings 1101, the working process will be as follow:</p>
-<ol>
-<li><p>You are in state p, and you get the first number 1. Look at the round arrow above state p, it means that if you get a 1 or 0, the next state could be p again. So you will still in p after reading the first 1. Actually, there is a little trick here, notice that the other arrow with 1 also means that when receiving a 1, you could go to the state q. So here comes to the idea of Nondeterministic Finite Automata, which means that the  different transitions will happen even resulting from a same input. In other words, the decision-making is not deterministic, there exists some multiple choices, and it depends on some specific situations such as the following parts of the input. For example in this case, though receiving a 1, you may follow the round arrow above to continue working the FA but not the straight one pointing to an accept state directly because you are still holding with the rest alphabets of string. </p>
-</li>
-<li><p>Then is another 1. Similarly, you will go back to p according to the round arrow.</p>
-</li>
-<li>Then is a 0. Notice that the round arrow also says that when receiving a 0, you should go to p again. So you are still in p after reading this 0.</li>
-<li>Finally, the last one is a 1. This time, you don’t have any other following alphabets, so you can choose the straight arrow and go through it, and you will go to the state q. </li>
-<li>After reading all of the string, you are now on the state q, and it is an accept state, so this we call this string is accepted by this FA.</li>
-</ol>
-<h3 id="DFA-and-NFA"><a href="#DFA-and-NFA" class="headerlink" title="DFA and NFA"></a>DFA and NFA</h3><p>Deterministic Finite Automata is a kind of Finite Automata that allows no uncertainty in the transitions. To be more specific, it doesn’t allow the distinctive arrows with same transition conditions(normally it is the alphabet) on one state, also it doesn’t include the empty string ‘ε’ to be served as the transition condition. Besides, every alphabet should has its transition in each state. Apparently, the FA I just introduced is not a Deterministic Finite Automata, therefore, it is a Nondeterministic Finite Automata, which allows the uncertainty.</p>
-<blockquote>
-<p>The empty string ‘ε’ means that without any condition the transition can be done as long as it is staying in that state. From a state q, all states that can be approached by ε are called the ε-closure of q.</p>
-</blockquote>
-<p>Finite Automata is a good model for computers with a limited memory. For example, the automatic door is a kind of electromechanical devices controlled by the Finite Automaton.</p>
-<h3 id="Formal-Definition"><a href="#Formal-Definition" class="headerlink" title="Formal Definition"></a>Formal Definition</h3><p> The formal definition of a Finite Automata is a tuple contains five components, writes ( Q, ∑, δ, q0, F).</p>
-<ol>
-<li>Q is a finite set called the states.</li>
-<li>∑ is a finite set called the alphabet.</li>
-<li>δ = Q × ∑ -&gt; Q is the transition function.</li>
-<li>q0 is the start state.</li>
-<li><p>F ⊆ Q is a set of accept states.</p>
-<p>Take the M1 just mentioned as example. Let’t use this formal definition to describe it:</p>
-<p>Q = {p, q}<br>∑ = {0,1}<br>δ is :        </p>
-</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>p</th>
-<th>q</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>  0</td>
-<td>p</td>
-<td>∅</td>
-</tr>
-<tr>
-<td>1</td>
-<td>p, q</td>
-<td>∅ </td>
-</tr>
-</tbody>
-</table>
-<p>q0 = p<br>F = {q}</p>
-<h3 id="Regular-Language"><a href="#Regular-Language" class="headerlink" title="Regular Language"></a>Regular Language</h3><p>If a set A is the set of all strings that can be accepted by a Finite Automata M, we call this set the regular language of Finite Automata M, writes L(M) = A.</p>
-<blockquote>
-<p>A machine may recognize several strings, but it only recognize one language.</p>
-</blockquote>
-<p>Furthermore, a language is called regular language if some finite automata recognize it.</p>
-<h3 id="Regular-Operation"><a href="#Regular-Operation" class="headerlink" title="Regular Operation"></a>Regular Operation</h3><p>There are three operations can be exerted on Languages. They are Union, Concatenation, Star.</p>
-<ol>
-<li>Union: A ∪ B = {x| x ⊆ A or x ⊆ B}.</li>
-<li>Concatenation : A∘B = {x y| x ⊆ A and y ⊆ B}.</li>
-<li>Star: A∗ = {x1x2x3x4….x k|k≥0, and each xi ⊆ A}.</li>
-</ol>
-<h2 id="Regular-Expressions"><a href="#Regular-Expressions" class="headerlink" title="Regular Expressions"></a>Regular Expressions</h2><p>Since we already get both the idea of regular language and regular operations, now we use these regular operations to describe the languages, which are called regular expressions.</p>
-<p>For example,<br>(0∪1)*1 </p>
-<p>is a regular expression, which describes the language that starts with several 0s and 1s and ending up with a 1. The first part<br>  (0∪1)*<br>means to “star” the union of  {1} and {0}, which is to contain any number of the strings in {1} or {0}. The second part means the first part to concatenate with a 1, here we have omitted a concatenation symbol ∘.</p>
-<p>Regular Expression is very useful in the applications of computer science, as we use it to express the pattern of strings. For example, a programming language could use it for the mechanism to describe the patterns of the tokens such as the key words, and this mechanism to recognize the tokens in the language can be called a lexical analyzer.</p>
-<h2 id="Practice"><a href="#Practice" class="headerlink" title="Practice"></a>Practice</h2><p>Here is the practice from my course “System Programming”.</p>
-<blockquote>
-<p>Write a program (a lexical analyzer) with C or Java Program Language for SL based on the FA. For tokens with the types ID, KEYWORD and NUM, you should give the lexeme (value) of the token (see the sample output as an example). </p>
-</blockquote>
-<p>SL is a simple language, The following is a sample program with SL.</p>
-<p>The sample test program:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var A, B, C; </div><div class="line">begin </div><div class="line">	A = 5;</div><div class="line">	B = 6;</div><div class="line">	C = (a + b) / 2.0; </div><div class="line">end.</div></pre></td></tr></table></figure></p>
-<p>In SL, a program begins with the declaration for variables using the keyword “var” following variable names. The program segment starts with the keyword “begin” and ends with the keyword “end” and “.”. A program segment consists of statements. A statement has two cases: (1) It can be another program segment; (2) It can be an assignment statement consisting of identifiers, “=” and expressions. An expression consists of number (integer and real number), operators (+,-, <em>, /). For numbers, you only need to consider integer and real number. For operators, you only need to consider +, -, </em> , and /. For all other symbols that are not defined can be reported as “Unrecognized” and in any case, your program should be able to finish to scan all inputs.<br>The syntactic elements and their corresponding tokens are listed as follows: </p>
-<table>
-<thead>
-<tr>
-<th>Syntactic Element</th>
-<th>Token Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>var</td>
-<td>KEYWORD</td>
-</tr>
-<tr>
-<td>begin</td>
-<td>KEYWORD </td>
-</tr>
-<tr>
-<td>+</td>
-<td>PLUS </td>
-</tr>
-<tr>
-<td>-</td>
-<td>MINUS </td>
-</tr>
-<tr>
-<td>end</td>
-<td>KEYWORD </td>
-</tr>
-<tr>
-<td>*</td>
-<td>MUL </td>
-</tr>
-<tr>
-<td>,</td>
-<td>COMMA </td>
-</tr>
-<tr>
-<td>/</td>
-<td>DIV </td>
-</tr>
-<tr>
-<td>;</td>
-<td>SEMICOLON </td>
-</tr>
-<tr>
-<td>(</td>
-<td>LBRACE </td>
-</tr>
-<tr>
-<td>=</td>
-<td>ASSIGN </td>
-</tr>
-<tr>
-<td>)</td>
-<td>RBRACE </td>
-</tr>
-<tr>
-<td>.</td>
-<td>PERIOD </td>
-</tr>
-<tr>
-<td>Integer (e.g. 124) or real number (e.g. 1.2)</td>
-<td>NUM </td>
-</tr>
-<tr>
-<td>A string starting with letter and following with letter or digit</td>
-<td>ID </td>
-</tr>
-</tbody>
-</table>
-<h3 id="Design-a-lexical-analyzer"><a href="#Design-a-lexical-analyzer" class="headerlink" title="Design a lexical analyzer"></a>Design a lexical analyzer</h3><ul>
-<li>Regular Expression for the tokens</li>
-</ul>
-<p>VAR -&gt; var<br>BEGIN -&gt; begin<br>END -&gt; end<br>KEYWORD -&gt; VAR| BEGIN| END<br>PLUS -&gt; +<br>MINUS -&gt; -<br>COMMA -&gt; ,<br>DIV -&gt; /<br>SEMICOLON -&gt; ;<br>LBRACE -&gt; (<br>ASSIGN -&gt; =<br>RBRACE -&gt; )<br>PERIOD -&gt; .</p>
-<p>LETTER -&gt; a|b|c|d|….|z|A|B|C|D|…..|Z<br>DIGIT -&gt; 1|2|3|4|5|6|7|8|9|0<br>ID -&gt; LETTER(LETTER|DIGIT)<em><br>INTEGER -&gt; DIGIT(DIGIT)</em><br>NUM -&gt; INTEGER(.|ℇ) INTEGER</p>
-<ul>
-<li>Finite Automata to recognize SL<br><img src="/img/fa2.png" alt=""><br><img src="/img/fa1.png" alt=""></li>
-</ul>
-<h3 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h3><p>I wrote three functions besides the main function to complete the analysis job.<br>They are respectively scan(), get_next_token() and print_token(). And here is some heading definitions and global variables of my program.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &lt;string.h&gt;</div><div class="line">#include &lt;fcntl.h&gt;</div><div class="line"></div><div class="line">/* Some definitions */</div><div class="line">#define MAXBUFSIZE  1000</div><div class="line">#define Max_Token_Size 100</div><div class="line">#define AB TOKEN_AB</div><div class="line"></div><div class="line">typedef enum &#123;</div><div class="line">	KEYWORD, COMMA, SEMICOLON, ASSIGN, PERIOD, PLUS, MINUS, MUL, DIV, LBRACE, RBRACE, ID, NUM, Unrecognized</div><div class="line">&#125;TokenType;</div><div class="line"></div><div class="line"></div><div class="line">/*----- The prototype of functions in this functions---*/</div><div class="line">int  get_next_token(void);</div><div class="line">int scan(void);</div><div class="line">void print_token(TokenType);</div><div class="line">int fail(int);</div><div class="line"></div><div class="line">/*--------------- The Global variables----------------*/</div><div class="line">int  fd;			  /* File descriptor to the input file*/</div><div class="line"></div><div class="line">char input_buf[MAXBUFSIZE];  /* Maximum buffer size */</div><div class="line"></div><div class="line"></div><div class="line">char *start_pt;		/*The pointer pointing to the starting  position for </div><div class="line">                                    the current token recongnizatioin*/	  </div><div class="line"></div><div class="line">int forward;			  /*The distance from start_pt for the </div><div class="line">                                    current token recongnization*/	</div><div class="line">char token_val[Max_Token_Size];	  /* The token lexeme value*/</div><div class="line"></div><div class="line">char letter[] =&#123;&apos;a&apos;,&apos;b&apos;,&apos;c&apos;,&apos;d&apos;,&apos;e&apos;,&apos;f&apos;,&apos;g&apos;,&apos;h&apos;,&apos;i&apos;,&apos;j&apos;,&apos;k&apos;,&apos;l&apos;,&apos;m&apos;,&apos;n&apos;,&apos;o&apos;,&apos;p&apos;,&apos;q&apos;,&apos;r&apos;,&apos;s&apos;,&apos;t&apos;,&apos;u&apos;,&apos;v&apos;,&apos;w&apos;,&apos;x&apos;,&apos;y&apos;,&apos;z&apos;,&apos;A&apos;,&apos;B&apos;,&apos;C&apos;,</div><div class="line">&apos;D&apos;,&apos;E&apos;,&apos;F&apos;,&apos;G&apos;,&apos;H&apos;,&apos;I&apos;,&apos;J&apos;,&apos;K&apos;,&apos;L&apos;,&apos;M&apos;,&apos;N&apos;,&apos;O&apos;,&apos;P&apos;,&apos;Q&apos;,&apos;R&apos;,&apos;S&apos;,&apos;T&apos;,&apos;U&apos;,&apos;V&apos;,&apos;W&apos;,&apos;X&apos;,&apos;Y&apos;,&apos;Z&apos;&#125;;   </div><div class="line"></div><div class="line">char digit[] =&#123;&apos;1&apos;,&apos;2&apos;,&apos;3&apos;,&apos;4&apos;,&apos;5&apos;,&apos;6&apos;,&apos;7&apos;,&apos;8&apos;,&apos;9&apos;,&apos;0&apos;&#125;;</div><div class="line"></div><div class="line">int current_state;</div></pre></td></tr></table></figure></p>
-<p>The scan() function is to open the input file and take charge of making decision about moving the start point or terminating the prorcess while looping function get_next_token().</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">int scan()</div><div class="line">&#123;</div><div class="line">	int  ret, rbytes;</div><div class="line"></div><div class="line">	start_pt=input_buf;</div><div class="line">	</div><div class="line">	/* Read the input file into a buffer */</div><div class="line">      /* Only consider the simple case when the buffer is big enough*/</div><div class="line">      rbytes = read( fd, input_buf, MAXBUFSIZE );</div><div class="line"></div><div class="line">	if( rbytes  &lt; 0 )&#123;</div><div class="line">		printf(&quot;Could not read from the file\n&quot;);</div><div class="line">		close(fd);</div><div class="line">		return -1;</div><div class="line">	&#125;else if (rbytes == 0 )&#123;</div><div class="line">		printf(&quot;The input file is empty.\n&quot;);	</div><div class="line">		close(fd);</div><div class="line">		return -1;</div><div class="line">	&#125;else&#123;</div><div class="line">		input_buf[rbytes-1]=&apos;\0&apos;;  /*the file ends with \0*/</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	printf(&quot;Token Name\t\t|Token Value \n&quot;);</div><div class="line">	printf(&quot;--------------------------------------------\n&quot;);</div><div class="line"></div><div class="line">		while( ( ret=get_next_token() ) &gt;= 0 )&#123;</div><div class="line">			print_token(ret); </div><div class="line">			start_pt = start_pt + forward +1;</div><div class="line">			//handle the space and \n</div><div class="line">			int i = 0;</div><div class="line">			while(start_pt[0]==32|start_pt[0]==&apos;\n&apos;)&#123;</div><div class="line">				start_pt++;</div><div class="line">				i++;</div><div class="line">				if(!start_pt[0])&#123;</div><div class="line">					printf(&quot;\nSucessfuly finish scan. Normal terminates.\n&quot;);</div><div class="line">					return 1;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			current_state = 0;</div><div class="line">			//initialize the token_val to null</div><div class="line">			for(int i = 0; i&lt;sizeof(token_val)/sizeof(token_val[0]); i++)&#123;</div><div class="line">				token_val[i]=&apos;\0&apos;;</div><div class="line">			&#125;</div><div class="line">			</div><div class="line">		&#125;	</div><div class="line">	</div><div class="line"></div><div class="line">	if (ret == -1 )</div><div class="line">		printf(&quot;\nSucessfuly finish scan.\n&quot;);</div><div class="line">	else</div><div class="line">		printf(&quot;\nError: Non-recongnizable character in the input file.\n&quot;);</div><div class="line">	</div><div class="line">	close(fd);</div><div class="line">	return 1;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>The key function is the get_next_token(), in this function I implemented the finite automata by using the mechanism of  “cases-switch” to represent each state.<br>BTW, I wrote a function named isMember(), which can be commonly used.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/*--------Function: isMember(c,a)-----------------------</div><div class="line">   Return 1 if c is a member of a.</div><div class="line">   Return 0 if c is not a member of a;</div><div class="line">---------------------------------------------------------*/</div><div class="line">int isMember(char c, int n, char a[])&#123;</div><div class="line">	</div><div class="line">	for (int i=0; i &lt; n; i++)                                         </div><div class="line">    &#123;</div><div class="line">        if(c== a[i])&#123;</div><div class="line">        	return 1;</div><div class="line">        &#125;                                                                                              </div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div></pre></td><td class="code"><pre><div class="line">/*--------Function: get_next_token()-----------------------</div><div class="line">   Return the next token. </div><div class="line">   Note: Return -1 if normal finish;</div><div class="line">         Return -2 if there is non-recongnizd character </div><div class="line">---------------------------------------------------------*/</div><div class="line">int  get_next_token()</div><div class="line">&#123;</div><div class="line">//start a new round of FA</div><div class="line">	char c;</div><div class="line">	int i;</div><div class="line">	current_state = 0;</div><div class="line">	forward = 0;</div><div class="line">//loop until find a token is returned, the range is from start_pt to start_pt+foward</div><div class="line">	while(1)&#123;</div><div class="line">		//from the first +forward in this turn</div><div class="line">		c = start_pt[forward];</div><div class="line">	</div><div class="line">		switch (current_state )&#123;</div><div class="line"></div><div class="line">			case 0:</div><div class="line">				if(c==&apos;,&apos;)&#123;</div><div class="line">					return COMMA;</div><div class="line">				&#125;else if(c==&apos;;&apos;)&#123;</div><div class="line">					return SEMICOLON;</div><div class="line">				&#125;else if(c==&apos;=&apos;)&#123;</div><div class="line">					return ASSIGN;</div><div class="line">				&#125;else if(c==&apos;.&apos;)&#123;</div><div class="line">					return PERIOD;</div><div class="line">				&#125;else if(c==&apos;+&apos;)&#123;</div><div class="line">					return PLUS;</div><div class="line">				&#125;else if(c==&apos;-&apos;)&#123;</div><div class="line">					return MINUS;</div><div class="line">				&#125;else if(c==&apos;*&apos;)&#123;</div><div class="line">					return MUL;</div><div class="line">				&#125;else if(c==&apos;/&apos;)&#123;</div><div class="line">					return DIV;</div><div class="line">				&#125;else if(c==&apos;(&apos;)&#123;</div><div class="line">					return LBRACE;</div><div class="line">				&#125;else if(c==&apos;)&apos;)&#123;</div><div class="line">					return RBRACE;</div><div class="line">					//finish this turn</div><div class="line">				&#125;else&#123;</div><div class="line">					current_state=1;</div><div class="line">					//go to state 1</div><div class="line">				&#125;</div><div class="line"></div><div class="line"></div><div class="line">				</div><div class="line">//state 1</div><div class="line">			case 1:</div><div class="line">			    //printf(&quot;in state 1\n&quot;);</div><div class="line">				if(isMember(c, 52, letter))&#123;</div><div class="line">					token_val[0]=start_pt[0];</div><div class="line">					current_state = 2;</div><div class="line">					//go to state 2</div><div class="line">					forward++;</div><div class="line">				&#125;else&#123;</div><div class="line">					current_state=3;</div><div class="line">					//go to state 3</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line">				//keep the this turn of loop, but change the state</div><div class="line">//state 2</div><div class="line">			case 2:</div><div class="line">				</div><div class="line">				if(isMember(c, 52, letter)|isMember(c, 10, digit))&#123;</div><div class="line">                    //give this char to token_val</div><div class="line">                    //printf(&quot;forward=%d\n&quot;,forward);</div><div class="line">					token_val[forward]= start_pt[forward];</div><div class="line">					token_val[forward+1]=&apos;\0&apos;;</div><div class="line">					current_state = 2;</div><div class="line">					forward++;</div><div class="line">				&#125;else&#123;</div><div class="line">					//printf(&quot;This token has been finished\n&quot;);</div><div class="line">					//printf(&quot;forward=%d\n&quot;,forward);</div><div class="line">					current_state=0;</div><div class="line">					forward--;</div><div class="line">					if (!strcmp(token_val, &quot;var&quot;)|!strcmp(token_val, &quot;begin&quot;)|!strcmp(token_val, &quot;end&quot;))&#123;</div><div class="line">						return KEYWORD;</div><div class="line">					&#125;else&#123;</div><div class="line">					 	return ID;</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line">				</div><div class="line">//state 3</div><div class="line">			case 3:	</div><div class="line">				if(isMember(c, 10, digit))&#123;</div><div class="line">					token_val[forward]= start_pt[forward];</div><div class="line">					current_state= 4;</div><div class="line">				&#125;else if(c==&apos;$&apos;)&#123;</div><div class="line">					//end successfully</div><div class="line">					return -1;</div><div class="line">				&#125;else&#123;</div><div class="line">					return Unrecognized;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line">//state 4</div><div class="line">		    case 4:</div><div class="line">		    	if(isMember(c, 10, digit))&#123;</div><div class="line">		    		token_val[forward]= start_pt[forward];</div><div class="line">					token_val[forward+1]=&apos;\0&apos;;</div><div class="line">					current_state = 4;</div><div class="line">					forward++;</div><div class="line">		    	&#125;else if(c==&apos;.&apos;)&#123;</div><div class="line">		    		current_state = 5;</div><div class="line">		    		forward++;</div><div class="line">		    	&#125;else&#123;</div><div class="line">					//printf(&quot;This token has been finished\n&quot;);</div><div class="line">					</div><div class="line">					forward=forward-1;</div><div class="line">					current_state=0;</div><div class="line">					return NUM;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line">//state 5   </div><div class="line">			case 5:</div><div class="line">				if(isMember(c, 10, digit))&#123;</div><div class="line">					//give it the dot symbol</div><div class="line">					token_val[forward-1]= start_pt[forward-1];</div><div class="line">					current_state = 6;</div><div class="line">				&#125;else&#123;</div><div class="line">					forward = forward-2;</div><div class="line">					return NUM;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line">			case 6:</div><div class="line">				//end state</div><div class="line">				if(isMember(c, 10, digit))&#123;</div><div class="line">					//give the decimal part</div><div class="line">					token_val[forward]= start_pt[forward];</div><div class="line">					current_state = 6;</div><div class="line">					forward++;</div><div class="line">				&#125;else&#123;</div><div class="line">					forward=forward-1;</div><div class="line">					current_state=0;</div><div class="line">					return NUM;</div><div class="line">				&#125;</div><div class="line">				break;</div><div class="line"></div><div class="line"></div><div class="line">		    			</div><div class="line">			default:</div><div class="line">				printf(&quot;Wrong state (should not occur)\n&quot;);</div><div class="line">				return -1;</div><div class="line">			&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>After that, I wrote a function print_token() which takes in the token number and value and then prints its name and token value into a certain format.<br>Finally, the main function, which opens the input_file, and calls the scan() function to run.<br>But this rest part of functions are omitted since they are not related to the process of the finite automata. </p>
-<p>This output sample looks like this:<br>The sample SL:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var A, B, C; </div><div class="line">begin </div><div class="line">	A = 5;</div><div class="line">	B = 6;</div><div class="line">	C = (a + b) / 2.0; </div><div class="line">end.</div></pre></td></tr></table></figure></p>
-<p>The output:<br><img src="/img/ans.jpg" alt=""></p>
-<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>Here is the end of my review article about Finite Automata and Lexical Analyzer homework, hope it can help. Thanks for reading. </p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/01/10/auto/">see more >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -728,11 +1107,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -185,6 +185,423 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-distributed-system" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/10/distributed-system/">Notes of Designing Data-Intensive Application(2) Replication</a>
+    </h1>
+  
+
+        
+        <a href="/2019/05/10/distributed-system/" class="archive-article-date">
+  	<time datetime="2019-05-10T19:50:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Distributed-Data"><a href="#Distributed-Data" class="headerlink" title="Distributed Data"></a>Distributed Data</h1><p>Why distributed a database acorss multiple machines:</p>
+<ol>
+<li>Scalability</li>
+<li>Fault tolerance/high availability, redundency.</li>
+<li>Latency, geographically chooce the servers.</li>
+</ol>
+<h2 id="Scaling-to-Higher-Load"><a href="#Scaling-to-Higher-Load" class="headerlink" title="Scaling to Higher Load"></a>Scaling to Higher Load</h2><ol>
+<li>shared-memory architecture, all the components can be treated as a single machine. Costy.<ul>
+<li>hign-end machines have hot-swappable components(replace disks, memory modules, and even CPUs without shutting down the machines).</li>
+</ul>
+</li>
+<li>shared-disk architecture, used for some data warehousing workloads, connection and the overhead of locking limit the scalability.</li>
+<li>shared-nothing architecture, scale out.<ul>
+<li>Each machine or virtual machine running in the database software is called a node.</li>
+</ul>
+</li>
+</ol>
+<h2 id="Replication-Versus-Partitioning"><a href="#Replication-Versus-Partitioning" class="headerlink" title="Replication Versus Partitioning"></a>Replication Versus Partitioning</h2><ol>
+<li>Replication - provides redundancy</li>
+<li>Partitioning - different partitions can be assigned to different nodes.(as known as sharding)<br>They often go hand in hand. Partitioning with Replication.</li>
+</ol>
+<h1 id="Replication"><a href="#Replication" class="headerlink" title="Replication"></a>Replication</h1><p>Replication means keeping a copy of the same data on multiple machines that are connected via a network.<br>Why replication?</p>
+<ol>
+<li>Keep data geographically close to your users, thus reduce latency</li>
+<li>Allow system running without downtime even some of its parts have failed.</li>
+<li>To scale out the number of machines, increase the read thoughput.</li>
+</ol>
+<p>This need your dataset is so small that each machine can hold a copy of the entire dataset.</p>
+<ul>
+<li>Replicating changes between nodes</li>
+</ul>
+<ol>
+<li>single-leader</li>
+<li>multi-leader</li>
+<li>leaderless</li>
+</ol>
+<h2 id="Leaders-and-Followers"><a href="#Leaders-and-Followers" class="headerlink" title="Leaders and Followers"></a>Leaders and Followers</h2><p>Every write to the database needs to be processed by every replica.</p>
+<ul>
+<li>Leader-based replication(active/passive or master/slave replication)<ol>
+<li>One of the replicas is desinated the leader, first writes the new data to its local storage.</li>
+<li>The other replicas are known as followers(read replicas, slaves, secondaries, or hot standbys). Leader will sends the data change to all of its followers as part of a replication log or change stream.</li>
+<li>Clients can either require the leader or any of the followers to read from the database.</li>
+</ol>
+</li>
+</ul>
+<p>This is a built-in feature of many reloational databases, PostgreSQL, MySQL, Oracle Data Guard, and SQL Server’s.<br>Also used in some nonrelational databases, including MongoDB, RethinkDB, and Espresso.<br>Not only databases, distributed message brokers such as Kafka and RabbitMQ highly available queues also use it.</p>
+<h2 id="Synchronous-Versus-Asynchronous-replication"><a href="#Synchronous-Versus-Asynchronous-replication" class="headerlink" title="Synchronous Versus Asynchronous replication"></a>Synchronous Versus Asynchronous replication</h2><ul>
+<li>Synchronous replication, the leader will wait until follower 1 has confiermed that it received the write before reporting sucess to the user.<ol>
+<li>The followers are garanteed to have an up-to-date copy of the data.</li>
+<li>But if the followers don’t respond, the write connot be processed, the leader must block all writes and wait.</li>
+<li>Any one node outage would cause the whole system to grined to a halt.</li>
+</ol>
+</li>
+<li>Asynchronous replication, the leader sends the message, but doesn’t wait for a response from the follower.</li>
+</ul>
+<h2 id="Semi-synchronous"><a href="#Semi-synchronous" class="headerlink" title="Semi-synchronous"></a>Semi-synchronous</h2><p>In practice, one of the followers is sychronous and the others are asynchronous, if the synchronous follower becomes unavailable or slow, one of the asynchronous followers is made synchronous. This garantees that you have an up-to-date copy of the data on at least two nodes: the leader and the synchronous follower.</p>
+<h2 id="Asynchronous-Replication"><a href="#Asynchronous-Replication" class="headerlink" title="Asynchronous Replication"></a>Asynchronous Replication</h2><p>Often, a leader-based replication is configured to be completely asynchronous. Because the leader can continue processing writes, but a write is not guaranteed to be durable, even if it has been confiermed to the client.<br>It is nevertheless widely used.</p>
+<ul>
+<li>Chain replication - successfully implemented in Microsoft Azure Storage.</li>
+<li>Consistency of Replication</li>
+<li>Consensus(getting several nodes to agree on a value).</li>
+</ul>
+<h2 id="Setting-Up-New-followers"><a href="#Setting-Up-New-followers" class="headerlink" title="Setting Up New followers"></a>Setting Up New followers</h2><ul>
+<li>Lock the database(make it unavailable for writes), but this go against our goal of high availability.</li>
+<li>Done without downtime:<ol>
+<li>Take a consisten snapshot of the leader’s database at some point in time. Third-party tools are needed in some cases, such as innobackupex for MySQL.</li>
+<li>Copy the snapshots to the new folloer node.</li>
+<li>The follower connects to the leader and requests all the data changes that have happened since the snapthot was taken. The snapshot needs to be associated with an exact position in the leader’s replication log. That position is named(log sequence number in PostgreSQL, or binlog coordinates in MySQL.).</li>
+<li>When the follower has processed the backlog of data changes since the snapshot, we say it has caught up. It can now continue to process data changes from the leader as they happen.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Handling-Node-Outages"><a href="#Handling-Node-Outages" class="headerlink" title="Handling Node Outages"></a>Handling Node Outages</h2><p>Any node might go down for unexpected reason(a fault) or a planned maintenance(rebooting for kernel security patch installation)</p>
+<ul>
+<li>Goal: keep the system as a whole running despite individual node failures.<h3 id="Follower-failure-Catch-up-recovery"><a href="#Follower-failure-Catch-up-recovery" class="headerlink" title="Follower failure: Catch-up recovery"></a>Follower failure: Catch-up recovery</h3></li>
+</ul>
+<ol>
+<li>On its local dist, each follower keeps a log of data changes it has received from the leader.</li>
+<li>Recover from the log.<h3 id="Leader-failure-Failover"><a href="#Leader-failure-Failover" class="headerlink" title="Leader failure: Failover"></a>Leader failure: Failover</h3></li>
+</ol>
+<ul>
+<li>failover - one of the followers needs to be promoted to be the new leader, clients need to reconfigured to send their writes to the new leader, and the other folloers need to start consuming data changes from te new leader.</li>
+<li><p>Failover can happen manually or automatically. An automatic failover process:</p>
+<ol>
+<li>Determining that the leader has failed. (crashes, prower outages, network issues), use a foolproof way of detecting: timeout. Nodes frequently bounce message back and forth between each other, if a node doesn’t respond for some period of time-say,30 seconds-it is assumed to be dead.</li>
+<li>Chooseing a new leader. election process, the leader is chosen by a majority of the remaining replicas. Or a new leader could be appointed by a previously elected controller node.<ul>
+<li>The best candidate is usually the replica with the most up-to-date data changes from the ode leader(to minimize any data loss).</li>
+</ul>
+</li>
+<li>Reconfiguring the system to use the new leader. When the old leader comes back, it is a follower and recognizes the new leader.</li>
+</ol>
+</li>
+<li><p>Failover if fraught with things that can go wrong:</p>
+</li>
+</ul>
+<ol>
+<li>Asynchronous repliation is used, the new leader might missed some writes from the old leader. When old leader comes back, what to do with the unreplicated writes? simply discard?</li>
+<li>Discarding writes is especially dangerous if other storage systems outside of the database need to coordinated with the database contents.</li>
+<li>If two nodes believe they are the leader, this is called “spilit brain”. Dangerous. Some systems have a mechanism to shut down one node.</li>
+<li>What is the right timeout? Unnecessary failover by temporary load spike? network glitch could cause delayed packets.</li>
+</ol>
+<h2 id="Implementation-of-Replication-Logs"><a href="#Implementation-of-Replication-Logs" class="headerlink" title="Implementation of Replication Logs"></a>Implementation of Replication Logs</h2><ol>
+<li><p>Statement-based Replication</p>
+<ul>
+<li>every INSERT, UPDATE, DELETE statement is forwarded to followers.</li>
+<li>Problems:<ol>
+<li>Some statements call a nondeterministic function such as NOW(), RAND() actually generate a different value on each replica.</li>
+<li>The order must be the same if the statments use an autoincrementing column.</li>
+<li>Side effects might happen.</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>Write-ahead log(WAL) shipping</p>
+<ul>
+<li><p>Storage engine represent data on disk:</p>
+<ul>
+<li>log-structured storage engine(SSLTables and LSM-Trees), Log segments are compacted and garbage-collected in the backgourn.</li>
+<li><p>B-tree, overwrites individual disk blocks, every modification is first written to a write-ahead log to restore the indexes.</p>
+</li>
+<li><p>The log is the append-only sequence of bytes containing all writes to the database.</p>
+</li>
+<li>The follower processes this log, it builds a copy of the exact same data structure.</li>
+<li>Coupled too close with storage engine: The log describes the data on a very low level: a WAL contains details of which bytes were changed in which disk blocks.</li>
+<li>If the replication protocol allows the follower to use a newer software version than the leader, you can perform a zero-downtime upgrade by first upgrading the followers and them performing a failover to make one the upgraded nodes te new leader.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Logic(row-based) log Replication<br>Use different log formats for replication and for the storage engine, decoupled from each other.</p>
+<ul>
+<li><p>logical log: a sequence of records describing writes to database tables at the granularity of a row</p>
+<ul>
+<li>inserted row: new values of all columns.</li>
+<li>deleted row: uniquely identify the deleted row (primary key or all columns o/w)</li>
+<li>updated row, at least the new values of all columns that changed.</li>
+</ul>
+</li>
+<li><p>easily to keep backward compatible.</p>
+</li>
+<li>A logical log format is also easier for external applications to parse.<ul>
+<li>Send the contents of a database to an external system</li>
+<li>e.g. data warehouse for offline analysis, or for building custom indexes and caches</li>
+<li>“change data capture”</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Trigger-based Replication</p>
+<ul>
+<li>move replication up to the application layer(not implemented by the database system)</li>
+<li>trigger<ul>
+<li>let you register custom application code that is automatically executed when a data change(write transaction) occurs in the database system.</li>
+<li>log the change into a separate table, from which it can be read by an external process.</li>
+<li>flexfible, however, has greater overheads and is more prone to bugs and limitations.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Problems-with-Replication-Lag"><a href="#Problems-with-Replication-Lag" class="headerlink" title="Problems with Replication Lag"></a>Problems with Replication Lag</h2><ul>
+<li>read-scaling architecture, increase the capacity for serving read-only reqeusts simply by adding more followers.<ul>
+<li>Not praticle with a fully synchronous configuration(one node dies, all die).</li>
+<li>Asynchronous followers may see outdated information if the follower has fallen behind. - inconsistency</li>
+<li>But inconsistency is temporary - eventual consistency</li>
+<li>The delay between a write happening on the leader and beging reflected on a follower is called the replication lag.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Reading-Your-Own-Writes"><a href="#Reading-Your-Own-Writes" class="headerlink" title="Reading Your Own Writes"></a>Reading Your Own Writes</h3><ul>
+<li>user wants to read it shortly after making a wirte, but the leader hasn’t send it to the replica.<ul>
+<li>read-after-write consistency is needed. Or read-your-writes-consistency.</li>
+<li>Possible techniques:<ol>
+<li>Read from the leader that the user modified, otherwise, read it from a follower. Knowing whethere something might have been modified without actually querying it.</li>
+<li>If most things in the application are potentially editable by the user, use other criteria to decide whether to read from the leader. e.g. read from the leader if it is only one minute after the last update. Or monitor the replication lag to prevent querys on any follower that is more than one minute behind the leader.</li>
+<li>Clients can remember the timestamp of its most recent write to decide whether any follower is outdated. Logical timestamp or the actual system clock(clock sychronization).</li>
+<li>If your replicas are distributed across multiple datacenters, any request that needs to be served by the leader must be routed to the datacenter that contains the leader.</li>
+</ol>
+</li>
+<li>cross-device read-after-write consistency<br>Problems:<ol>
+<li>How to remembering the timestamp(centralize the metadata on all devices)</li>
+<li>There is no guarantee that connections from different devices will be routed to the same datacenter.</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Monotonic-Reads"><a href="#Monotonic-Reads" class="headerlink" title="Monotonic Reads"></a>Monotonic Reads</h3><ul>
+<li>moving backward in time - The latter read is routed to a more lag replica.</li>
+<li>Monotonic reads: you will not see time go backward.<ul>
+<li>make sure each user always makes their read from the same replica. The replica can be chosen based on a hash of the user ID, rather than randomly.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Consisten-Prefix-Reads"><a href="#Consisten-Prefix-Reads" class="headerlink" title="Consisten Prefix Reads"></a>Consisten Prefix Reads</h3><p>Reading the replicas with different lags which disroders the conversation between other writes. (answering becomes the qeustions)</p>
+<ul>
+<li>Require that if a sequence of writes happens in a certain order, then anyone reading those writes will see them appear in the same order.</li>
+<li>Problematic in partitioned databases, make sure that any writes that are causually realted to each other are written to the same partition.</li>
+</ul>
+<h3 id="Solution-for-Replication-Lag"><a href="#Solution-for-Replication-Lag" class="headerlink" title="Solution for Replication Lag"></a>Solution for Replication Lag</h3><ul>
+<li>Pretending that replication is synchronous when in fact it is asyncronous is a recipe for problems down the time.</li>
+<li>transactions: for a database to provide stronger guarantees so that the application can be simpler.</li>
+</ul>
+<h2 id="Multi-Leader-Replication"><a href="#Multi-Leader-Replication" class="headerlink" title="Multi-Leader Replication"></a>Multi-Leader Replication</h2><p>Multi-layer configuration(master/master or active/active replication)</p>
+<ul>
+<li><p>You have a leader in each datacenter, leader communicates with leader, and replicates to its own followers.</p>
+</li>
+<li><p>Performance</p>
+<ul>
+<li>every write can be processed in the local datacenter, and is replicated asynchrously to the other datacenters. perceived performance may be better.</li>
+</ul>
+</li>
+<li>Tolerance of datacenter outages<ul>
+<li>Each datacenter is independently operating.</li>
+</ul>
+</li>
+<li>Tolerance of network Problems<ul>
+<li>Traffic between datacenters usually goes over the public internet, less reliable than the local network within a datacenter. A temporary network interruption does not prevent writes being processed with multi-leader.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Clients-with-offline-operation"><a href="#Clients-with-offline-operation" class="headerlink" title="Clients with offline operation"></a>Clients with offline operation</h3><p>When disconnected with internet, make every devices have their own (writes)changes offline, and get synced with a server and other services when the device is next online.</p>
+<h3 id="Collaborative-editing"><a href="#Collaborative-editing" class="headerlink" title="Collaborative editing"></a>Collaborative editing</h3><p>make the unit of change very small and avoid locking.</p>
+<h2 id="Handling-Write-Conflicts"><a href="#Handling-Write-Conflicts" class="headerlink" title="Handling Write Conflicts"></a>Handling Write Conflicts</h2><h3 id="Synchronous-versus-asynchronous-conflict-detection"><a href="#Synchronous-versus-asynchronous-conflict-detection" class="headerlink" title="Synchronous versus asynchronous conflict detection"></a>Synchronous versus asynchronous conflict detection</h3><p>Asynchronously detect will lead the confliction detection too late. Synchronous detection will be just like the single-leader database(not allowing each replica to accept writes independently).</p>
+<h3 id="Conflict-avoidance"><a href="#Conflict-avoidance" class="headerlink" title="Conflict avoidance"></a>Conflict avoidance</h3><p>ensure that all writes for a particular record go through the same leader.<br>But this requires the datacenter that the user can write will never down or changed(when user move to somewhere closer to other datacenter), otherwise, conflict avoidance breaks.</p>
+<h3 id="Converging-toward-a-consistent-state"><a href="#Converging-toward-a-consistent-state" class="headerlink" title="Converging toward a consistent state"></a>Converging toward a consistent state</h3><p>The order of a sequence of writes in a multi-leader configuration is hard to keep consistent(each one takes the last one wins to be the final value).</p>
+<ul>
+<li>Every replication schema must ensure that the data is eventually the same in all replicas. Thus the database must resolve the conflict in a convergent way.<ol>
+<li>Give each write a unique ID(timestamp, long random number, UUID, or a hash key value) - last write wins(LWW).</li>
+<li>Give each replica a unique ID, and let writes that originated at a higher-numbered replica always take precedence over writes that originated at a lower numbered replication.</li>
+<li>Somehow merge the values together.(B and C -&gt; B/C)</li>
+<li>Record the conflict in an explicit data structure that preserves all information and write aplication code that resolves the conflict at some later time.</li>
+</ol>
+</li>
+</ul>
+<h3 id="Custom-conflict-resolution-logic"><a href="#Custom-conflict-resolution-logic" class="headerlink" title="Custom conflict resolution logic"></a>Custom conflict resolution logic</h3><p>The application code for conflict resolution logic:</p>
+<ol>
+<li>On write, as soon as the database system detects a conflict in the log of replicated changes, it calls the conflict handler. - Bucardo</li>
+<li>On read, all conflicting writes are stored, the next time the data is read, these multiple versions of the data are returned to the application.(prompt the user or automatically reslove the conflict, and write back) - CouchDB.</li>
+</ol>
+<h3 id="Automatic-Conflict-resolution"><a href="#Automatic-Conflict-resolution" class="headerlink" title="Automatic Conflict resolution"></a>Automatic Conflict resolution</h3><ul>
+<li>Conflict-free replicated datatypes(CRDTs) are a family of data structures for sets, maps, ordered lists, counters, etc. Automatically resolve conflicts.</li>
+<li>Mergeable persistent data structures, track history explicitly, similar to Git version control system use a three-way merge function.</li>
+<li>Operational transformation - Etherpad, Google Docs use this conflict resolution algorithm, particularly designed for concurrent editing of an ordered list of items.</li>
+</ul>
+<h3 id="Multi-Leader-Replication-Topologies"><a href="#Multi-Leader-Replication-Topologies" class="headerlink" title="Multi-Leader Replication Topologies"></a>Multi-Leader Replication Topologies</h3><ol>
+<li>Circular topology</li>
+<li>Star topology</li>
+<li>All-to-all topology</li>
+</ol>
+<p>Circular and Star topology need to pass through several nodes before it reaches all replicas. To prevent infinite replication loops, each node has a unique identifier and in the replication log, and each write is tagged with the identifiers of all the nodes it has passed through. So when a node receives a write with the tag of own, it will ignore it.</p>
+<ul>
+<li>Problem of Circular and Star is one node fails will cause influence to all other nodes related.<br>More dense the network, the fault tolerance will be better.</li>
+</ul>
+<ul>
+<li><p>All to all also has problem. Some network links may be faster than others, with the result that some replication message may overtake others.</p>
+</li>
+<li><p>make sure all nodes process the insert first, and then the update. (simply timestamp still has problem of synchronization)</p>
+<ul>
+<li>version vectors can be used</li>
+</ul>
+</li>
+</ul>
+<h2 id="Leaderless-replication"><a href="#Leaderless-replication" class="headerlink" title="Leaderless replication"></a>Leaderless replication</h2><p>Almost been forgotten. Amazon used it for its in-house Dynamo system Riak, Cassandra. Dynamo-style.<br>the client directly sends its writes to several replicas, while in others, a coordinator node does this on behalf of the client.</p>
+<ul>
+<li><p>Writing to the Database When a Node Is Down</p>
+<ul>
+<li>leader-based configuration, perform a failover(recover from log)</li>
+<li>leaderless configuration, ignores the fact that one of the replicas missed the write. When the missed node comes back, you may get stale(outdated) values as responses. So, the read request will be sent to all replicas nodes in parallel. Version numbers are used to determine different values responded by stale and up-to-date nodes.</li>
+</ul>
+</li>
+<li><p>Read repair and anti-entropy<br>For the unavailable node catch up on the writes when it comes back:</p>
+<ul>
+<li>Read repair: When a client makes a read from several nodes in parallel, it can detect any state responses. See which one has the newer value, write the newer value to all other falling back replicas. This way is good for frequently read.</li>
+<li>Anti-entropy process: a background process that constatnly looks for differences in the data between replicas and copies any missing data from one replica to another. (Guarantee the data that is rarely read can be updated)</li>
+</ul>
+</li>
+<li><p>Quorums for reading and writing</p>
+<ul>
+<li>there are n replicas, at least w nodes to be considered successful, and we must query at least r nodes for each read: r&gt;n-w or r+w &gt; n.</li>
+<li>If obey these value ineuqlity, are called quorum reads and writes.</li>
+</ul>
+<p>Configurable value:</p>
+<ol>
+<li>If w&lt;n, it can still process writes if a node is unavailable</li>
+<li>If r&lt;n, we can still process reads if a node is unavailable</li>
+<li>Normally, reads and writes are always sent to all n replicas in parallel, r and w parameters are used to determine how many nodes to wait for(can consider as successful).</li>
+</ol>
+</li>
+</ul>
+<h3 id="Limitations-of-Quorum-Consistency"><a href="#Limitations-of-Quorum-Consistency" class="headerlink" title="Limitations of Quorum Consistency"></a>Limitations of Quorum Consistency</h3><ul>
+<li>Usually w and r are chosen to be a majority (more than n/2) of nodes. But quorums only matters that the sets of nodes used by the read and write operations overlap in at least one node.</li>
+<li><p>You may also set w and r to smaller numbers, so that w+r&lt;n. more likely to read stale values. This allows lower latency and higher availability.</p>
+</li>
+<li><p>It is wise to not take the parameters w and r as absolute guarantee, there are some edge cases.</p>
+</li>
+</ul>
+<h3 id="Monitoring-staleness"><a href="#Monitoring-staleness" class="headerlink" title="Monitoring staleness"></a>Monitoring staleness</h3><p>You need to be aware of the health of your replication.</p>
+<ul>
+<li>In leader-based replication, there are metrics for the replication lag.  </li>
+<li>In leaderless replications, there is no fixed order in which writes are applied. Not yet common pratice, but it would be good to include staleness measurements in the standard set of metrics for databases.</li>
+</ul>
+<h2 id="Sloppy-Quorums-and-Hinted-Handoff"><a href="#Sloppy-Quorums-and-Hinted-Handoff" class="headerlink" title="Sloppy Quorums and Hinted Handoff"></a>Sloppy Quorums and Hinted Handoff</h2><p>Databases with appropriately configured quorums can tolerate the failure of individual nodes without the need for failover.<br>When in a large cluster, the client can connect to some database nodes during the network interuption, but not to the quorum needs, there is a trade-off:</p>
+<ol>
+<li>Return errors to all requests for which we cannot reach a quorum of w or r nodes?</li>
+<li>Accept writes anyway, and write them to some nodes that are reachable. - Sloppy quorum<br>Sloppy quorum means writes and reads still require w and r successful responses, but those may include nodes that are not among the desinated n “home” nodes for a value.</li>
+</ol>
+<ul>
+<li>Hinted handoff: one the network interuption is fixed, any writes that on node temporarily accepted on behalf of another node are sent to the approporiate “home” node.</li>
+<li>Increasing write availability, but still not gurantee when w+r&gt;n, because there may be some latest value temporarily written to some nodes outsides of n. Until the hinted handoff has completed.</li>
+</ul>
+<h3 id="Multi-datacenter-operation"><a href="#Multi-datacenter-operation" class="headerlink" title="Multi-datacenter operation"></a>Multi-datacenter operation</h3><p>Leaderless replication is also suitable for multi-datacenter operation, since it is designed to tolerate conflicting councurrent writes, network interruptions and latency spikes.</p>
+<h2 id="Detecting-Concurrent-Writes"><a href="#Detecting-Concurrent-Writes" class="headerlink" title="Detecting Concurrent Writes"></a>Detecting Concurrent Writes</h2><p>Dynamo-style databases allow several clients to concurrently write to the same key, conflicts will occur, during read repair or hinted handoff.</p>
+<ul>
+<li>Events may arrive in different order at different nodes.</li>
+<li>For eventually consistent, the replicas should converge toward the same value.</li>
+</ul>
+<h3 id="Last-write-wins-discarding-concurrent-writes"><a href="#Last-write-wins-discarding-concurrent-writes" class="headerlink" title="Last write wins (discarding concurrent writes)"></a>Last write wins (discarding concurrent writes)</h3><ul>
+<li>declare that each replica need only store the most “recent” value and allow “older” values to be overwritten and discarded. But in leaderless, no order to define “recent”.</li>
+<li>So we can force an arbitrary oder on them, attach timestamp, and pick the highest, discard the others.</li>
+<li>achieves the goal of eventual convergence, but at the cost of durability.</li>
+<li>Key need to be only written once and therefore treated as immutable. Thus, use UUID, unique ID.</li>
+</ul>
+<h3 id="The-“happen-before”-relationship-and-concurrency"><a href="#The-“happen-before”-relationship-and-concurrency" class="headerlink" title="The “happen-before” relationship and concurrency"></a>The “happen-before” relationship and concurrency</h3><p>How to decide whether two operations are concurrent or not?</p>
+<ul>
+<li>An increment by B is based on an insertion by A -&gt; B is causal dependent on A.</li>
+<li>Two writes are performaning on the same key while doesn’t know each other -&gt; no causal dependency between the operations.</li>
+<li>Say that two operations are concurrent if neithwer happens before the other.</li>
+</ul>
+<p>To define concurrency, exact time doesn’t matter, we simply call two operation concurrent if they are both unaware of each other.</p>
+<h3 id="Capturing-the-happens-before-relationship"><a href="#Capturing-the-happens-before-relationship" class="headerlink" title="Capturing the happens-before relationship"></a>Capturing the happens-before relationship</h3><ul>
+<li><p>tag the write with version number. same number writes are concurrent.</p>
+</li>
+<li><p>Merging concurrently written values</p>
+<ul>
+<li>called siblings in Riak.</li>
+<li>Take union to avoid losing data, but will reappear the deleted item. So we needs to mark the deletion with tombstone.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Version-vectors"><a href="#Version-vectors" class="headerlink" title="Version vectors"></a>Version vectors</h3><p>use a version number per replica as well as per key. - Each replica increments its own version number when processing a write, and also keeps track of the version numbers it has seen from each of the other replicas.</p>
+<ul>
+<li>dotted version vector</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">backend</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/05/10/distributed-system/">see more >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-micro-service" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -288,624 +705,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/05/03/micro-service/">see more >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-system_application" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/05/01/system_application/">Notes of Designing Data-Intensive Application(1)</a>
-    </h1>
-  
-
-        
-        <a href="/2019/05/01/system_application/" class="archive-article-date">
-  	<time datetime="2019-05-01T20:56:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1-Data-intensive-Application"><a href="#1-Data-intensive-Application" class="headerlink" title="1. Data-intensive Application"></a>1. Data-intensive Application</h1><h2 id="Scalability"><a href="#Scalability" class="headerlink" title="Scalability"></a>Scalability</h2><ul>
-<li><p>Percentiles</p>
-<ol>
-<li>tail latency amplification</li>
-<li>Dashboard: forward decay, t-digest, HdrHistogram</li>
-<li>SLOs, SLAs, it is up if less than 200ms and a 99th percentile under 1s, and the service may be required to be up at least 99.9% of the time.</li>
-<li>Queueing delay, head-of-line blocking.</li>
-</ol>
-</li>
-<li><p>Coping with Load</p>
-<ol>
-<li>scaling up, vertical moving to a more powerful machine</li>
-<li>scaling out, horizontal distributing the load across multiple smaller machines</li>
-<li>elastic, automatically add computing resources.</li>
-<li>easy for stateless services to be distributed but complex for stateful one.</li>
-</ol>
-</li>
-</ul>
-<h2 id="Maintainability"><a href="#Maintainability" class="headerlink" title="Maintainability"></a>Maintainability</h2><ul>
-<li>fixing bugs</li>
-<li>keeping its systems operational investigating failures</li>
-<li>adapting it to new platform</li>
-<li>modifying it for new use cases</li>
-<li>repaying technical debt</li>
-<li>adding new features</li>
-</ul>
-<ol>
-<li>Operability - easy to keep the system running smoothly</li>
-<li><p>Simplicity - easy to understand the system<br> Avoid:</p>
-<ul>
-<li>explosion of the state space</li>
-<li>tight coupling of modules</li>
-<li>tangled dependencies</li>
-<li>inconsistent naming and terminology</li>
-</ul>
-</li>
-<li><p>Evolvability - easy to change the system, adapt it for new use cases.</p>
-</li>
-</ol>
-<h1 id="2-Data-Models-and-Query-Languages"><a href="#2-Data-Models-and-Query-Languages" class="headerlink" title="2. Data Models and Query Languages"></a>2. Data Models and Query Languages</h1><p>Examples</p>
-<ul>
-<li>Model the real world in terms of objects or data     structures, and APIs that manipulate those data     structures.</li>
-<li>Express them in terms of a general-purpose data model, such as JSON, XML documents, tables in relational databases, or a graph model.</li>
-<li>Decide a way of representing that JSON/XML/relational/graph data in terms of bytes in memory, on disk, or on a network. Allow the data to be queried, searched, manipulated and processed in various ways.</li>
-<li>Lower layer, hardware engineers represent bytes in terms of electrical currents, pulses of light, magnetic fields, and more.</li>
-</ul>
-<h2 id="Relational-Model-Versus-Document-Model"><a href="#Relational-Model-Versus-Document-Model" class="headerlink" title="Relational Model Versus Document Model"></a>Relational Model Versus Document Model</h2><ul>
-<li>SQL - transaction processing, batch processing</li>
-<li>Relational model dominates other competitors - network model, hierarchical model, Object data bases, XML databases.</li>
-<li><p>NoSQL: driving forces behind the adoption of NoSQL are:</p>
-<ol>
-<li>greater scalability can be achieved, very large datasets or very high write throughput.</li>
-<li>preference for free and open source software over commercial database products.</li>
-<li>Specialized query operations</li>
-<li>Frustration with restrictiveness of relational schemas, and a desire for a more dynamic and expressive data model.</li>
-</ol>
-</li>
-</ul>
-<h2 id="Object-Relational-Mismatch"><a href="#Object-Relational-Mismatch" class="headerlink" title="Object-Relational Mismatch"></a>Object-Relational Mismatch</h2><p>Needs a translation layer between the objects in the application code and the databases model of tables, rows and  columns.</p>
-<ul>
-<li>ORM(Object-relational mapping) framework like ActiveRecord and Hibernate</li>
-<li><p>one-to-many relationship from the user to these items, which can be represented in various ways:</p>
-<ol>
-<li>put them in separate tables with a foreign key reference to the users table.</li>
-<li>support for structured datatypes and XML data;</li>
-<li>encode them as a JSON or XML document, store it on a text column in the database, and let the application interpret its structure and content.</li>
-</ol>
-</li>
-</ul>
-<h2 id="Many-to-One-and-Many-to-Many-Relationships"><a href="#Many-to-One-and-Many-to-Many-Relationships" class="headerlink" title="Many-to-One and Many-to-Many Relationships"></a>Many-to-One and Many-to-Many Relationships</h2><p>There are advantages to having standardized lists of geographic regions and industries, and letting users choose from a drop-down list or auto-completer:</p>
-<ol>
-<li>Consistent style and spelling across profiles</li>
-<li>Avoid ambiguity</li>
-<li>Ease of updating</li>
-<li>Localization support</li>
-<li>Better search</li>
-</ol>
-<h3 id="many-to-one-relationship"><a href="#many-to-one-relationship" class="headerlink" title="many-to-one relationship"></a>many-to-one relationship</h3><ul>
-<li><p>Store an ID instead of a text string is a question of duplication</p>
-<p>  Because an ID has no meaning to humans, it never needs to change. If the information is duplicated, all the redundant copies need to be updated, that incurs write overheads, and risks inconsistencies.<br>  Removing such duplication is the key idea behind normalization in databases.</p>
-</li>
-</ul>
-<h3 id="Many-to-Many-relationship"><a href="#Many-to-Many-relationship" class="headerlink" title="Many-to-Many relationship"></a>Many-to-Many relationship</h3><ul>
-<li><p>Organizations and schools as entities</p>
-<p>  each organization, school and university could have its own web page, each resume could link to it, includes their logos and other information.</p>
-</li>
-<li>Recommendations</li>
-</ul>
-<h2 id="Compare"><a href="#Compare" class="headerlink" title="Compare"></a>Compare</h2><ul>
-<li><p>Document data model:</p>
-<p>  schema flexibility, better performance due to locality,     closer to the data structures used by the application</p>
-</li>
-<li><p>Relational model:</p>
-<p>  providing better support for joins, and many-to-one and many-to-many relationships.</p>
-</li>
-<li><p>polyglot</p>
-</li>
-</ul>
-<h2 id="Query-Languages-for-Data"><a href="#Query-Languages-for-Data" class="headerlink" title="Query Languages for Data"></a>Query Languages for Data</h2><p>SQL: declarative - just specify the pattern of the data you want. And databases system’s query optimizer to decide how to achieve the goal.</p>
-<p>IMS, CODASYL and others programming languages: imperative - step through the code line by line, evaluating conditions, updating variables, and deciding whether to go around the loop one more time.</p>
-<p>Declarative query language is attractive because:</p>
-<ul>
-<li>Possible for the database system to introduce performance improvements without requiring any changes to queries.</li>
-<li>Have a better chance of getting faster in parallel execution they specify only the pattern of the results, not the algorithm that is used to determine the results.</li>
-</ul>
-<h2 id="Declarative-Queries-on-the-Web"><a href="#Declarative-Queries-on-the-Web" class="headerlink" title="Declarative Queries on the Web"></a>Declarative Queries on the Web</h2><p>Specify the selected item “Sharks” as blue background:<br>CSS example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">li.selected &gt; p&#123;</div><div class="line">	background-color: blue;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>XSL example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;xsl:template match=&quot;li[@class=&apos;selected&apos;]/p&quot;&gt;</div><div class="line">	&lt;fo:block background-color=&quot;bule&quot;&gt;</div><div class="line">		&lt;xsl:apply-templates/&gt;</div><div class="line">	&lt;/fo:block&gt;</div><div class="line">&lt;/xsl:template&gt;</div></pre></td></tr></table></figure></p>
-<p>They are both declarative languages for specifying the styling of a document. If we use a imperative approach, like Java-script, using the core Document Object Model(DOM) API, the result might look like:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var liElements = document.getElementsByTagName(&quot;li&quot;);</div><div class="line">for(var i = 0; i&lt;liElements.length;i++)&#123;</div><div class="line">	if(liEelements[i].className==&quot;selected&quot;)&#123;</div><div class="line">		var children = liElements[i].childNodes;</div><div class="line">		for(var j=0; j&lt;children.length;j++)&#123;</div><div class="line">			var child = children[j];</div><div class="line">			if(child.nodeType == Node.ELEMENT_NODE &amp;&amp; child.tagName === &quot;p&quot;)&#123;</div><div class="line">				child.setAttribute(&quot;style&quot;, &quot;background-color:blue&quot;);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>Not only longer and harder to read, but also:</p>
-<ol>
-<li>If the selected class is removed(select other page), the background color won’t be removed, until the entire page is reloaded. With CSS, the browser automatically detects when the li.selected &gt; p rule no longer applies.</li>
-<li>If you want to take advantage of a new API, say to use document.getElementsByClassName(“selected”) or document.evaluate()<br>, you have to rewrite the code. But CSS can do it without breaking compatibility.<h2 id="MapReduce-Querying"><a href="#MapReduce-Querying" class="headerlink" title="MapReduce Querying"></a>MapReduce Querying</h2>MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between. It is based on the map(collect) and reduce(fold, inject) functions that exist in many functional programming languages.</li>
-</ol>
-<p>An example to report how many sharks you have sighted per month:<br>In PostgreSQL:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">SELECT data_trunc(&apos;month&apos;, observation_timestamp) AS observatin_month, sum(num_animals) AS total_animals</div><div class="line">FROM observations</div><div class="line">WHERE family = &apos;Sharks&apos;</div><div class="line">GROUP BY observation_month;</div></pre></td></tr></table></figure>
-<p>The same can be expressed with MongoDB’s MapReduce features as follows:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">db.observations.mapReduce(</div><div class="line">	function map()&#123;</div><div class="line">		var yer = this.observationTimestamp.getFullYear();</div><div class="line">		var month = this.observationTimestamp.getMonth()+1;</div><div class="line">		emit(year + &quot;-&quot; +month, this.numAnimals;</div><div class="line">	&#125;</div><div class="line">	function reduce(key, values)&#123;</div><div class="line">		return Array.sum(values);</div><div class="line">	&#125;</div><div class="line">	&#123;</div><div class="line">		query: &#123; family: &quot;Sharks&quot;&#125;,</div><div class="line">		out: &quot;monthlySharkReport&quot;</div><div class="line">	&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>Result:<br>map: emit(“1995-12”, 3) and emit(“1995-12”,4)<br>reduce: reduce(“1995-12”, [3,4]) -&gt; 7</p>
-<ul>
-<li>Restricted in: They must be pure function, cannot perform additional databases queries, and they must not have any side effects.</li>
-</ul>
-<p>MapReduce is a fairly low-level programming model for distributed execution on a cluster of machines. Higher-level query languages like SQL can be implemented as a pipeline of MapReduce operations, but there are also many distributed implementations of SQL that don’t use MapReduce.</p>
-<p>MongoDB 2.2 added support for a declarative query language called the aggregation pipeline:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">db.observations.aggregate([</div><div class="line">	&#123; $match:&#123;family:&quot;Sharks&quot;&#125;&#125;,</div><div class="line">	&#123; $group: &#123;</div><div class="line">		_id: &#123;</div><div class="line">			year:&#123;$year: &quot;$observationTimestamp&quot;&#125;,</div><div class="line">			month:&#123;$month:&quot;$ovservationTimestamp&quot;&#125;</div><div class="line">		&#125;,</div><div class="line">		totalAnimals:&#123;$sum:&quot;$numAnimals&quot;&#125;</div><div class="line">	&#125;&#125;</div><div class="line">]&#125;;</div></pre></td></tr></table></figure>
-<h2 id="Graph-like-data-models"><a href="#Graph-like-data-models" class="headerlink" title="Graph-like data models"></a>Graph-like data models</h2><p>Many-to-many relationships are an important distinguishing feature between different data models.<br>A graph consists of two kinds of objects: vertices, edges<br>Social graphs, The web graph, Road or rail networks.</p>
-<h3 id="Property-Graphs"><a href="#Property-Graphs" class="headerlink" title="Property Graphs"></a>Property Graphs</h3><p>Each vertex consists of:</p>
-<ul>
-<li>A unique identifier</li>
-<li>A set of outgoing edges</li>
-<li>A set of incoming edges</li>
-<li>A collection of properties(key-value pairs)</li>
-</ul>
-<p>Each edge consists of:</p>
-<ul>
-<li>A unique identifier</li>
-<li>The vertex at which the edge starts(the tail vertex)</li>
-<li>The vertex at which the edge ends(the head vertex)</li>
-<li>A label to describe the kind of relationship between the two vertices</li>
-<li>A collection of properties(key-value pairs)</li>
-</ul>
-<h3 id="The-Cypher-Query-Language"><a href="#The-Cypher-Query-Language" class="headerlink" title="The Cypher Query Language"></a>The Cypher Query Language</h3><p>Cypher is a declarative query language for property graphs, create for the Neo4j graph database.</p>
-<h3 id="Recursive-common-table-expression"><a href="#Recursive-common-table-expression" class="headerlink" title="Recursive common table expression"></a>Recursive common table expression</h3><p>find all nodes that are within “us”</p>
-<h3 id="Triple-Stores-and-SPARQL"><a href="#Triple-Stores-and-SPARQL" class="headerlink" title="Triple-Stores and SPARQL"></a>Triple-Stores and SPARQL</h3><p>simple three-part statements: subject, predicate, object -&gt; Jim likes bananas.</p>
-<ul>
-<li>Semantic web<br>  Resource Description Framework(RDF) was intended as a mechanism for different websites to publish data in a consistent format, allowing data from different websites to be automatically combined into a web of data.<ul>
-<li>RDF data model<br>  The subject, predicate and object of a triple are often URIs, <a href="http://my-company.com/namespace#within" target="_blank" rel="external">http://my-company.com/namespace#within</a></li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>SPARQL query language<br>query a person born in somewhere:<br>  Cypher:</p>
-<pre><code>(person) -[:BORN_IN]-&gt; () -[:WITHIN*0..]-&gt;(location)
-</code></pre><p>  SPARQL:</p>
-<pre><code>?person :bornIn / : within* ?location.
-</code></pre></li>
-</ul>
-<h3 id="Datalog"><a href="#Datalog" class="headerlink" title="Datalog"></a>Datalog</h3><p>is similar to triple-store model, writing as  predicate(subject, object).</p>
-<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Besides from relational databases.<br>NoSQL datastores have diverged in two main directions:</p>
-<ol>
-<li>Document databases target use cases where data comes in self-contained documents and relationships between one document and another are rare.</li>
-<li>Graph databases go in the opposite direction, targeting use cases where anything is potentially to related to everything.</li>
-</ol>
-<h1 id="3-Storage-and-Retrieval"><a href="#3-Storage-and-Retrieval" class="headerlink" title="3. Storage and Retrieval"></a>3. Storage and Retrieval</h1><h2 id="Data-Structures"><a href="#Data-Structures" class="headerlink" title="Data Structures"></a>Data Structures</h2><ul>
-<li>Log - an append-only data file.</li>
-<li>Index - efficiently find the value for a particular key in database</li>
-</ul>
-<h2 id="Hash-Indexes"><a href="#Hash-Indexes" class="headerlink" title="Hash Indexes"></a>Hash Indexes</h2><ul>
-<li>Bitcask(the default storage engine in Riak)<br>Keep the hash map completely in memory, the key points to the byte offset where can find the value. High-performance reads and writes.</li>
-</ul>
-<p>This is feasible when you have a large number of writes per key, and there are not many distinct keys.</p>
-<ul>
-<li>What if “Out of disk space”<br>Break log into segments of a certain size, then perform compaction on these segments</li>
-</ul>
-<h3 id="Issues-in-an-implementation"><a href="#Issues-in-an-implementation" class="headerlink" title="Issues in an implementation"></a>Issues in an implementation</h3><ol>
-<li>File format - CSV, it is faster simpler to use a binary format that first encodes the length of a string in bytes, followed by the raw string.</li>
-<li>Deleting records - append a deletion record to the data file(tombstone), will be discarded previous while merging.</li>
-<li>Crash recovery - speed up the restart by storing a snapshot of each segment’s map on disk.</li>
-<li>Partially written records - checksums, allowing such corrupted parts of the log to be detected and ignored.</li>
-<li>Concurrency control - only one write thread.</li>
-</ol>
-<h3 id="Why-append-only"><a href="#Why-append-only" class="headerlink" title="Why append-only"></a>Why append-only</h3><ol>
-<li>appending and segment merging are sequential write operations, generally much faster than random writes.</li>
-<li>CC and crash recovery are much simpler.</li>
-</ol>
-<h3 id="Hash-table-index-limitations"><a href="#Hash-table-index-limitations" class="headerlink" title="Hash table index limitations:"></a>Hash table index limitations:</h3><ol>
-<li>The hash table must fit in memory.</li>
-<li>Range query are not efficient.</li>
-</ol>
-<h2 id="SSTables-and-LSM-Trees"><a href="#SSTables-and-LSM-Trees" class="headerlink" title="SSTables and LSM-Trees"></a>SSTables and LSM-Trees</h2><p>Require the sequence of key-value pairs is sorted by key.</p>
-<ol>
-<li>Merging segments is simple and efficient, use mergesort.</li>
-<li>Find particular key in the file you don’t need an index of all keys in memory, but directly jump to the offset of some known key and scan according to the order. Only needs a sparse index to tell you the offsets for some of the keys.</li>
-<li>Possible to group those records in a block and compress it before writing it to disk.</li>
-</ol>
-<p>Long-Structured Merge-Tree (LMS-Tree) is based on the principle of merging and compacting files. It can be slow when looking up keys that do not exist.</p>
-<h2 id="B-Trees"><a href="#B-Trees" class="headerlink" title="B-Trees"></a>B-Trees</h2><ol>
-<li>Crash recovery  - WAL(write ahead log) or redo log, every B-tree modification must be written before it can be applied to the pages of the tree itself. The log is used to restore the B-tree back to a consistent state.</li>
-<li>Concurrency control with latches(lightweight locks).</li>
-</ol>
-<h3 id="Optimizations"><a href="#Optimizations" class="headerlink" title="Optimizations"></a>Optimizations</h3><ul>
-<li>use a copy-on-write scheme, instead of overwriting pages and maintaining a WAL for each recovery.</li>
-<li>Abbreviating the sorted key names.</li>
-<li>lay out the trees so that leaf pages appear in sequential order on disk. (LMS-trees is easier on this)</li>
-<li>Additional pointers have been added to the tree, sibling pages to the left and right, for going back to parent pages.</li>
-<li>Fractal trees with log-structured ideas to reduce disk seeks.</li>
-</ul>
-<h2 id="Compare-B-Trees-and-LSM-Trees"><a href="#Compare-B-Trees-and-LSM-Trees" class="headerlink" title="Compare B-Trees and LSM-Trees"></a>Compare B-Trees and LSM-Trees</h2><ol>
-<li>LSM-trees are faster for writes.</li>
-<li>B-trees are faster for reads.</li>
-</ol>
-<h2 id="Secondary-index"><a href="#Secondary-index" class="headerlink" title="Secondary index"></a>Secondary index</h2><p>there might be many rows with the same key:</p>
-<ol>
-<li>make each value in the index a list of matching row identifiers.</li>
-<li>make each key unique by appending a row identifier to it.</li>
-</ol>
-<h2 id="Storing-values-within-the-index"><a href="#Storing-values-within-the-index" class="headerlink" title="Storing values within the index"></a>Storing values within the index</h2><ol>
-<li>Clustered index - storing all row data within the index</li>
-<li>Non-clustered index - storing only references to the data within the index</li>
-</ol>
-<h2 id="Multi-column-indexes"><a href="#Multi-column-indexes" class="headerlink" title="Multi-column indexes"></a>Multi-column indexes</h2><p>Concatenated index, simply combines several fields into on key by appending one column to another.</p>
-<h3 id="Spatial-Indexes"><a href="#Spatial-Indexes" class="headerlink" title="Spatial Indexes"></a>Spatial Indexes</h3><ul>
-<li>translate a two-dimensional location into a single number using space-filling curve, and then to use a regular B-tree index.</li>
-<li>More commonly, R-trees are used.</li>
-</ul>
-<h2 id="Full-text-search-and-fuzzy-indexes"><a href="#Full-text-search-and-fuzzy-indexes" class="headerlink" title="Full-text search and fuzzy indexes"></a>Full-text search and fuzzy indexes</h2><ul>
-<li>fuzzy querying</li>
-</ul>
-<p>It requires different techniques. It uses a finite state automaton over the characters in the keys, similar to a trie. Search for words within a given edit distance.</p>
-<h2 id="In-memory-databases"><a href="#In-memory-databases" class="headerlink" title="In memory databases"></a>In memory databases</h2><p>Keep the entire database in memory, potentially distributed across several machines.</p>
-<ul>
-<li>Performance, faster because they can avoid the overheads of encoding in-memory data structures in a form that can be written to disk.</li>
-<li><p>Providing data models that are difficult to implement with disk-based indexes.</p>
-</li>
-<li><p>Anti-caching approach - LRU</p>
-</li>
-<li>Non-volatile memory(NVM)</li>
-</ul>
-<h2 id="Transaction-Processing-or-Analytics"><a href="#Transaction-Processing-or-Analytics" class="headerlink" title="Transaction Processing or Analytics?"></a>Transaction Processing or Analytics?</h2><ol>
-<li>Online transaction processing(OLTP)</li>
-<li><p>OLTA - different access pattern</p>
-<p> needs to scan over a huge number of records, only reading a few columns per record, and calculates aggregate statistics(count, sum, average).</p>
-</li>
-</ol>
-<h3 id="Data-Warehousing-run-analytics-on-this-separate-database"><a href="#Data-Warehousing-run-analytics-on-this-separate-database" class="headerlink" title="Data Warehousing - run analytics on this separate database"></a>Data Warehousing - run analytics on this separate database</h3><p>They are usually reluctant to let business analysts run ad hoc analytic queries on an OLTP database.<br>Expensive, scanning large parts of the dataset, harm the performance of concurrently executing transactions.</p>
-<ul>
-<li><p>Extract-Transform-Load(ETL)</p>
-<p>  Data is extracted from OLTP databases(using either a periodic data dump or a continuous stream of updates), transformed into an analysis-friendly schema, cleaned up, and then loaded into the data warehouse.</p>
-</li>
-<li><p>The divergence between OLTP databases and data warehouses<br>  On the surface, a data warehouse and a relational OLTP database look similar, because they both have a SQL query interface, but the internals of the systems can look quite different. Focus on either OLTP or OLTA, but not both.</p>
-</li>
-<li><p>A plethora of open source SQL-on-Hadoop projects</p>
-<p>  Apache Hive, Spark SQL, Cloudera Impala, Facebook Presto, Apache Tajo and Apache Drill.</p>
-</li>
-</ul>
-<h3 id="Starts-and-Snowflakes-Schemas-for-Analytics"><a href="#Starts-and-Snowflakes-Schemas-for-Analytics" class="headerlink" title="Starts and Snowflakes: Schemas for Analytics"></a>Starts and Snowflakes: Schemas for Analytics</h3><p>There is a fact table in the middle, surrounded by its dimension tables. These dimension tables with the foreign key as the columns in the fact table.</p>
-<ul>
-<li>Snowflakes<br>  If the dimension tables are further broken into sub-dimensions.</li>
-</ul>
-<h2 id="Column-Oriented-Storage"><a href="#Column-Oriented-Storage" class="headerlink" title="Column-Oriented Storage"></a>Column-Oriented Storage</h2><p>In OLTP databases, storage is laid out in a row-oriented fashion, all the value from a row are stored one by one.</p>
-<p>Instead, store all the values from each column together, save a lot of work and space. They are in the same order of the row number, so it is easy to reassemble an entire row.</p>
-<h3 id="Column-Compression"><a href="#Column-Compression" class="headerlink" title="Column Compression"></a>Column Compression</h3><ul>
-<li><p>Bitmap encoding<br>  74 = 000010000000000000 -&gt; 4,1(4 zeros, 1 one, rest zeros)</p>
-<ol>
-<li><code>WHERE product_sk IN(30,68,69)</code><br>Use bitwise OR can be done efficiently</li>
-<li><code>WHERE product_sk=31 AND store_sk=3</code><br>Use bitwise AND.</li>
-</ol>
-</li>
-</ul>
-<h3 id="Memory-bandwidth-and-vectorized-processing"><a href="#Memory-bandwidth-and-vectorized-processing" class="headerlink" title="Memory bandwidth and vectorized processing"></a>Memory bandwidth and vectorized processing</h3><ol>
-<li>Reducing the volume of data that needs to be loaded from disk.</li>
-<li>Making efficient use of CPU cycle. Process a chunk of compressed column data that fit in the same amount of L1 cache directly one chunk by one chunk, CPU can execute a loop much faster. This is vectorized processing.</li>
-</ol>
-<h2 id="Sort-Order-in-Column-Storage"><a href="#Sort-Order-in-Column-Storage" class="headerlink" title="Sort Order in Column Storage"></a>Sort Order in Column Storage</h2><h3 id="Several-different-sort-orders"><a href="#Several-different-sort-orders" class="headerlink" title="Several different sort orders"></a>Several different sort orders</h3><ol>
-<li>C-Store, multiple sort orders, replicate to multiple machines anyway for backup.</li>
-</ol>
-<h2 id="Writing-to-Column-Oriented-Storage"><a href="#Writing-to-Column-Oriented-Storage" class="headerlink" title="Writing to Column-Oriented Storage"></a>Writing to Column-Oriented Storage</h2><p>With a B-Tree, write a row will be difficult. Rewrite all column files.<br>But with LMS-Tree, they are all written in a sorted structure and prepared for writing to disk.</p>
-<h2 id="Aggregation-Data-Cubes-and-Materialized-Views"><a href="#Aggregation-Data-Cubes-and-Materialized-Views" class="headerlink" title="Aggregation: Data Cubes and Materialized Views"></a>Aggregation: Data Cubes and Materialized Views</h2><ul>
-<li><p>Materialized aggregates, Cache some of the counts or sums that queries use most often.</p>
-<ol>
-<li>Materialized view, automatically make a copy of the query results. More expensive for writing, only for improving read performance.</li>
-<li>Data cube, OLAP cube, use a n-dimension table to get the sum, count attribute for each other dimension.<br> Certain queries are very fast with this fashion, but it doesn’t have the same flexibility as querying the raw data.</li>
-</ol>
-</li>
-</ul>
-<h1 id="Encoding-and-Evolution"><a href="#Encoding-and-Evolution" class="headerlink" title="Encoding and Evolution"></a>Encoding and Evolution</h1><p>Evolvability: Make it easy to change.</p>
-<ol>
-<li>Server-side applications, perform a rolling upgrade, deploying the new version to a few nodes at a time, gradually working your way through all nodes. Allow new versions to be deployed without service downtime.</li>
-<li>Client-side, at the mercy of the user, who may not install the update for some time.</li>
-</ol>
-<p>Old and new versions of the code, old and new data formats potentially coexist in the system.</p>
-<ul>
-<li>Compatibility<ol>
-<li>Backward compatibility - newer code can read data that was written by older code.</li>
-<li>Forward compatibility - Older code can read data that was written by newer code.</li>
-</ol>
-</li>
-</ul>
-<h2 id="Formats-for-Encoding-Data"><a href="#Formats-for-Encoding-Data" class="headerlink" title="Formats for Encoding Data"></a>Formats for Encoding Data</h2><p>Two representations of data:</p>
-<ol>
-<li>In memory, data is kept in objects, structs, lists, arrays, hash tables, trees and so on. Optimized for efficient access, and manipulation by the CPU.</li>
-<li>When write data to a file or send it over the network, you have to encode it as some kind of self-contained sequence of bytes(JSON).</li>
-</ol>
-<p>So we need to translate these two representation, from in-memory to a byte sequence is called encoding(serialization or marshalling), other way is called decoding(deserialization, unmarshalling, parsing).</p>
-<h2 id="Language-Specific-Formats"><a href="#Language-Specific-Formats" class="headerlink" title="Language-Specific Formats"></a>Language-Specific Formats</h2><p>Many programming languages come with built-in support for encoding in-memory object into byte sequence.</p>
-<ul>
-<li>Java - java.io.Serializable</li>
-<li>Ruby - Marshal</li>
-<li>Python - pickle</li>
-<li>Kryo for Java(thrid-party libraries)</li>
-</ul>
-<p>Problems are:</p>
-<ol>
-<li>It is very difficult to read the data in another language.</li>
-<li>To restore data in the same object types, the decoding process needs to be able to instantiate arbitrary classes. Security problem, attacker can get your application to decode an arbitrary byte sequence, they can instantiate arbitrary classes, which in turn often allows them to do terrible things such as remotely executing arbitrary code.</li>
-<li>Versioning data is often an afterthought in these libraries.</li>
-<li>Efficiency, Java’s built-in serialization is notorious for its bad performance and bloated encoding.</li>
-</ol>
-<h2 id="JSON-XML-and-Binary-Variants"><a href="#JSON-XML-and-Binary-Variants" class="headerlink" title="JSON, XML, and Binary Variants"></a>JSON, XML, and Binary Variants</h2><p>Problems:</p>
-<ol>
-<li>There is a lot of ambiguity around the encoding of numbers.<br> Dealing with large number, integers greater than %2^53% cannot be exactly represented in an IEEE 754 double-precision floating-point number.</li>
-<li>JSON and XML have good support for Unicode character strings, but they don’t support binary strings.</li>
-<li>Applications that don’t use XML/JSON schemas need to potentially hardcode the appropriate encoding/decoding logic instead.</li>
-<li>CSV doesn’t have any schema, if an application change adds a new row or column, you have to handle the change manually. CSV is also a quite vague format(what happens if a value contains a comma or a newline character?)</li>
-</ol>
-<h3 id="Binary-encoding"><a href="#Binary-encoding" class="headerlink" title="Binary encoding"></a>Binary encoding</h3><p>JSON is less verbose than CML, but both use a lot of space compared to binary format.<br>Example record:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	&quot;userName&quot;:&quot;Martin&quot;,</div><div class="line">	&quot;favoriteNumber&quot;:1337,</div><div class="line">	&quot;interest&quot;:[&quot;daydreaming&quot;,&quot;hacking&quot;]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>Example of MessagePack, a binary encoding for JSON:</p>
-<table>
-<thead>
-<tr>
-<th>object(3 entries)</th>
-<th>string(length 8)</th>
-<th>u</th>
-<th>s</th>
-<th>e</th>
-<th>r</th>
-<th>N</th>
-<th>a</th>
-<th>m</th>
-<th>e</th>
-<th>string(length6)</th>
-<th>M</th>
-<th>a</th>
-<th>r</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>83</td>
-<td>a8</td>
-<td>75</td>
-<td>73</td>
-<td>65</td>
-<td>72</td>
-<td>4e</td>
-<td>61</td>
-<td>6d</td>
-<td>65</td>
-<td>a6</td>
-<td>4d</td>
-<td>61</td>
-<td>72</td>
-</tr>
-</tbody>
-</table>
-<ol>
-<li>The first byte, 0x83, indicates that what follows is an object(top four bits=0x80) with three fields(bottom four bits = 0x03).</li>
-<li>The second byte, 0xa8, indicates that what follows is a string, that is eight bytes long.</li>
-<li>The next eight bytes are the field name userName in ASCII.</li>
-<li>The next seven bytes encode the six-letter string value Martin with a prefix 0xa6.</li>
-</ol>
-<p>Not very much reduction in the size.</p>
-<h3 id="Thrift-and-Protocol-Buffers"><a href="#Thrift-and-Protocol-Buffers" class="headerlink" title="Thrift and Protocol Buffers"></a>Thrift and Protocol Buffers</h3><p>Both Thrift(Facebook) and Protocol Buffers(Google) require a schema for any data that is encoded. In Thrift, you would describe the schema in the Thrift interface definition language(IDL) like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">strcut Person&#123;</div><div class="line">	1: required string userName,</div><div class="line">	2: optional i64 favoriteNumber,</div><div class="line">	3: optional list&lt;string&gt; interests</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>In Protocol Buffers looks like similar:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">message Person &#123;</div><div class="line">	required string userName = 1;</div><div class="line">	optional int64 favoriteNumber = 2;</div><div class="line">	repeated string interests = 3;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<ul>
-<li>BinaryProtocal<br><img src="img/thrift.jpg" alt="example encoding in Thrift"></li>
-</ul>
-<p>Using field tag(number 1, 2, 3) to replace the field name.</p>
-<ul>
-<li>CompactProtocol<br>It packs the field type and field tag number into a single byte.<br><img src="img/compact.jpeg" alt="example encoding in Thrift"></li>
-</ul>
-<p>The required and optional don’t interfere how the field is encoded, only use for a runtime check if the field is not set when it is required, catching the bug.</p>
-<h3 id="Field-tags-and-Schema-Evolution"><a href="#Field-tags-and-Schema-Evolution" class="headerlink" title="Field tags and Schema Evolution"></a>Field tags and Schema Evolution</h3><ol>
-<li>Adding new schema(fields)<br> For forward compatbility, simply ignore the new field.<br> For backward compatbility, as long as each field has a unique tag number, new code can always read old data. The only concern is that the new field cannot be a required field, instead it should be optional or has a default value.</li>
-<li>Removing schema(fields)<br> Reversed, not removing a required field, and you can never use the same tag number again.</li>
-</ol>
-<h3 id="Datatypes-and-schema-Evolution"><a href="#Datatypes-and-schema-Evolution" class="headerlink" title="Datatypes and schema Evolution"></a>Datatypes and schema Evolution</h3><p>It is possible for Protocol buffers when make the single field value as repeated (multi-value)field. New code reading old data sees a list with zero or one elements. old code reading new data sees only the last element of the list.<br>Thrift has a dedicated list datatype, but it has advantage of supporting nested lists.</p>
-<h3 id="Avro"><a href="#Avro" class="headerlink" title="Avro"></a>Avro</h3><p>For Hadoop<br>Use a schema to specify the structure of the data being encoded. Two schema languages:</p>
-<ol>
-<li>Avro IDL, for human editing</li>
-<li>based on JSON, for machines-readable<br>There is noting to identify fields or their datatypes. Simply consists of values Concatenated together.<br>To parse the binary data, you go through the fields in the order that they appear in the schema and use the schema to tell you the datatype of each field.</li>
-</ol>
-<ul>
-<li>Writer’s schema - the schema to be compiled into the application</li>
-<li>Reader’s schema - decode some data, read it from a file or database, recieve it from the network, etc.<br>Writer’s schema and reader’s don’t need to be same, just need to be compatible.</li>
-</ul>
-<p>Schema resolution matches up the fields by field name.</p>
-<ol>
-<li>If the code reading the data encounters a field that appears in the writer’s schema, but not in the reader’s schema, ignore.</li>
-<li>If the code reading expects some fields, but the writer’s schema does not contain a field of that name, it is filled with a default value declared in the reader’s schema.</li>
-</ol>
-<ul>
-<li><p>compatibility<br>forward compatibility: ignore the field added, or fill with defualt value with the removed one.<br>backward compatibility: only add or remove a field that has a default value.</p>
-</li>
-<li><p>null : to make it nullable, must use a union type. union {null, long, string} field.</p>
-</li>
-<li>Changing datatype is possible.</li>
-<li>Changing the name of a field, can use an alias to refer the old name, so it is backward compatible not forward.</li>
-<li>Adding a branch to a union type is also backward compatbible but not forward.<h3 id="Dynamic-generated-Schemas"><a href="#Dynamic-generated-Schemas" class="headerlink" title="Dynamic generated Schemas"></a>Dynamic generated Schemas</h3>Avro is friendly to dynamically generated schemas, because it doesn’t contain any tag numbers. Generate new Avro schema from the database schema and export data in the new Avro schema.<h3 id="Code-generation-and-dynamically-typed-Languages"><a href="#Code-generation-and-dynamically-typed-Languages" class="headerlink" title="Code generation and dynamically typed Languages"></a>Code generation and dynamically typed Languages</h3>Thrift and Protocol Buffers rely on code generation, after a schema has been defined, you an generate code that implements this schema in programming languages you chose. Statically typed languages Java, C++ or C# allows efficient in-memory structures to be used for decoded data, allows type checking and autocomplition in IDEs.<br>For dynamically typed programming languages such as JavaScript, Ruby, or Python, there is not much point in generating code, since there is no compile-time type checker to satisfy.</li>
-</ul>
-<p>Avro provides optional code generation for statically typed programming languages, but it can be used just as well without any code generation. The file is self-describing since it includes all the neccessary metadata when open Arvo’s objsct container file(which embeds the writer’s schema).</p>
-<h2 id="The-Merits-of-schemas"><a href="#The-Merits-of-schemas" class="headerlink" title="The Merits of schemas"></a>The Merits of schemas</h2><p>Schema languages:</p>
-<ol>
-<li>ASN, a schema definition language in 1984. To define various network protocols, its binary encoding (DER) is still used to encode SSL certificates.<br>It supports schema evolution using tag numbers. Still complex, not a good choice for now.</li>
-<li>Some protocols are generally specific to a particular database, and the database vendor provides a driver(ODBC or JDBC APIs).</li>
-</ol>
-<h2 id="Modes-of-Dataflow"><a href="#Modes-of-Dataflow" class="headerlink" title="Modes of Dataflow"></a>Modes of Dataflow</h2><p>Who encodes the data, decodes it?</p>
-<ol>
-<li>Via databases</li>
-<li>Via service calculates</li>
-<li>Via asynchronous message passing<h3 id="Dataflow-through-databases"><a href="#Dataflow-through-databases" class="headerlink" title="Dataflow through databases"></a>Dataflow through databases</h3>In database the process that writes to the database encodes the data, the process reads from the database decodes it.<br>There could be severall different applications or sevices, and some processes acessing database run newer code, some will be running older code.</li>
-</ol>
-<ul>
-<li>History data can stay in the database, and update with null value in the newly added fields, thus whole database can be updated withouth rewriting.</li>
-<li>To backup the database, you can take a snapshot from time to time, or load into a data warehouse.</li>
-</ul>
-<h2 id="Datafolw-Through-Services-REST-and-RPC"><a href="#Datafolw-Through-Services-REST-and-RPC" class="headerlink" title="Datafolw Through Services: REST and RPC"></a>Datafolw Through Services: REST and RPC</h2><p>Servers expose an API over the network, the clients can connect to the servers to make requests to that API. The API exposed by the server is known as a service.<br>Web browsers make requests to web servers, making GET requests to download HTML, CSS, JavaScript, imgas, etc. And making POST requests to submit data to the server. The API consists of a standardized set of protocols and data formats(HTTP, URLs, SSL/TLS, HTML, etc)<br>A client-side JavaScript application running inside a web browser can use XMLHttpRequest to become a HTTP client(Ajax).</p>
-<ul>
-<li>SOA, Microservices<br>  A server can itself be a client to another service. This approach is often used to decompose a large application into smaller services by area of funcationality. This way of building applications is called service oriented architecture(SOA) or refined as microservices architecture.</li>
-<li>Service can impose fine-grained restrictions on what clients can and cannot do.</li>
-<li>Goal of microservices<br>  Make the application easier to change and maintain by making services independently deployable and evolvable.<br>  So the data encoding used by servers and clients must be compatible across versions of the service API.</li>
-</ul>
-<h3 id="Web-Services"><a href="#Web-Services" class="headerlink" title="Web Services"></a>Web Services</h3><ol>
-<li>A client application running on a user’s device. (e.g., a native app on a mobile device, or JavaScript web app using Ajax) making requests to a service over HTTP. There requests typically go over the public internet.</li>
-<li>One service making requests to another service owned by the same organization, often located within the same datacenter, as part of a service-oriented/microservices architecture. (Software that supports this kind of use case is sometimes called middleware.)</li>
-<li>One service making requests to a service owned by a different organization, usually via the internet. This category includes public APIs provided by online services, such as credit card processing systems, or OAuth for shared access to user data.</li>
-</ol>
-<p>Two popular appraches to web service: REST, SOAP</p>
-<ol>
-<li>REST is not a protocol, but rather a design philosiphy that build upon the principles of HTTP. It emphasized simple data formats, using URLs for identifying resources and using HTTP features for cache control, authentication, and content type negotiation. An API designed according to the principles of REST is called RESTfull.</li>
-<li>SOAP is an XML-based protocol by contrast, for making network API requests. Web Services Description Language(WSDL). Useful in statically typed programming Languages.</li>
-</ol>
-<p>RESTful APIs tend to favor simpler approaches, typically involving less code generation and automated tooling. A definition format such as OpenAPI, also known as Swagger, can be used to describe RESTful APIs and produce documentation.</p>
-<h3 id="The-problems-with-remote-procedure-calls-RPCS"><a href="#The-problems-with-remote-procedure-calls-RPCS" class="headerlink" title="The problems with remote procedure calls(RPCS)"></a>The problems with remote procedure calls(RPCS)</h3><p>Make a request to a remote network service look the same as calling a function or method in your programming language, whin the same process.(This abstraction is called location tranparancy). But the approach is fundamentally flawed.</p>
-<ol>
-<li>A local function is predictable, however, a network request is not, it could be lost, the remote machine may be slow or unavailable.</li>
-<li>A local function call either returns a result or throw an exception, or never returns. A network request might return but without results, due to timeout, you don’t know what happended.</li>
-<li>If you retried a failed network request, it could happen that the requests are actually getting through, and only the rewponses are getting lost.</li>
-<li>Local function takes same time to execute, but a network request takes longger, and its latency is widely variable. When the network is congested or the remote service is overloaded it took long time to complete.</li>
-<li>When you call a local function, you can efficiently pass its references(pointers) to objects in local memory, but a network request, all those parameters need to be encoded into a sequence of bytes that can be sent over the network.</li>
-<li>The client and service may be implemented in different programming languages, so the RPCs framework must translate datatypes from one language into another.</li>
-</ol>
-<p>REST appeals because it doesn’t hide the fact that it’s a network protocol, although this doesn’t seem to stop people from building RPC libraries on top of REST.</p>
-<h3 id="Current-directions-for-RPC"><a href="#Current-directions-for-RPC" class="headerlink" title="Current directions for RPC"></a>Current directions for RPC</h3><p>Various RPC frameworks have been built on top of all encodings(Thrift, Avro). gRPC is an RPC implementation using Protocol Buffers, Finagle also uses Thrift and Rest.li uses JSON over HTTP.</p>
-<p>Finagle and Rest.li use futures(promises) to encapsulate asynchronous actions that may fail. Futures also simplify situations where you need to make requests to mutiple services in paralell, and combine their results.</p>
-<ul>
-<li>Streams - gRPC supports streams, where a call consists of not just one request and one response, but a series of reqeusts and response over time.</li>
-</ul>
-<p>Custom RPC protocols with a binary encoding format can achieve better performance than something generic like JSON over REST.<br>But a RESTful API has other advantages:</p>
-<ol>
-<li>good for experimentation and debugging(simply make requests to it using a web browser or $curl)</li>
-<li>it is supported by all main-stream programming languages and platforms.</li>
-<li>there is a vast ecosystem of tools available(servers, caches, load balancers, proxies, firewalls, monitoering, debugging tools, testing tools, ect.)<br>For these reasons, REST seems to be the predominant style for public APIs, the main focus of RPC frameworks is on requests between servies owned by the same organization, typically within the same datacenter.</li>
-</ol>
-<h3 id="Data-encoding-and-evolution-for-RPC"><a href="#Data-encoding-and-evolution-for-RPC" class="headerlink" title="Data encoding and evolution for RPC"></a>Data encoding and evolution for RPC</h3><p>It is important that RPC clinets and servers can be changed and deployed independently.<br>Update servers firstly, and client secondly. Handle backward compatibility for requests, and forward for response.<br>The backward and forward compatibility properties of an RPC scheme are inherited from whatever encoding it uses.</p>
-<ul>
-<li>Service compatibility is made harder by the fact that RPC is often used for communication across organizational boundaries, so the provider of a service often has no control across organizational boundaries.</li>
-<li>There is no aggrement on how API versioning should work. (how a client can indicate which version of the API it want to use.)<ol>
-<li>For RESTful APIs, common approaches are to use a version number in the URL or in the HTTP Accepct header.</li>
-<li>For services that use API keys to identify a particular client, another option is to store a client’s requested API version on the server, version selection can be updated through a separate administrative interface.</li>
-</ol>
-</li>
-</ul>
-<h3 id="Message-Passing-Dataflow"><a href="#Message-Passing-Dataflow" class="headerlink" title="Message-Passing Dataflow"></a>Message-Passing Dataflow</h3><p>asynchronous message-passing systems: somewhere between RPC and databases</p>
-<ol>
-<li>As for RPC, a message is delivered to another process with low latency.</li>
-<li>As for databases, the message is not sent via a direct net-work connection, but goes via an intermediary called a message broker.(message queue, message-oriented middleware), which stores the message temporarily.</li>
-</ol>
-<p>Using a message broker has several advantages compared to direct RPC:</p>
-<ol>
-<li>It can act as a buffer if the recipient is unavailable or overloaded, and thus improve system reliability.</li>
-<li>It can automatically redeliver messages to a process that has crashed, and thus prevent messages from being lost.</li>
-<li>Sender don’t need to know the IP address and port number of the recipient.</li>
-<li>It allows one message to be sent to several recipients.</li>
-<li>It logically decouples the sender from the recipient(the sender just published messages and doesn’t care who consumes them).</li>
-</ol>
-<ul>
-<li><p>Message broker: one process sends a message to a named queue or topic, and the broker ensures that the message is delivered to one or more consumers of or subcribers to that queue or topic. There can be many producers and many consumuers on the same topic.</p>
-</li>
-<li><p>Message brokers examples: IBM WebSphere, RabbitMQ, ActiveMQ, HornetQ, NATS and Apache Kafka.</p>
-</li>
-<li><p>A topic provides only on-way dataflow. However, a consumer may itself publish messages to another topic,  or to a reply queue that is consumed by the sender of the original message.</p>
-</li>
-<li><p>Message brokers typically don’t enforce any particular data model. A message is just a sequence of bytes with some metadata, any encoding format is okay.</p>
-</li>
-<li><p>If the encoding is forward and backward compatible, flexible to change publishers and consumers independently and deploy them in any order.</p>
-</li>
-</ul>
-<h3 id="Distributed-actor-frameworks"><a href="#Distributed-actor-frameworks" class="headerlink" title="Distributed actor frameworks"></a>Distributed actor frameworks</h3><ul>
-<li>actor model: is a programming model for concurrency in a single process.</li>
-<li><p>actor: encapsulate logic in actors not threads, representing a client or entity</p>
-<ol>
-<li>may have some local state, not shared with owther actor.</li>
-<li>communicates with other actors by sending and receiving asynchronous message.</li>
-<li>Message delivery is not guarantted.</li>
-<li>Each actor processes only one message at a time, it doesn’t need to worry about thread.</li>
-<li>each actor can be scheduled independently by the framework.</li>
-</ol>
-</li>
-<li><p>Distributed actor framework, the programming model is used to scale an application across multiple nodes.</p>
-<ol>
-<li>Use the same message-passing mechanism.</li>
-<li>Message between different nodes is transparently encoded into a byte sequence, sent over the network, and decoded on the other side.</li>
-</ol>
-</li>
-<li><p>Location transparency works better in the actor model than in RPC, because the actor model already assumes that the message may be lost.</p>
-</li>
-<li><p>Less of a fundamental mismatch between local and remote communication when using actor model(latency still higher than within the same process.)</p>
-</li>
-<li><p>A distributed actor framework is a single framework = a message broker + actor programming model</p>
-<ul>
-<li>Backward and forward compability is still need to be worried about, a message may be sent from a node running the new version to a code running the old version, and vice versa.</li>
-</ul>
-</li>
-</ul>
-<p>Some popular distributed actor frameworks handle message encoding as follow:</p>
-<ol>
-<li>Akka, Java’s built-in serialization by default, Can replace it with something like Protocaol Buffers, thus gain the ablity to do rolling upgrades.</li>
-<li>Orleans, by default uses a custom data encoding format that does not support rolling upgrade deployments. To deploy a new version of your application, you need to set up a new cluster, move traffic from the cluster to the new one, and shut down the old one. Custom serialization plug-ins can be used.</li>
-<li>Erlang OTP, hard to make changes to record shcemas, the system haves many features designed for high availability. Rolling upgrades are possible, but need to plan carefully. map - a JSON-like structure may make this easier in the future.</li>
-</ol>
-<h1 id="Summary-1"><a href="#Summary-1" class="headerlink" title="Summary"></a>Summary</h1><h2 id="Rolling-upgrades"><a href="#Rolling-upgrades" class="headerlink" title="Rolling upgrades"></a>Rolling upgrades</h2><ol>
-<li>Allow new versions of a service to be released without downtime. More frequent small releases over rare big release.</li>
-<li>make deployments less risky. Allow to be rolled back before they affect a large number of users.</li>
-<li>Beneficial for evolvability.</li>
-</ol>
-<h2 id="Data-encoding-formats"><a href="#Data-encoding-formats" class="headerlink" title="Data encoding formats:"></a>Data encoding formats:</h2><ol>
-<li>Programming languages specific - restircted to single programming langues, fail to provide compatibility.</li>
-<li>Textual formats like JSON, XML, CSV, widespread, compatibility depends on how to use.</li>
-<li>Binary schema-driven formats like Thrift, Protocol Buffers, and Avro, allow compat, efficient encoding with caerfully defined sematics. (need to decode for human-readble)</li>
-</ol>
-<h2 id="Model-of-Dataflow"><a href="#Model-of-Dataflow" class="headerlink" title="Model of Dataflow"></a>Model of Dataflow</h2><ol>
-<li>Databases, the process writing to the database encode, and the process reading to do encode.</li>
-<li>RPC and REST APIs, the client encodes a request, and the server decodes the request and encode the response, and the client finally decodes the response.</li>
-<li>Asynchronous message passing(using message brokers or actors).</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">backend</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/05/01/system_application/">see more >></a>
         </p>
       
 
@@ -1053,11 +852,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -185,6 +185,191 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Python" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/06/Python/">有关Python语言与函数式编程的思考</a>
+    </h1>
+  
+
+        
+        <a href="/2017/09/06/Python/" class="archive-article-date">
+  	<time datetime="2017-09-06T21:31:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这篇文章内容产生背景是我在学习python过程中的一些个人理解，主要是对python语言的辨识度较高的知识点即语法中比较特殊的地方进行考究与归纳。<br>适合供已经掌握某一门编程语言或有一定编程知识背景的同学，想快速了解python的朋友来一起学习并分享交流。<br>P.S.前面基本都是总结现有知识，从第7点“高阶函数”开始属于“灰色地带”，即会带有很多我个人提出的观点以及奇特的思考与理解方式的成分，同时它们也是我下一步想要研究的方向，若有兴趣，欢迎交流讨论，同时欢迎指正！</p>
+<p>学习资料：<br>《python学习手册》（第4版）<br>《Introduction to the Theory of Computation》<br><a href="https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000" target="_blank" rel="external">廖海峰python教程</a><br>知乎<br>Google</p>
+<h1 id="Content"><a href="#Content" class="headerlink" title="Content"></a>Content</h1><h3 id="1-数据类型-动态语言"><a href="#1-数据类型-动态语言" class="headerlink" title="1. 数据类型-动态语言"></a>1. 数据类型-动态语言</h3><p>什么是动态语言，就是变量本身的数据类型是不固定的，可变的语言。与之相反的就是静态语言，比如JAVA、Objective-C。<br>声明一个Objective-C的变量为整型，那么之后无论你用任何操作，都不能改变它的数据类型（除非你直接改变它的声明的类型）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//Objective-C声明一个整型</div><div class="line">NSInteger a = 0;</div></pre></td></tr></table></figure>
+<p>而python是一种动态语言，因此python没有类型声明，即创建对象的时候你不需要花时间去预先定义它的数据类型，你使用的运行的表达式和语法会帮你决定这个对象的类型。因此在python中，你可以这样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//python声明语句</div><div class="line">a = &apos;dead&apos;</div><div class="line">b = 2</div><div class="line">c = &apos;sketch&apos;</div><div class="line">a=b</div><div class="line">print(a,b,c)</div></pre></td></tr></table></figure></p>
+<p>运行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ python test.py</div><div class="line">(2, 2, &apos;sketch&apos;)</div></pre></td></tr></table></figure></p>
+<p>可以发现a的数据类型在执行a=b后发生了改变。<br>那么你可能会认为这样可能会有危险，会出现乱套了的情况，因此这就要求，一旦对象创建之后，它就应该和它对应的操作集合绑定了，例如只可以对字符串进行字符串相关操作，对列表进行列表相关操作。<br>总结上面两点：</p>
+<ol>
+<li>python是动态类型的，它自动地追踪你的类型而不是声明代码。</li>
+<li>python也是强类型语言，你只能对一个对象进行适合该类型的有效的操作。</li>
+</ol>
+<p>这里我还想补充的就是，实际中python中的某个类型的操作集合会比想象的要多，比如对于字符串来讲，是可以对两个字符串使用“+”来进行合并的。很多我们在其他语言中不被允许的操作，在python都是合法的，例如重访嵌套：在一个字典中嵌套一个字典或列表，并对嵌入的字典或列表进行扩展，嵌入的字典或列表是字典包含的一部分独立内存，它可以自由地增加或减少。关于对象的内存部署会在之后讨论。</p>
+<p>因此，这也就是为什么python使用起来会觉得非常灵活的原因吧。</p>
+<h3 id="2-list和tuple"><a href="#2-list和tuple" class="headerlink" title="2. list和tuple"></a>2. list和tuple</h3><ul>
+<li>list</li>
+</ul>
+<p>list是一种有序集合，是python内置的一种数据类型，可以随时添加和删除其中的元素。</p>
+<ol>
+<li>设置一个list</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">students = [&apos;Tom&apos;,&apos;Bob&apos;,&apos;Tracy&apos;]</div></pre></td></tr></table></figure>
+<p>2.获取list元素的个数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; len(students)</div><div class="line">3</div></pre></td></tr></table></figure></p>
+<p>3.用索引来访问list中每一个位置的元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//访问第一个元素</div><div class="line">&gt;&gt;&gt; students[0]</div><div class="line">&apos;Tom&apos;</div><div class="line">&gt;&gt;&gt; students[1]</div><div class="line">&apos;Bob&apos;</div><div class="line">&gt;&gt;&gt; students[2]</div><div class="line">&apos;Tracy&apos;</div></pre></td></tr></table></figure>
+<p>要确保索引不要越界。<br>还可以用负数来表示倒序的索引<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students[-1]</div><div class="line">&apos;Tracy&apos;</div></pre></td></tr></table></figure></p>
+<p>4.追加到list到末尾</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students.append(&apos;Edie&apos;)</div><div class="line">&gt;&gt;&gt; students</div><div class="line">[&apos;Tom&apos;,&apos;Bob&apos;,&apos;Tracy&apos;, &apos;Edie&apos;]</div></pre></td></tr></table></figure>
+<p>5.把元素插入到指定位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students.insert(1,&apos;Edie&apos;)</div><div class="line">&gt;&gt;&gt; students</div><div class="line">[&apos;Tom&apos;,&apos;Edie&apos;,&apos;Bob&apos;,&apos;Tracy&apos;,&apos;Adam&apos;]</div></pre></td></tr></table></figure>
+<p>6.删除list末尾的元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students.pop()</div><div class="line">&apos;Adam&apos;</div><div class="line">&gt;&gt;&gt; students</div><div class="line">[&apos;Tom&apos;,&apos;Edie&apos;,&apos;Bob&apos;,&apos;Tracy&apos;]</div></pre></td></tr></table></figure>
+<p>7.替换list中某个元素<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students[2]=&apos;Sarah&apos;</div><div class="line">&gt;&gt;&gt; students</div><div class="line">[&apos;Tom&apos;,&apos;Edie&apos;,&apos;Sarah&apos;,&apos;Tracy&apos;]</div></pre></td></tr></table></figure></p>
+<p>8.list元素的数据类型可以不同<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">L = [&apos;Apple&apos;, 123, True]</div></pre></td></tr></table></figure></p>
+<p>9.list的元素也可以是list<br>就是说可以在list里嵌套一个list，并且可以对嵌入的list进行操作，也就是刚才提到的重访嵌套。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; profile = [&apos;Name&apos;,&apos;Gender&apos;,&apos;Add&apos;,[19970101,20]]</div><div class="line">&gt;&gt;&gt; len(profile)</div><div class="line">4</div></pre></td></tr></table></figure></p>
+<p>访问嵌入的list中的元素<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; profile[3][1]</div><div class="line">20</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>tuple<br>tuple和list非常相似，只是tuple是一旦初始化后它的元素就不可以被修改的。它没有append（），insert（）之类的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; students(&apos;Tom&apos;,&apos;Bob&apos;,&apos;Lucy&apos;)</div></pre></td></tr></table></figure>
+<p>tuple使用括号来表示，然而在写代码进行计算的时候括号又可能是数学公式中的小括号<br>比如： t = (1)，这时候t代表1这个数，而不会是一个只有一个元素的tuple。<br>正确表示只有一个元素的tuple应该是这样：带上逗号</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (1,)</div><div class="line">&gt;&gt;&gt; t</div><div class="line">(1,)</div></pre></td></tr></table></figure>
+<p>还有一个需要注意的地方就是，tuple的元素是不能被修改的，但是当tuple嵌套了list作为元素的时候，这个list的元素还是可以被修改的。<br>例如：在test.py里定义一个tuple和一个list</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">t = ([1, 2], 3, 4, 5)</div><div class="line">l = [6, 7]</div></pre></td></tr></table></figure>
+<p>交互式运行：<br>1.不能对tuple添加元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; test.t</div><div class="line">([1, 2], 3, 4, 5)</div><div class="line">&gt;&gt;&gt; test.t.insert(4)</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">AttributeError: &apos;tuple&apos; object has no attribute &apos;insert&apos;</div></pre></td></tr></table></figure>
+<p>2.不能改变tuple中的list这个元素<br>这里尝试把tuple中的第一个list元素替换成另一个list l，失败。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; test.t[0] = test.l</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">TypeError: &apos;tuple&apos; object does not support item assignment</div></pre></td></tr></table></figure>
+<p>3.可以改变tuple中的list中的元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; test.t[0][0]</div><div class="line">1</div><div class="line">&gt;&gt;&gt; test.t[0][0] = 3</div><div class="line">&gt;&gt;&gt; test.t[0][0]</div><div class="line">3</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> 使用tuple的好处就在于因为它是不可变的，因此代码会更安全。</p>
+<h3 id="3-dict和set"><a href="#3-dict和set" class="headerlink" title="3. dict和set"></a>3. dict和set</h3><ul>
+<li>dict<br>python内置的字典dict，在其他语言中也被称作map，就是使用键-值（key-value）存储数据，便于查找。dict用一对花括号表示，一个键值对用冒号区分键与值：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; d = &#123;‘A’:apple，‘B&apos;:blue，‘C’:cat&#125;</div></pre></td></tr></table></figure>
+<p>一个key只能对应一个value，重复对一个key放入value会把之前的value覆盖掉。</p>
+<blockquote>
+<p>小提示，如果实际情况是想要同一个key对应多个value，那不妨把这个key对应的value设置成一个list就好了，把想要存放的这些多个数值作为这个list中的元素。</p>
+</blockquote>
+<p>然而必须要注意的一点是，dict中的key必须是不可变对象，例如python中的字符串、整型都是不可变对象，因此可以放心作为key来使用，但是绝对不能把key设置成一个可变对象list。这是因为dict中会根据key来计算value存储的位置。如果key是一个可变的对象，那么当这个key发生改变，用原来的查找算法的计算结果就不同，那dict的查找机制就乱套了，就会出错。这种通过key计算位置的算法便是哈希算法（Hash)。</p>
+<p>另外，访问一个不存在的key是会报错的。<br>以上其实和一般的字典都差不多。</p>
+<ul>
+<li>set<br>set其实就是我们数学中学到的集合的概念，它的一个重要特性就是没有重复的元素。也可以理解为它是一个存放key的集合，但不存储value。可以重复添加元素，但它会自动过滤掉重复的元素。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; s = set([2,3,4,5])</div><div class="line">&gt;&gt;&gt; s</div><div class="line">set([2,3,4,5])</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>既然set是一组key的集合，那么自然这些key同样也就不可以是可变的，这和dict是一样的。</p>
+<h3 id="4-不可变对象"><a href="#4-不可变对象" class="headerlink" title="4.不可变对象"></a>4.不可变对象</h3><p>list是一个可变对象，而str（字符串）是一个不可变对象。那么是否意味着我们就不能对一个str进行更改的操作呢？实际上，我们是可以用replace（）这样的方法去引用str对象所指向的内容来进行更改操作，然而这个对象本身却不会改变。<br>例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = &quot;I love you&quot;</div><div class="line">&gt;&gt;&gt; a</div><div class="line">&apos;I love you&apos;</div><div class="line">&gt;&gt;&gt; a.replace(&apos;love&apos;,&apos;hate&apos;)</div><div class="line">&apos;I hate you&apos;</div><div class="line">&gt;&gt;&gt; a</div><div class="line">&apos;I love you&apos;</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>执行完replace（）方法的时候，确实得到了一个改变后的句子，然而再访问a对象时，会发现它没有变，这就是不可变对象。实际上我们在对它进行更改操作的时候，可以理解为是把对象a复制为一个新对象b，然后更改操作是对b对象所指的内容进行更改。</p>
+<h3 id="5-切片"><a href="#5-切片" class="headerlink" title="5. 切片"></a>5. 切片</h3><p>切片（Slice）是python中非常常用的一个操作。它用于对一个list或者tupe取其一部分的元素。</p>
+<p>切片操作符使用非常简单，就是一个取制定索引的符号：[:]<br>[0:3]表示取前3个元素<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; L = [&apos;Tom&apos;,&apos;Bob&apos;,&apos;Mary&apos;,&apos;John&apos;]</div><div class="line">&gt;&gt;&gt; L[0:3]</div><div class="line">[&apos;Tom&apos;,&apos;Bob&apos;,&apos;Mary&apos;]</div></pre></td></tr></table></figure></p>
+<p>以此类推，[1:3]就是从第一个元素（第一个不算）开始取两个元素，[2:3]就是取第三个元素。<br>又根据python支持用L[-1]表示倒序的第一个，那么它同样也可以支持倒序切片：<br>L[-2:]表示从倒数第二个开始（包括倒数第二个）到最后一个。<br>L[-2:-1]表示从倒数第二开始到倒数第一个（不包括倒数第一个）<br>根据以上可以发现切片操作符是一个左闭右开的取值范围。<br>那么我很好奇[-2:0]的情况会是如何：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; L = [1,2,3,4,5,6]</div><div class="line">&gt;&gt;&gt; L[-2:0]</div><div class="line">[]</div></pre></td></tr></table></figure></p>
+<p>返回的是一个空列表，这个切片操作失败了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; L[-2:2]</div><div class="line">[]</div></pre></td></tr></table></figure></p>
+<p>这就告诉我们，切片是不支持“循环”列表的，也就是索引的头尾不会相接，即不能从倒数跨到正数。另外，切片符中前面的数不能大于后面的数，既索引总是从左向右的。<br>切片符还支持定义隔多少个元素取一个，只需要再定义个“切片步长”就好了，例如[::2]就代表在整个列表中，下一元素总取从这一元素开始（不包括这个元素）的第二个元素。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; L[::2]</div><div class="line">[1, 3, 5]</div></pre></td></tr></table></figure></p>
+<p>那么L[:]其实就是默认slice step为1，相当于L[::1]。<br>切片同样也可以用在tuple和字符串上。<br>用切片的主要好处就是省去了很多像遍历列表这样繁琐的循环。 </p>
+<h3 id="6-生成器"><a href="#6-生成器" class="headerlink" title="6. 生成器"></a>6. 生成器</h3><p>讲生成器之前，我先大概说一下python的列表生成式。</p>
+<h4 id="列表生成式"><a href="#列表生成式" class="headerlink" title="列表生成式"></a>列表生成式</h4><p>列表生成式List Comprehensions，用于按照自定义的规则来创建一个列表。<br>例如生成一定范围的数字：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; range(1,13)</div><div class="line">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]</div></pre></td></tr></table></figure></p>
+<p>这个range只能用于integer的范围。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; range(&apos;a&apos;,10)</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">TypeError: range() integer start argument expected, got str.</div></pre></td></tr></table></figure></p>
+<p>又根据这个基础，我们可以生成某个定义域下的x*x的列表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; [x*x for x in range(1,11)]</div><div class="line">[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]</div></pre></td></tr></table></figure></p>
+<p>又比如，在两个变量各自的定义域内，生成某种函数下两个变量的函数值的列表：<br>举两个字符串各个字符全排列的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; [x+y for x in &apos;abcde&apos; for y in &apos;1234567&apos;]</div><div class="line">[&apos;a1&apos;, &apos;a2&apos;, &apos;a3&apos;, &apos;a4&apos;, &apos;a5&apos;, &apos;a6&apos;, &apos;a7&apos;, &apos;b1&apos;, &apos;b2&apos;, &apos;b3&apos;, &apos;b4&apos;, &apos;b5&apos;, &apos;b6&apos;, &apos;b7&apos;, &apos;c1&apos;, &apos;c2&apos;, &apos;c3&apos;, &apos;c4&apos;, &apos;c5&apos;, &apos;c6&apos;, &apos;c7&apos;, &apos;d1&apos;, &apos;d2&apos;, &apos;d3&apos;, &apos;d4&apos;, &apos;d5&apos;, &apos;d6&apos;, &apos;d7&apos;, &apos;e1&apos;, &apos;e2&apos;, &apos;e3&apos;, &apos;e4&apos;, &apos;e5&apos;, &apos;e6&apos;, &apos;e7&apos;]</div></pre></td></tr></table></figure></p>
+<p>另外for循环中也可以有多个变量，当然这个循环器需要能够同时迭代多个变量。<br>例如dict中的iteriems（）可以同时迭代key和value：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; d = &#123;1:&apos;a&apos;,2:&apos;b&apos;,3:&apos;c&apos;&#125;</div><div class="line">&gt;&gt;&gt; [str(k) + &apos;=&apos; + v for k,v in d.iteritems()]</div><div class="line">[&apos;1=a&apos;, &apos;2=b&apos;, &apos;3=c&apos;]</div></pre></td></tr></table></figure></p>
+<p>还可以加入if判断<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; d = &#123;1,&apos;a&apos;,2,&apos;b&apos;,3,&apos;c&apos;&#125;</div><div class="line">&gt;&gt;&gt; [x*x for x in d if isinstance(x,int)]</div><div class="line">[1, 9, 4]</div><div class="line">&gt;&gt;&gt; d</div><div class="line">set([&apos;a&apos;, 1, &apos;c&apos;, 3, 2, &apos;b&apos;])</div></pre></td></tr></table></figure></p>
+<h4 id="生成器"><a href="#生成器" class="headerlink" title="生成器"></a>生成器</h4><p>列表生成式是按照一定规则生成一个列表，那么如果我们只是需要定义这个规则而不需要一次就把这个列表创建出来的时候呢？这时候我们就要用到python的生成器。<br>生成器generator，就是一种实现一边循环一遍计算的机制。<br>将列表生成式的方括号[]改为（），即可以创建一个生成器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; (x*x for x in range(10))</div><div class="line">&lt;generator object &lt;genexpr&gt; at 0x10d028af0&gt;</div></pre></td></tr></table></figure></p>
+<p>那么这个生成器要怎么用呢？首先我们可以用它的next()方法来generate列表中的每个元素：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = (x*x for x in range(10))</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">0</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">1</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>然而事实上我们会用for循环来迭代它。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = (x*x for x in range(10))</div><div class="line">&gt;&gt;&gt; g</div><div class="line">&lt;generator object &lt;genexpr&gt; at 0x10d028a00&gt;</div><div class="line">&gt;&gt;&gt; for n in g:</div><div class="line">...     print n</div><div class="line">...</div><div class="line">0</div><div class="line">1</div><div class="line">4</div><div class="line">9</div><div class="line">16</div><div class="line">25</div><div class="line">36</div><div class="line">49</div><div class="line">64</div><div class="line">81</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>生成器还被用于处理一些复杂的推算规则，以著名的斐波那契数列为例：后一个数字为前两个数字相加之和<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">def fib(max):</div><div class="line">    n, a, b = 1, 0, 1</div><div class="line">    while n &lt; max:</div><div class="line">        a, b = b, a+b</div><div class="line">        n = n+1</div><div class="line">    print b</div></pre></td></tr></table></figure></p>
+<p>这个函数能够打印出斐波那契数列的第max个数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; fib(3)</div><div class="line">2</div><div class="line">&gt;&gt;&gt; fib(4)</div><div class="line">3</div><div class="line">&gt;&gt;&gt; fib(6)</div><div class="line">8</div><div class="line">&gt;&gt;&gt;fib(100)</div><div class="line">354224848179261915075</div><div class="line">&gt;&gt;&gt; fib(9)</div><div class="line">34</div></pre></td></tr></table></figure></p>
+<p>如果我把print b放进while循环，那么这个函数就会一次性打印出斐波那契数列的前max个数。<br>那么其实这个fib函数已经非常像一个生成器了，那如果我不想要一次性打印出来，想把它变成一个生成器，那就只需要这样：<br>把print b 改为 yield b。<br>这就创建了一个按照斐波那契数列规则，最多执行到第五个数的生成器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">def fib(max):</div><div class="line">    n, a, b = 1, 0, 1</div><div class="line">    while n &lt; max:</div><div class="line">        yield b</div><div class="line">        a, b = b, a+b</div><div class="line">        n = n+1</div></pre></td></tr></table></figure></p>
+<p>这里的yield可以当作为一个“闸”的效果，即生成器执行一次next（），它就会输出一次，并且停在这里。下一次执行会从这里开始。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = mylife.fib(5)</div><div class="line">&gt;&gt;&gt; g</div><div class="line">&lt;generator object fib at 0x1080b6aa0&gt;</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">1</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">1</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">2</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">3</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">StopIteration</div></pre></td></tr></table></figure></p>
+<p>通过我的实验发现，一个生成器创建之后，它的循环周期就只有一次，不能重新开始，除非你重新创建一个。也就是说，如果我一次没有循环完这个生成器，那么下一次它还会从它上次循环停止的地方继续开始。如果最后我循环完了这个生成器，那么这个生成器的周期就结束了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; g = mylife.fib(10)</div><div class="line">&gt;&gt;&gt; for n in range(3):</div><div class="line">...     g.next()</div><div class="line">...</div><div class="line">1</div><div class="line">1</div><div class="line">2</div><div class="line">&gt;&gt;&gt; for n in range(3):</div><div class="line">...     g.next()</div><div class="line">...</div><div class="line">3</div><div class="line">5</div><div class="line">8</div><div class="line">&gt;&gt;&gt; for n in g:</div><div class="line">...     print n</div><div class="line">...</div><div class="line">13</div><div class="line">21</div><div class="line">34</div><div class="line">&gt;&gt;&gt; g.next()</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">StopIteration</div><div class="line">&gt;&gt;&gt; g</div><div class="line">&lt;generator object fib at 0x1080b6a50&gt;</div></pre></td></tr></table></figure></p>
+<h3 id="7-高阶函数"><a href="#7-高阶函数" class="headerlink" title="7. 高阶函数"></a>7. 高阶函数</h3><p>高阶函数的英文是Higher-oder function。简单来说，高阶函数的概念就是把函数泛化为普通的参数，既函数能够作为参数被传入。</p>
+<p>深入理解，主要总结为以下几点：</p>
+<p>1.函数的结果可以赋值给变量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> &gt;&gt;&gt; x = abs(-10)</div><div class="line"> &gt;&gt;&gt; x</div><div class="line">10</div></pre></td></tr></table></figure>
+<p>2.函数本身可以赋值给变量,并且通过这个变量可以调用这个函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; f = abs</div><div class="line">&gt;&gt;&gt; f</div><div class="line">&lt;built-in function abs&gt;</div><div class="line">&gt;&gt;&gt; f(-10)</div><div class="line">10</div></pre></td></tr></table></figure>
+<p>3.函数名是指向函数的变量<br>这就是说，在python中，函数名可以完全当作一个普通的变量来使用。<br>可以给函数名这个变量赋值试试：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; abs = 10</div><div class="line">&gt;&gt;&gt; abs(-10)</div><div class="line">Traceback (most recent call last):</div><div class="line">File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">TypeError: &apos;int&apos; object is not callable</div></pre></td></tr></table></figure>
+<p>因为这个函数名被重新赋值成了一个整型变量10，abs这个变量就不代表这个函数，也就不能被调用了。</p>
+<p>4.函数作为参数<br>当一个函数的参数中包含一个函数的时候，这种函数就被称之为高阶函数。<br>其实用数学里的表达就是：f(g(x))，f函数的参数又是一个g函数。来感受一下“阶”的概念：例如对这个二阶函数求导，就是二阶求导。</p>
+<p>一个最简单的高阶函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">def add(x, y, f)</div><div class="line">	return f(x)+f(y)</div></pre></td></tr></table></figure></p>
+<p>用数学表达式去理解，例如：g(x, y, f)= f(x)+f(y)</p>
+<p>这个函数g可以理解为是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">一个</div><div class="line">	通过</div><div class="line">		1.用一个处理“分支问题”的方法f来计算若干中间结果</div><div class="line">			[方法甚至可以是再调用一个方法解决分支的“分支问题”...]</div><div class="line">		2.然后将最终的最上层结果用以产生某种关系（这里是数值相加）</div><div class="line">		</div><div class="line">	来解决“主要问题”</div><div class="line">的方法。</div></pre></td></tr></table></figure></p>
+<p>假设我们把这个函数掏空，剩下的这个函数的骨架实际上就是一个“产生某种关系”的方法。这个方法组合了更多的方法以完成更庞大的任务。<br>根据不同的分支计算方法与产生关系方法，高阶函数就会发挥出不同的效果，而其潜在的无穷能力也正是无数计算机科学家、数学家为之着迷的原因所在吧。</p>
+<h3 id="8-函数式编程"><a href="#8-函数式编程" class="headerlink" title="8. 函数式编程"></a>8. 函数式编程</h3><p>像这种高度抽象的编程范式，我们就把它称作函数式编程。<br>Python对函数式编程提供部分支持。但由于Python允许使用变量，因此，Python不是纯函数式编程语言。<br>满足函数式编程的条件中还有一条，那就是允许函数返回一个函数。<br>实际上我认为，这与是否满足“函数可以作为参数”并不是独立开的。<br>因为当函数A可以作为函数B的参数传入时，是否需要返回一个函数只取决于B函数的骨架，也就是“产生某种关系“的方法。如果这种关系需要通过返回函数来产生（维持），那么它就是如此这般的一类特殊的高阶函数，仅此而已，并不代表它是一个独立的概念。</p>
+<ul>
+<li>思考：return是不是可以理解成一个函数呢？那么返回一个函数是不是也就是把函数作为参数(或者构成了一个表达式)传给了return这个“函数”呢？</li>
+</ul>
+<h3 id="9-递归"><a href="#9-递归" class="headerlink" title="9. 递归"></a>9. 递归</h3><p>揭开这这种特殊的高阶函数的面纱，没错，它就是 ”递归“。</p>
+<p>假如说某个问题是一个能够通过方法迭代的关系来解决的过程，也就是我们可以把它分解成多个可重复解决的小问题，那么我们就只需要找到解决这一种小问题的方法，然后对这个方法进行递归调用，就可以解决这整一个问题。<br>递归的执行过程可以理解为，当停止条件存在且为A时，从问题的起点开始计算n次，n即代表达到停止条件所需要迭代方法f的次数：<br>g（f，A）= f(f(f(f(f(f(f…(A)…)))))</p>
+<blockquote>
+<p>发现递归函数其实就是一种高阶函数，这个函数对各层计算得到的“参数”的组合方式就是“重复调用直到结束条件满足为止”。</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tutorial</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/09/06/Python/">see more >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-CNN" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -229,109 +414,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2017/09/04/CNN/">see more >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-DetectScheme" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/09/04/DetectScheme/">iOS - DetectScheme</a>
-    </h1>
-  
-
-        
-        <a href="/2017/09/04/DetectScheme/" class="archive-article-date">
-  	<time datetime="2017-09-04T14:41:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Targets"><a href="#Targets" class="headerlink" title="Targets"></a>Targets</h1><ul>
-<li>Using schemes to detect if the list of apps are installed then return the result as two strings - installed app list &amp; uninstalled app list.</li>
-</ul>
-<h1 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h1><blockquote>
-<p>Using method canOpenScheme, we can easily detect any URL Scheme to see if the application is installed, which I have introduced in my last article.<br><a href="https://edieyoung.github.io/2017/09/04/Schemes/" target="_blank" rel="external">click here to see.</a><br>Therefore, in this task, I am going to write a runable tool module for any project(application) to complete the app-installed detection task. And I record this coding-testing process circle to mark down some usful gained knowledge and important notes for reminder. </p>
-</blockquote>
-<h2 id="1-detectWithArray-amp-detectScheme"><a href="#1-detectWithArray-amp-detectScheme" class="headerlink" title="1. detectWithArray &amp; detectScheme"></a>1. detectWithArray &amp; detectScheme</h2><ul>
-<li>Outline<br>This method is designed to return the result installed or uninstalled apps list seperated by commas as a string acording to an appList which is declared as an array. </li>
-</ul>
-<p>1、 Traverse the array<br>    So I will to get the app scheme and detect it each time by traversing the array. And this array must be made up with string objects - each object is the exact scheme of an app.<br>    since let’s simply traverse the array:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">- (void) init &#123;</div><div class="line">	self = [super init];</div><div class="line">	if(self)&#123;</div><div class="line">		NSArray *appList = @[@&quot;scheme1&quot;, @&quot;scheme2&quot;];</div><div class="line">		NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">	&#125;</div><div class="line">	return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (NSString *)detectWithArray:(NSArray *)appArray &#123;</div><div class="line">	</div><div class="line">	for ( int i = 0; i &lt; appArray.count, i++)&#123;</div><div class="line">		[detectScheme:appArray[i];</div><div class="line">	&#125;</div><div class="line">	NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    return installedList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>2、 Detect scheme<br>    As you can see above, I now need to design a method detectScheme to complete the logic.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- (void)detectScheme: (NSString *)scheme&#123;</div><div class="line">    //here the scheme need to be added with &quot;://&quot;</div><div class="line">	NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, scheme];</div><div class="line">    NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">    if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">	        //add this app scheme into the result array</div><div class="line">            [_installedApp addObject:scheme];</div><div class="line">	&#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>3、 Call the method<br>    Now we need to set the “entrance” of this method, which means I need to find a place to call the method. As I run the application, the main method will be called automatically, and also by AppDelegate class our application will do all the launching job. Ok, very cool, I can just call my method when this type of method being called.<br>    However, I wrote it as a object method(-).So I need to creat an object of my class to call the method. It will be soon found not convenient.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#import &quot;DetectScheme.h&quot;</div><div class="line"></div><div class="line"></div><div class="line">//code</div><div class="line"></div><div class="line"></div><div class="line">DetectScheme *ds = [[DetectScheme alloc] init];</div><div class="line">NSLog(@&quot;Result:%@&quot;, [ds detectWithArray:ds.appList]);</div></pre></td></tr></table></figure>
-<blockquote>
-<p>However, This is a bad example for following reasons:<br>1、 To call the method, you need to creat an object of the class because it is object method. Also it need to creat class’s properties. It is not convenient to be reused and might cause some unnecessary errors.<br>2、 In the method detectScheme, it will alloc and init some variables which are unnecessary (even not allowed) to be created many times like that. So to avoid  such as memory leaking problem, it is better to creat the variables outside the for-loop. In other words, to maintain the result variable, we don’t need to seperate the logic into two parts(methods).</p>
-</blockquote>
-<h2 id="2-detectWithDictionary-only"><a href="#2-detectWithDictionary-only" class="headerlink" title="2. detectWithDictionary only"></a>2. detectWithDictionary only</h2><p>To solve the problem above, I just comerge two method into one, and turn it into a class method.</p>
-<blockquote>
-<p>Because there are schemes which are meaningless, so I use dictionary to identify the schemes with their app names as keys. Then the result will be more readable.</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">+ (NSString *)detectWithDictionary &#123;</div><div class="line">    NSDictionary *appList = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;scheme1&quot;, @&quot;app1&quot;, @&quot;scheme2&quot;, @&quot;app2&quot;, @&quot;scheme3&quot;, @&quot;app3&quot;, nil];</div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">    </div><div class="line">    //检测这个scheme是否存在，存在即证明装有此app</div><div class="line">    for (NSString *key in appList) &#123;</div><div class="line">        NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, [appList objectForKey:key]];</div><div class="line">        NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">        if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">            [installedApp addObject:key];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //把installedapp的array变成string输出</div><div class="line">    NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line">    return installedList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>With this class method, I can simply use one line to call this method:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NSLog(@&quot;Result:%@&quot;, [DetectScheme detectWithDictionary]);</div></pre></td></tr></table></figure>
-<h2 id="3-Demo-application"><a href="#3-Demo-application" class="headerlink" title="3. Demo application"></a>3. Demo application</h2><p>To test this tool class, I creat another application to do a unit test. Also in order to make this application’s outcome more reasonable to understand, I also make it to return uninstalled apps list.<br>Have a glance at my file root:<br><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/293d84c72cef7cd4.png" alt="1.png"> </p>
-<p>rewrite the method to return both installed apps list and uninstalled apps list:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">+ (NSString *)detectWithDictionary: (BOOL) forInstalled&#123;</div><div class="line">    NSDictionary *appList = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;scheme0&quot;, @&quot;app0&quot;, @&quot;scheme1&quot;, @&quot;app1&quot;, @&quot;scheme2&quot;, @&quot;app2&quot;,  nil];</div><div class="line">    NSMutableArray *installedApp = [[NSMutableArray alloc] init];</div><div class="line">    NSMutableArray *uninstalledApp = [[NSMutableArray alloc] init];</div><div class="line">    //检测这个scheme是否存在，存在即证明装有此app</div><div class="line">    for (NSString *key in appList) &#123;</div><div class="line">        NSString *schemeURL = [[NSString alloc] initWithFormat:@&quot;%@://&quot;, [appList objectForKey:key]];</div><div class="line">        NSURL *url = [NSURL URLWithString: schemeURL];</div><div class="line">        if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;</div><div class="line">            [installedApp addObject:key];</div><div class="line">        &#125; else &#123;</div><div class="line">            [uninstalledApp addObject:key];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //把installedapp的array变成string输出</div><div class="line">    NSString *installedList = [installedApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSString *uninstalledList = [uninstalledApp componentsJoinedByString:@&quot;,&quot;];</div><div class="line">    NSLog(@&quot;Result: %@&quot;, installedList);</div><div class="line">    if(forInstalled)&#123;</div><div class="line">        return installedList;</div><div class="line">    &#125; else &#123;</div><div class="line">        return uninstalledList;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Let’s run the demo to do the test.<br><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/34612/b451c8b5e32177b1.png" alt="2.png"> </p>
-<h2 id="Ending"><a href="#Ending" class="headerlink" title="Ending"></a>Ending</h2><p>This task it self is not a complecated one, but the way to think how to implement it reminds me of how important it is to optimize the algorithm and coding structure. And the very delicate codes don’t come to our minds at the very first time, so I need to keep practicing more to polish my coding mind and skill.</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">iOS开发</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/09/04/DetectScheme/">see more >></a>
         </p>
       
 
@@ -479,11 +561,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
+                <a href="javascript:void(0)" class="js-tag color3">ml</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">ml</a>
+                <a href="javascript:void(0)" class="js-tag color1">iOS开发</a>
               </li>
              
               <li class="article-tag-list-item">
